@@ -1,6 +1,24 @@
 {
-    "hash": "c2639bd4ac21bfd8d3fd08e114f2f759",
+    "hash": "2f99bd6bbcad56fc86561e56797b5b4f",
     "packages": [
+        {
+            "package": "cedriclombardot/admingenerator-generator-bundle",
+            "version": "dev-master",
+            "source-reference": "593798336f421fd41abb35e881658b1208da1d5c",
+            "commit-date": "1347484308"
+        },
+        {
+            "package": "cedriclombardot/admingenerator-oldtheme-bundle",
+            "version": "dev-master",
+            "source-reference": "8c0773536ef29d3811133314daa12d9a04609dff",
+            "commit-date": "1347465834"
+        },
+        {
+            "package": "cedriclombardot/twig-generator",
+            "version": "dev-master",
+            "source-reference": "c7e1abd6c95c05c9e5bb98fe4e956bfaa15731a3",
+            "commit-date": "1345887519"
+        },
         {
             "package": "doctrine/common",
             "version": "2.3.x-dev",
@@ -32,6 +50,18 @@
             "commit-date": "1347883749"
         },
         {
+            "package": "friendsofsymfony/user-bundle",
+            "version": "dev-master",
+            "alias-pretty-version": "2.0.x-dev",
+            "alias-version": "2.0.9999999.9999999-dev"
+        },
+        {
+            "package": "friendsofsymfony/user-bundle",
+            "version": "dev-master",
+            "source-reference": "34f1919ceab96339a8dc6ad7c2b00274a6f499f1",
+            "commit-date": "1347897534"
+        },
+        {
             "package": "jms/aop-bundle",
             "version": "1.0.0"
         },
@@ -56,6 +86,30 @@
             "commit-date": "1346947943"
         },
         {
+            "package": "knplabs/doctrine-behaviors",
+            "version": "dev-master",
+            "source-reference": "d62bfdabc7ffa42aab8e2464caafb43709f8a005",
+            "commit-date": "1348047275"
+        },
+        {
+            "package": "knplabs/knp-menu",
+            "version": "dev-master",
+            "alias-pretty-version": "2.0.x-dev",
+            "alias-version": "2.0.9999999.9999999-dev"
+        },
+        {
+            "package": "knplabs/knp-menu",
+            "version": "dev-master",
+            "source-reference": "78f78d593117ac50ba3ab13664a7c99904f694d1",
+            "commit-date": "1345991530"
+        },
+        {
+            "package": "knplabs/knp-menu-bundle",
+            "version": "dev-master",
+            "source-reference": "dcbbf95363d2e36d507b481ac2124a0ae0ce6e67",
+            "commit-date": "1346242383"
+        },
+        {
             "package": "kriswallsmith/assetic",
             "version": "dev-master",
             "alias-pretty-version": "1.1.x-dev",
@@ -68,6 +122,10 @@
             "commit-date": "1347622188"
         },
         {
+            "package": "leafo/lessphp",
+            "version": "v0.3.5"
+        },
+        {
             "package": "monolog/monolog",
             "version": "dev-master",
             "alias-pretty-version": "1.3.x-dev",
@@ -78,6 +136,18 @@
             "version": "dev-master",
             "source-reference": "09b3a80cfaf3e323e348a5e817afeee98d5e6b48",
             "commit-date": "1347983448"
+        },
+        {
+            "package": "nitra/nitra-theme-bundle",
+            "version": "dev-master",
+            "source-reference": "63f017a915c48a571449df8059a4a1f53cbe77db",
+            "commit-date": "1347793497"
+        },
+        {
+            "package": "pagerfanta/pagerfanta",
+            "version": "dev-master",
+            "source-reference": "12f71d99457b018fb80746f84514dd5b495c5789",
+            "commit-date": "1345672591"
         },
         {
             "package": "sensio/distribution-bundle",
@@ -165,15 +235,25 @@
         },
         {
             "package": "twig/twig",
-            "version": "dev-master",
-            "alias-pretty-version": "1.10.x-dev",
-            "alias-version": "1.10.9999999.9999999-dev"
+            "version": "v1.9.2"
         },
         {
-            "package": "twig/twig",
+            "package": "white-october/pagerfanta-bundle",
             "version": "dev-master",
-            "source-reference": "b4d1d62b82e83c6fd3d5a6cd46a186de64275bb4",
-            "commit-date": "1347961095"
+            "source-reference": "38e317a3ecd5a68e2322024ea8fe57632d4ddd68",
+            "commit-date": "1343134121"
+        },
+        {
+            "package": "zerkalica/millwright-configuration-bundle",
+            "version": "dev-master",
+            "source-reference": "760929945ed01320a062f3ba7e8b6eb3940a3b4c",
+            "commit-date": "1346761248"
+        },
+        {
+            "package": "zerkalica/millwright-menu-bundle",
+            "version": "dev-master",
+            "source-reference": "6544f95d8c42b672ae0f23ebcc81a51e37d57717",
+            "commit-date": "1345214962"
         }
     ],
     "packages-dev": null,
@@ -181,7 +261,8 @@
 
     ],
     "minimum-stability": "dev",
-    "stability-flags": [
-
-    ]
+    "stability-flags": {
+        "nitra/nitra-theme-bundle": 20,
+        "friendsofsymfony/user-bundle": 20
+    }
 }

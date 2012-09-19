@@ -1,0 +1,19 @@
+millwright_menu:
+    renderers:
+        navigation: #menu type id
+            renderer: null # custom renderer
+            rendererOptions:
+                template: MillwrightMenuBundle:Default:knp_menu.html.twig
+                ancestorClass: current active
+                currentClass: current_item
+
+    items: #menu items
+        orders:
+            label: 'Заказы'
+        
+    tree: #menu containers
+        main: #main container
+            type: navigation # menu type id
+            children:
+                orders:
+                  
