@@ -1,0 +1,37 @@
+generator: admingenerator.generator.doctrine
+params:
+  model: Nitra\DeliveryBundle\Entity\DeliveryCity
+  namespace_prefix: Nitra
+  bundle_name: DeliveryBundle
+  fields: 
+    name:
+      label:  Название города
+    city:
+      label:  Город
+
+builders:
+  list:
+    params:
+      title: Список названий городов в транспортных компаниях
+      display: [ name, city ]
+      actions:
+        {}
+      object_actions:
+        edit: ~
+        delete: {}
+  filters:
+    params:
+      display: [ name, city ]
+  new:
+    params:
+      title: Новый город ТК
+      display: [ name, city ]
+      actions:
+        list: ~
+  edit:
+    params:
+      title: Редактирование города "%object%"|{ %object%: DeliveryCity.name }|
+      display: [ name, city ]
+      actions:
+        list: ~
+  delete: ~

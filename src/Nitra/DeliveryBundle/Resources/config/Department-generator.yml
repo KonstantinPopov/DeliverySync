@@ -1,0 +1,43 @@
+generator: admingenerator.generator.doctrine
+params:
+  model: Nitra\DeliveryBundle\Entity\Department
+  namespace_prefix: Nitra
+  bundle_name: DeliveryBundle
+  fields: 
+    name:
+      label:  Название
+    address:
+      label:  Адрес
+    phone:
+      label:  Телефон
+    latitude:
+      label:  Широта
+    longitude:
+      label:  Долгота
+
+builders:
+  list:
+    params:
+      title: Список отделений
+      display: [ name, address, phone, latitude, longitude ]
+      actions:
+        new: {}
+      object_actions:
+        edit: ~
+        delete: {}
+  filters:
+    params:
+      display: [ name, address, phone ]
+  new:
+    params:
+      title: Новое отделение
+      display: [ name, address, phone, latitude, longitude ]
+      actions:
+        list: ~
+  edit:
+    params:
+      title: редактирование отделения "%object%"|{ %object%: Delivery.name }|
+      display: [ name, address, phone, latitude, longitude ]
+      actions:
+        list: ~
+  delete: ~

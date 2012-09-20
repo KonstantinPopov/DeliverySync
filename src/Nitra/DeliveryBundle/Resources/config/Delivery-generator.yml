@@ -1,0 +1,37 @@
+generator: admingenerator.generator.doctrine
+params:
+  model: Nitra\DeliveryBundle\Entity\DeliveryService
+  namespace_prefix: Nitra
+  bundle_name: DeliveryBundle
+  fields: 
+    name:
+      label:               Название службы доставки
+    settings:
+      label:               Настройки
+
+builders:
+  list:
+    params:
+      title: Список служб доставки
+      display:  [ name ]
+      actions:
+        new: ~
+      object_actions:
+        edit: ~
+        delete: ~
+  filters:
+    params:
+      display: [ name ]
+  new:
+    params:
+      title: Новая служба доставки
+      display: [ name, settings ]
+      actions:
+        list: ~
+  edit:
+    params:
+      title: Редактирование "%object%"|{ %object%: DeliveryService.name }|
+      display: [ name, settings ]
+      actions:
+        list: ~
+  delete: ~

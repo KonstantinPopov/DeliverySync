@@ -1,0 +1,9 @@
+NitraGeoBundle_admin_nitra_geo_bundle_City:
+    resource: "@NitraGeoBundle/Controller/City/"
+    type:     admingenerator
+    prefix:   /city
+
+NitraGeoBundle_admin_nitra_geo_bundle_Region:
+    resource: "@NitraGeoBundle/Controller/Region/"
+    type:     admingenerator
+    prefix:   /region

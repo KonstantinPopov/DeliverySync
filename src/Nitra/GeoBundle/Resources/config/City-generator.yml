@@ -1,0 +1,39 @@
+generator:                 admingenerator.generator.doctrine
+params:
+  model:                   Nitra\GeoBundle\Entity\City
+  namespace_prefix:        Nitra
+  bundle_name:             GeoBundle
+  fields:
+    name:
+      label:               Название города
+    region:
+      label:               Регион
+
+builders:
+  list:
+    params:
+      title:               Список городов
+      display:             [ name, region  ]
+      sort:                [ name, ASC ]
+      max_per_page:        50
+      actions:
+        new:               ~
+      object_actions:
+        edit:              ~
+        delete:            ~
+  filters:
+    params:
+      display:             [ name, region ]
+  new:
+    params:
+      title:               Добавление нового города
+      display:             [ name, region ]
+      actions:
+        list:              ~
+  edit:
+    params:
+      title:               Редактирование города "{{ City.name }}"
+      display:             [ name, region ]
+      actions:
+        list:              ~
+  delete:                  ~

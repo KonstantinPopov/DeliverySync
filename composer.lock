@@ -1,5 +1,5 @@
 {
-    "hash": "2f99bd6bbcad56fc86561e56797b5b4f",
+    "hash": "f8157bb60369e3e67e13e1b8f43ad5c6",
     "packages": [
         {
             "package": "cedriclombardot/admingenerator-generator-bundle",
@@ -22,14 +22,20 @@
         {
             "package": "doctrine/common",
             "version": "2.3.x-dev",
-            "source-reference": "24c761bf0f8337064b961a8fad85631a561d26c7",
-            "commit-date": "1347882477"
+            "source-reference": "bb0aebbf234db52df476a2b473d434745b34221c",
+            "commit-date": "1348120518"
+        },
+        {
+            "package": "doctrine/data-fixtures",
+            "version": "dev-master",
+            "source-reference": "cd03a6dee6f5ca1c680f2066b32c92320f3421d7",
+            "commit-date": "1347929044"
         },
         {
             "package": "doctrine/dbal",
             "version": "2.3.x-dev",
-            "source-reference": "c4fe3499781944f7f2b056fd164cfedc67cc0130",
-            "commit-date": "1347882607"
+            "source-reference": "fdc866a37959e43620e4f7ec519dc7dd8e30fc5b",
+            "commit-date": "1348120597"
         },
         {
             "package": "doctrine/doctrine-bundle",
@@ -44,10 +50,16 @@
             "commit-date": "1347289964"
         },
         {
+            "package": "doctrine/doctrine-fixtures-bundle",
+            "version": "dev-master",
+            "source-reference": "186d605aa6b592bd577e07e0e9a2c420b02b2492",
+            "commit-date": "1345465418"
+        },
+        {
             "package": "doctrine/orm",
             "version": "2.3.x-dev",
-            "source-reference": "c6101317cd71cbf320e96f4ce461f8a5a54bf56d",
-            "commit-date": "1347883749"
+            "source-reference": "ea2b28857830720460a345c80c6e7d3f6adae93a",
+            "commit-date": "1348121015"
         },
         {
             "package": "friendsofsymfony/user-bundle",
@@ -88,8 +100,8 @@
         {
             "package": "knplabs/doctrine-behaviors",
             "version": "dev-master",
-            "source-reference": "d62bfdabc7ffa42aab8e2464caafb43709f8a005",
-            "commit-date": "1348047275"
+            "source-reference": "e89dc232cc258e6da4016c91bf1f051f7bffa964",
+            "commit-date": "1348056878"
         },
         {
             "package": "knplabs/knp-menu",
@@ -152,14 +164,14 @@
         {
             "package": "sensio/distribution-bundle",
             "version": "2.1.x-dev",
-            "source-reference": "2eee3cb4cd761c851f0d766649fb9ff6f4c97002",
+            "source-reference": "v2.1.1",
             "commit-date": "1347340208"
         },
         {
             "package": "sensio/framework-extra-bundle",
             "version": "2.1.x-dev",
-            "source-reference": "6d393099b17f301cc09a1d586292ed0b84763011",
-            "commit-date": "1347780475"
+            "source-reference": "86a68df44eb50a64042d05a3f09548d2c21d4456",
+            "commit-date": "1348064274"
         },
         {
             "package": "sensio/generator-bundle",
@@ -200,8 +212,8 @@
         {
             "package": "symfony/monolog-bundle",
             "version": "dev-master",
-            "source-reference": "e1acd0a0da661bdb0f5378a60226ae6e30ec55c6",
-            "commit-date": "1347983520"
+            "source-reference": "51517152a608926ee6b40ed8cfbba1a708f0a14f",
+            "commit-date": "1348137624"
         },
         {
             "package": "symfony/swiftmailer-bundle",
@@ -212,14 +224,14 @@
         {
             "package": "symfony/swiftmailer-bundle",
             "version": "dev-master",
-            "source-reference": "d2eae9385c029cbac031a90e6d2abc74b889a562",
-            "commit-date": "1346243146"
+            "source-reference": "e055faf5d7279f3c01ffd58f1548e0fc524b71d1",
+            "commit-date": "1348137776"
         },
         {
             "package": "symfony/symfony",
             "version": "2.1.x-dev",
-            "source-reference": "f1e6063c0a42065adf026811127f3db1d7a79eb5",
-            "commit-date": "1348035223"
+            "source-reference": "9fd2baa502ea6700461cce89f2295a695c20e430",
+            "commit-date": "1348130370"
         },
         {
             "package": "twig/extensions",
@@ -263,6 +275,7 @@
     "minimum-stability": "dev",
     "stability-flags": {
         "nitra/nitra-theme-bundle": 20,
-        "friendsofsymfony/user-bundle": 20
+        "friendsofsymfony/user-bundle": 20,
+        "doctrine/doctrine-fixtures-bundle": 20
     }
 }

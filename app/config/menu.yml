@@ -8,12 +8,37 @@ millwright_menu:
                 currentClass: current_item
 
     items: #menu items
-        orders:
-            label: 'Заказы'
+        d_service:
+            label: 'ТК'
+        delivery_service:
+            label: 'Транспортные компании'
+            route:  Nitra_DeliveryBundle_Delivery_list
+        department:
+            label:  'Отделения ТК'
+            route:  Nitra_DeliveryBundle_Department_list
+        delivery_city:
+            label:  'Города в ТК'
+            route:  Nitra_DeliveryBundle_DeliveryCity_list
+        territory:
+            label:  'Территории'
+        region:
+            label:  'Регионы'
+            route:  Nitra_GeoBundle_Region_list
+        city:
+            label:  'Города'
+            route:   Nitra_GeoBundle_City_list
         
     tree: #menu containers
         main: #main container
             type: navigation # menu type id
             children:
-                orders:
+                d_service:
+                  children:
+                    delivery_service:    ~
+                    department:    ~
+                    delivery_city:    ~
+                territory:
+                  children:
+                    region:    ~
+                    city:    ~
                   

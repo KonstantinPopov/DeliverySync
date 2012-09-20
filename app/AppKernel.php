@@ -27,6 +27,9 @@ class AppKernel extends Kernel
             new Millwright\ConfigurationBundle\MillwrightConfigurationBundle(),
             new FOS\UserBundle\FOSUserBundle(),
             new Nitra\NitraThemeBundle\NitraThemeBundle(),
+            new Nitra\GeoBundle\NitraGeoBundle(),
+            new Nitra\DeliveryBundle\NitraDeliveryBundle(),
+            new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle()
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
