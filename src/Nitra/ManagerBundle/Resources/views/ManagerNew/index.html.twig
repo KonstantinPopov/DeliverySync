@@ -1,0 +1,9 @@
+{% extends_admingenerated "NitraManagerBundle:ManagerNew:index.html.twig" %}
+
+{% block form_roles %}
+{{ parent() }}
+    
+<script type="text/javascript">
+    $('a.new').remove();
+</script>
+{% endblock %}

@@ -1,0 +1,7 @@
+{% extends_admingenerated "NitraManagerBundle:ManagerList:index.html.twig" %}
+
+{% block list_td_column_roles_text %}
+    {% autoescape false %}
+        {{ Manager.rolesText }}
+    {% endautoescape %}
+{% endblock %}

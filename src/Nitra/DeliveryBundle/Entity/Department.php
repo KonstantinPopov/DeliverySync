@@ -17,10 +17,10 @@ use Knp\DoctrineBehaviors\Model as ORMBehaviors;
  */
 class Department
 {
-    
+
     use ORMBehaviors\Timestampable\Timestampable,
         ORMBehaviors\SoftDeletable\SoftDeletable;
-    
+
     /**
      * @var integer $id
      *
@@ -52,35 +52,35 @@ class Department
      * @ORM\Column(name="phone", type="string", length=255)
      */
     private $phone;
-    
-     /**
+
+    /**
      * @ORM\ManyToOne(targetEntity="DeliveryCity", inversedBy="departments")
      * @ORM\JoinColumn(name="delivery_city_id", referencedColumnName="id")
      * @Assert\Type(type="DeliveryCity")
      * */
     private $deliveryCity;
-    
+
     /**
      * @ORM\ManyToOne(targetEntity="DeliveryService", inversedBy="departments")
      * @ORM\JoinColumn(name="delivery_service_id", referencedColumnName="id")
      * @Assert\Type(type="DeliveryService")
      * */
     private $deliveryService;
-    
+
     /**
      * @var decimal $latitude
      *
      * @ORM\Column(name="latitude", type="decimal", precision=13, scale=8, nullable = true)
      */
     private $latitude;
-    
+
     /**
      * @var decimal $longitude
      *
      * @ORM\Column(name="longitude", type="decimal", precision=13, scale=8, nullable = true)
      */
     private $longitude;
-    
+
     /**
      *
      * @var type string
@@ -88,7 +88,7 @@ class Department
      * @ORM\Column(name="ware_id", type = "string", length=10)
      */
     private $wareId;
-    
+
     /**
      * Get id
      *
@@ -108,7 +108,7 @@ class Department
     public function setName($name)
     {
         $this->name = $name;
-    
+
         return $this;
     }
 
@@ -131,7 +131,7 @@ class Department
     public function setAddress($address)
     {
         $this->address = $address;
-    
+
         return $this;
     }
 
@@ -154,7 +154,7 @@ class Department
     public function setPhone($phone)
     {
         $this->phone = $phone;
-    
+
         return $this;
     }
 
@@ -177,7 +177,7 @@ class Department
     public function setDeliveryCity(\Nitra\DeliveryBundle\Entity\DeliveryCity $deliveryCity = null)
     {
         $this->deliveryCity = $deliveryCity;
-    
+
         return $this;
     }
 
@@ -200,7 +200,7 @@ class Department
     public function setDeliveryService(\Nitra\DeliveryBundle\Entity\DeliveryService $deliveryService = null)
     {
         $this->deliveryService = $deliveryService;
-    
+
         return $this;
     }
 
@@ -223,7 +223,7 @@ class Department
     public function setLatitude($latitude)
     {
         $this->latitude = $latitude;
-    
+
         return $this;
     }
 
@@ -246,7 +246,7 @@ class Department
     public function setLongitude($longitude)
     {
         $this->longitude = $longitude;
-    
+
         return $this;
     }
 
@@ -259,7 +259,6 @@ class Department
     {
         return $this->longitude;
     }
-   
 
     /**
      * Set ware_id
@@ -270,7 +269,7 @@ class Department
     public function setWareId($wareId)
     {
         $this->wareId = $wareId;
-    
+
         return $this;
     }
 
@@ -284,5 +283,4 @@ class Department
         return $this->wareId;
     }
 
-   
 }

@@ -1,0 +1,4 @@
+NitraManagerBundle_admin_nitra_manager_bundle_Manager:
+    resource: "@NitraManagerBundle/Controller/Manager/"
+    type:     admingenerator
+    prefix:   /manager

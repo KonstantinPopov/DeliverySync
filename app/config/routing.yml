@@ -1,3 +1,8 @@
+NitraDeliveryBundle_admin_nitra_delivery_bundle_Client:
+    resource: "@NitraDeliveryBundle/Controller/Client/"
+    type:     admingenerator
+    prefix:   /client
+
 NitraDeliveryBundle_admin_nitra_delivery_bundle_Department:
     resource: "@NitraDeliveryBundle/Controller/Department/"
     type:     admingenerator
@@ -13,6 +18,10 @@ NitraDeliveryBundle_admin_nitra_delivery_bundle_Delivery:
     type:     admingenerator
     prefix:   /delivery
 
+NitraManagerBundle:
+    resource: "@NitraManagerBundle/Resources/config/routing.yml"
+    prefix:   /
+    
 NitraGeoBundle:
     resource: "@NitraGeoBundle/Resources/config/routing.yml"
     prefix:   /

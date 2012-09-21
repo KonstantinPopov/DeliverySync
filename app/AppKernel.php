@@ -29,6 +29,7 @@ class AppKernel extends Kernel
             new Nitra\NitraThemeBundle\NitraThemeBundle(),
             new Nitra\GeoBundle\NitraGeoBundle(),
             new Nitra\DeliveryBundle\NitraDeliveryBundle(),
+            new Nitra\ManagerBundle\NitraManagerBundle(),
             new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle()
         );
 

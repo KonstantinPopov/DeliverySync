@@ -18,9 +18,10 @@ use Knp\DoctrineBehaviors\Model as ORMBehaviors;
  */
 class DeliveryCity
 {
+
     use ORMBehaviors\Timestampable\Timestampable,
         ORMBehaviors\SoftDeletable\SoftDeletable;
-    
+
     /**
      * @var integer $id
      *
@@ -44,7 +45,7 @@ class DeliveryCity
      * @Assert\Type(type="Nitra\GeoBundle\Entity\City")
      * */
     private $city;
-    
+
     /**
      * @ORM\OneToMany(targetEntity="Department", mappedBy="delivery_city")
      * @Assert\Type(type="Nitra\DeliveryBundle\Entity\Department")
@@ -70,7 +71,7 @@ class DeliveryCity
     public function setName($name)
     {
         $this->name = $name;
-    
+
         return $this;
     }
 
@@ -93,7 +94,7 @@ class DeliveryCity
     public function setCity(\Nitra\GeoBundle\Entity\City $city = null)
     {
         $this->city = $city;
-    
+
         return $this;
     }
 
@@ -106,6 +107,7 @@ class DeliveryCity
     {
         return $this->city;
     }
+
     /**
      * Constructor
      */
@@ -113,7 +115,7 @@ class DeliveryCity
     {
         $this->departments = new \Doctrine\Common\Collections\ArrayCollection();
     }
-    
+
     /**
      * Add departments
      *
@@ -123,7 +125,7 @@ class DeliveryCity
     public function addDepartment(\Nitra\DeliveryBundle\Entity\Department $departments)
     {
         $this->departments[] = $departments;
-    
+
         return $this;
     }
 
@@ -146,5 +148,5 @@ class DeliveryCity
     {
         return $this->departments;
     }
-   
+
 }

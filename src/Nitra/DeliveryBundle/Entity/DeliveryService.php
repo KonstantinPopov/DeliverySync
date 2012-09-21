@@ -51,8 +51,8 @@ class DeliveryService
      * @Assert\Type(type="Nitra\DeliveryBundle\Entity\Department")
      */
     private $departments;
-
-
+    
+   
     /**
      * Get id
      *
@@ -149,4 +149,18 @@ class DeliveryService
         return $this->departments;
     }
    
+    /**
+     * Get clients
+     *
+     * @return Doctrine\Common\Collections\Collection 
+     */
+    public function getClients()
+    {
+        return $this->clients;
+    }
+    
+    public function __toString() {
+        return $this->getName();
+    }
+    
 }

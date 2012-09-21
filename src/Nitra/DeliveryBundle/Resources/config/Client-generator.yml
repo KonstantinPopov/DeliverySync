@@ -1,0 +1,40 @@
+generator: admingenerator.generator.doctrine
+params:
+  model: Nitra\DeliveryBundle\Entity\Client
+  namespace_prefix: Nitra
+  bundle_name: DeliveryBundle
+  fields: 
+    name:
+      label:  Название клиента
+    token:
+      label:  Ключ
+    deliveryServices:
+      label:  Транспортные компании
+    
+
+builders:
+  list:
+    params:
+      title: Список клиентов
+      display: [ name, token ]
+      actions:
+        new: ~
+      object_actions:
+        edit: ~
+        delete: ~
+  filters:
+    params:
+      display: [ name, token ]
+  new:
+    params:
+      title: Новый клиент
+      display: [ name, token, deliveryServices]
+      actions:
+        list: ~
+  edit:
+    params:
+      title: Редактирование клиента|{ %object%: Client.name }|
+      display:  [ name, token, deliveryServices]
+      actions:
+        list: ~
+  delete: ~
