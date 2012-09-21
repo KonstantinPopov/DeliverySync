@@ -4,6 +4,7 @@ namespace Nitra\DeliveryBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Knp\DoctrineBehaviors\Model as ORMBehaviors;
 
 /**
@@ -11,6 +12,8 @@ use Knp\DoctrineBehaviors\Model as ORMBehaviors;
  *
  * @ORM\Table(name="department")
  * @ORM\Entity 
+ * 
+ * @UniqueEntity(fields={"delivery_service_id", "ware_id"}, message="Отделение данной компании с таким идентификатором уже существует")
  */
 class Department
 {
@@ -55,28 +58,36 @@ class Department
      * @ORM\JoinColumn(name="delivery_city_id", referencedColumnName="id")
      * @Assert\Type(type="DeliveryCity")
      * */
-    private $delivery_city;
+    private $deliveryCity;
     
     /**
      * @ORM\ManyToOne(targetEntity="DeliveryService", inversedBy="departments")
      * @ORM\JoinColumn(name="delivery_service_id", referencedColumnName="id")
      * @Assert\Type(type="DeliveryService")
      * */
-    private $delivery_service;
+    private $deliveryService;
     
     /**
      * @var decimal $latitude
      *
-     * @ORM\Column(name="latitude", type="decimal", precision=13, scale=8)
+     * @ORM\Column(name="latitude", type="decimal", precision=13, scale=8, nullable = true)
      */
     private $latitude;
     
     /**
      * @var decimal $longitude
      *
-     * @ORM\Column(name="longitude", type="decimal", precision=13, scale=8)
+     * @ORM\Column(name="longitude", type="decimal", precision=13, scale=8, nullable = true)
      */
     private $longitude;
+    
+    /**
+     *
+     * @var type string
+     * 
+     * @ORM\Column(name="ware_id", type = "string", length=10)
+     */
+    private $wareId;
     
     /**
      * Get id
@@ -165,7 +176,7 @@ class Department
      */
     public function setDeliveryCity(\Nitra\DeliveryBundle\Entity\DeliveryCity $deliveryCity = null)
     {
-        $this->delivery_city = $deliveryCity;
+        $this->deliveryCity = $deliveryCity;
     
         return $this;
     }
@@ -177,7 +188,7 @@ class Department
      */
     public function getDeliveryCity()
     {
-        return $this->delivery_city;
+        return $this->deliveryCity;
     }
 
     /**
@@ -188,7 +199,7 @@ class Department
      */
     public function setDeliveryService(\Nitra\DeliveryBundle\Entity\DeliveryService $deliveryService = null)
     {
-        $this->delivery_service = $deliveryService;
+        $this->deliveryService = $deliveryService;
     
         return $this;
     }
@@ -200,7 +211,7 @@ class Department
      */
     public function getDeliveryService()
     {
-        return $this->delivery_service;
+        return $this->deliveryService;
     }
 
     /**
@@ -248,4 +259,30 @@ class Department
     {
         return $this->longitude;
     }
+   
+
+    /**
+     * Set ware_id
+     *
+     * @param string $wareId
+     * @return Department
+     */
+    public function setWareId($wareId)
+    {
+        $this->wareId = $wareId;
+    
+        return $this;
+    }
+
+    /**
+     * Get ware_id
+     *
+     * @return string 
+     */
+    public function getWareId()
+    {
+        return $this->wareId;
+    }
+
+   
 }
