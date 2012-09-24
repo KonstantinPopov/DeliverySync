@@ -1,5 +1,9 @@
+Nitra_DeliveryBundle_Client_newToken:
+    resource: "@NitraDeliveryBundle/Controller/Client"
+    type:     annotation
+    prefix:   /client
+    
 NitraDeliveryBundle_Synchronization:
-#  resouce:  "@NitraDeliveryBundle/Controller"
   pattern:  /sync/{key}
   defaults:  { _controller: NitraDeliveryBundle:Sync:synchronization }
 

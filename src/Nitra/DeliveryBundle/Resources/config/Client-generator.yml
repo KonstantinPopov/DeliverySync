@@ -16,25 +16,26 @@ builders:
   list:
     params:
       title: Список клиентов
-      display: [ name, token, user, deliveryServices ]
+      display: [ name, user, deliveryServices ]
       actions:
         new: ~
       object_actions:
         edit: ~
         delete: ~
+        newToken: ~
   filters:
     params:
       display: [ name, token ]
   new:
     params:
       title: Новый клиент
-      display: [ name, token, user, deliveryServices ]
+      display: [ name, token, deliveryServices ]
       actions:
         list: ~
   edit:
     params:
       title: Редактирование клиента|{ %object%: Client.name }|
-      display:  [ name, token, user, deliveryServices ]
+      display:  [ name, token, deliveryServices ]
       actions:
         list: ~
   delete: ~

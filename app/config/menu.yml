@@ -32,6 +32,9 @@ millwright_menu:
         client_list:
           label:    'Список клиентов'
           route:  Nitra_DeliveryBundle_Client_list
+        managers:
+          label:   'Менеджеры'
+          route:  Nitra_ManagerBundle_Manager_list
         
     tree: #menu containers
         main: #main container
@@ -49,4 +52,5 @@ millwright_menu:
                 client:
                   children:
                     client_list:  ~
+                    managers:  ~
                   

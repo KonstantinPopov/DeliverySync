@@ -34,14 +34,14 @@ class Client
      * @var string $name
      *
      * @ORM\Column(name="name", type="string", length=255)
-     * @Assert\NotBlank
+     * 
      */
     private $name;
 
     /**
      * @var string $token
      *
-     * @ORM\Column(name="token", type="string", length=32)
+     * @ORM\Column(name="token", type="string", length=32, nullable = true)
      */
     private $token;
     
