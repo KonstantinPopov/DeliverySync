@@ -109,7 +109,7 @@ class City
     }
     
     public function __toString() {
-        return $this->getName();
+        return $this->getName() . $this->getRegion()->getName();
     }
 
     /**

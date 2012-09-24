@@ -282,5 +282,9 @@ class Department
     {
         return $this->wareId;
     }
+    
+      public function __toString() {
+        return $this->getName();
+    }
 
 }

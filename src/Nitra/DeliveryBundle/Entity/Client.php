@@ -53,8 +53,8 @@ class Client
     private $user;
 
      /**
-     * @ORM\ManyToMany(targetEntity="DeliveryService")
-     * 
+     * @ORM\ManyToMany(targetEntity="DeliveryService", inversedBy="clients")
+     * @ORM\JoinTable(name="client_deliveryservice")
      */
     private $deliveryServices;
 
@@ -179,4 +179,5 @@ class Client
     {
         return $this->user;
     }
+    
 }

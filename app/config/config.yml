@@ -71,7 +71,7 @@ swiftmailer:
 fos_user:
     db_driver: orm
     firewall_name: main
-    user_class: Nitra\NitraThemeBundle\Entity\User
+    user_class: Nitra\ManagerBundle\Entity\Manager
 
 admingenerator_generator:
     base_admin_template: ::base_admin.html.twig
@@ -90,4 +90,4 @@ admingenerator_generator:
             thousand_separator: ' '
 
 parameters:
-    knp.doctrine_behaviors.blameable_listener.user_entity: Nitra\NitraThemeBundle\Entity\User
+    knp.doctrine_behaviors.blameable_listener.user_entity: Nitra\ManagerBundle\Entity\Manager

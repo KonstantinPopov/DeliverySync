@@ -148,5 +148,9 @@ class DeliveryCity
     {
         return $this->departments;
     }
+    
+      public function __toString() {
+        return $this->getName();
+    }
 
 }

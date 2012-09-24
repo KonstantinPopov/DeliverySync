@@ -27,6 +27,11 @@ millwright_menu:
         city:
             label:  'Города'
             route:   Nitra_GeoBundle_City_list
+        client: 
+          label:  'Клиенты'
+        client_list:
+          label:    'Список клиентов'
+          route:  Nitra_DeliveryBundle_Client_list
         
     tree: #menu containers
         main: #main container
@@ -41,4 +46,7 @@ millwright_menu:
                   children:
                     region:    ~
                     city:    ~
+                client:
+                  children:
+                    client_list:  ~
                   

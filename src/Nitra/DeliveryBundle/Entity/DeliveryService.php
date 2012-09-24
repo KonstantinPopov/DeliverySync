@@ -52,6 +52,11 @@ class DeliveryService
      */
     private $departments;
     
+    
+     /**
+     * @ORM\ManyToMany(targetEntity="Client", mappedBy="deliveryServices")
+     */
+    private $clients;
    
     /**
      * Get id
@@ -163,4 +168,28 @@ class DeliveryService
         return $this->getName();
     }
     
+    
+
+    /**
+     * Add clients
+     *
+     * @param Nitra\DeliveryBundle\Entity\Client $clients
+     * @return DeliveryService
+     */
+    public function addClient(\Nitra\DeliveryBundle\Entity\Client $clients)
+    {
+        $this->clients[] = $clients;
+    
+        return $this;
+    }
+
+    /**
+     * Remove clients
+     *
+     * @param Nitra\DeliveryBundle\Entity\Client $clients
+     */
+    public function removeClient(\Nitra\DeliveryBundle\Entity\Client $clients)
+    {
+        $this->clients->removeElement($clients);
+    }
 }

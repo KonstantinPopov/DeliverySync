@@ -1,3 +1,8 @@
+NitraDeliveryBundle_Synchronization:
+#  resouce:  "@NitraDeliveryBundle/Controller"
+  pattern:  /sync/{key}
+  defaults:  { _controller: NitraDeliveryBundle:Sync:synchronization }
+
 NitraDeliveryBundle_admin_nitra_delivery_bundle_Client:
     resource: "@NitraDeliveryBundle/Controller/Client/"
     type:     admingenerator
