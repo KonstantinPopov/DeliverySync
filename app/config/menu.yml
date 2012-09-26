@@ -35,6 +35,14 @@ millwright_menu:
         managers:
           label:   'Менеджеры'
           route:  Nitra_ManagerBundle_Manager_list
+        settings:
+          label:  'Настройки'
+        groups:
+          label:  'Группы'
+          route:  Nitra_ManagerBundle_Group_list
+        roles:
+          label:   'Привилегии'
+          route:  Nitra_ManagerBundle_Role_list
         
     tree: #menu containers
         main: #main container
@@ -53,4 +61,8 @@ millwright_menu:
                   children:
                     client_list:  ~
                     managers:  ~
+                settings:
+                  children:
+                    groups:  ~
+                    roles:  ~
                   

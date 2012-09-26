@@ -2,7 +2,6 @@
 
 namespace Nitra\DeliveryBundle\Entity;
 
-
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -18,10 +17,10 @@ use Knp\DoctrineBehaviors\Model as ORMBehaviors;
  */
 class DeliveryService
 {
-    
+
     use ORMBehaviors\Timestampable\Timestampable,
         ORMBehaviors\SoftDeletable\SoftDeletable;
-    
+
     /**
      * @var integer $id
      *
@@ -45,19 +44,18 @@ class DeliveryService
      * @ORM\Column(name="settings", type="array")
      */
     private $settings;
-    
-     /**
+
+    /**
      * @ORM\OneToMany(targetEntity="Department", mappedBy="delivery_service")
-     * @Assert\Type(type="Nitra\DeliveryBundle\Entity\Department")
+     * 
      */
     private $departments;
-    
-    
-     /**
+
+    /**
      * @ORM\ManyToMany(targetEntity="Client", mappedBy="deliveryServices")
      */
     private $clients;
-   
+
     /**
      * Get id
      *
@@ -77,7 +75,7 @@ class DeliveryService
     public function setName($name)
     {
         $this->name = $name;
-    
+
         return $this;
     }
 
@@ -100,7 +98,7 @@ class DeliveryService
     public function setSettings($settings)
     {
         $this->settings = $settings;
-    
+
         return $this;
     }
 
@@ -113,6 +111,7 @@ class DeliveryService
     {
         return $this->settings;
     }
+
     /**
      * Constructor
      */
@@ -120,7 +119,7 @@ class DeliveryService
     {
         $this->departments = new \Doctrine\Common\Collections\ArrayCollection();
     }
-    
+
     /**
      * Add departments
      *
@@ -130,7 +129,7 @@ class DeliveryService
     public function addDepartment(\Nitra\DeliveryBundle\Entity\Department $departments)
     {
         $this->departments[] = $departments;
-    
+
         return $this;
     }
 
@@ -153,7 +152,7 @@ class DeliveryService
     {
         return $this->departments;
     }
-   
+
     /**
      * Get clients
      *
@@ -163,12 +162,11 @@ class DeliveryService
     {
         return $this->clients;
     }
-    
-    public function __toString() {
+
+    public function __toString()
+    {
         return $this->getName();
     }
-    
-    
 
     /**
      * Add clients
@@ -179,7 +177,7 @@ class DeliveryService
     public function addClient(\Nitra\DeliveryBundle\Entity\Client $clients)
     {
         $this->clients[] = $clients;
-    
+
         return $this;
     }
 
@@ -192,4 +190,5 @@ class DeliveryService
     {
         $this->clients->removeElement($clients);
     }
+
 }

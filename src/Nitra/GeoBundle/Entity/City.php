@@ -34,7 +34,7 @@ class City
      * @var string $name
      *
      * @ORM\Column(name="name", type="string", length=255)
-     * not blank
+     * @Assert\NotBlank
      */
     private $name;
 
@@ -47,7 +47,7 @@ class City
     
      /**
      * @ORM\OneToMany(targetEntity="Nitra\DeliveryBundle\Entity\DeliveryCity", mappedBy="city")
-      * @Assert\Type(type="Nitra\DeliveryBundle\Entity\DeliveryCity")
+     * 
      */
     private $delivery_cities;
     
@@ -109,7 +109,7 @@ class City
     }
     
     public function __toString() {
-        return $this->getName() . $this->getRegion()->getName();
+        return $this->getName() . '      ' .  $this->getRegion()->getName();
     }
 
     /**

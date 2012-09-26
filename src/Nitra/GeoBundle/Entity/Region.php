@@ -45,7 +45,7 @@ class Region
 
     /**
      * @ORM\OneToMany(targetEntity="Region", mappedBy="region")
-     * @Assert\Type(type="Nitra\GeoBundle\Entity\City")
+     * 
      */
     private $cities;
     

@@ -47,8 +47,8 @@ class DeliveryCity
     private $city;
 
     /**
-     * @ORM\OneToMany(targetEntity="Department", mappedBy="delivery_city")
-     * @Assert\Type(type="Nitra\DeliveryBundle\Entity\Department")
+     * @ORM\OneToMany(targetEntity="Department", mappedBy="deliveryCity")
+     * 
      */
     private $departments;
 
@@ -149,7 +149,8 @@ class DeliveryCity
         return $this->departments;
     }
     
-      public function __toString() {
+    public function __toString()
+    {
         return $this->getName();
     }
 

@@ -20,7 +20,13 @@ class Department
 
     use ORMBehaviors\Timestampable\Timestampable,
         ORMBehaviors\SoftDeletable\SoftDeletable;
-
+    
+    public function __construct()
+    {
+        $this->latitude = 0;
+        $this->longitude = 0;
+    }
+    
     /**
      * @var integer $id
      *
@@ -70,14 +76,14 @@ class Department
     /**
      * @var decimal $latitude
      *
-     * @ORM\Column(name="latitude", type="decimal", precision=13, scale=8, nullable = true)
+     * @ORM\Column(name="latitude", type="decimal", precision=13, scale=8)
      */
     private $latitude;
 
     /**
      * @var decimal $longitude
      *
-     * @ORM\Column(name="longitude", type="decimal", precision=13, scale=8, nullable = true)
+     * @ORM\Column(name="longitude", type="decimal", precision=13, scale=8)
      */
     private $longitude;
 

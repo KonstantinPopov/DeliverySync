@@ -1,0 +1,39 @@
+generator: admingenerator.generator.doctrine
+params:
+  model: Nitra\ManagerBundle\Entity\Group
+  namespace_prefix: Nitra
+  bundle_name: ManagerBundle
+  fields: 
+    name:
+      label:  Название группы
+    roles:
+      label:  Роли
+    Roles:
+      label:  Роли
+
+builders:
+  list:
+    params:
+      title: Список групп
+      display: [ name, roles ]
+      actions:
+        new: ~
+      object_actions:
+        edit: ~
+        delete: ~
+  filters:
+    params:
+      display: [ name ]
+  new:
+    params:
+      title: Новая группа
+      display: [ name, roles ]
+      actions:
+        list: ~
+  edit:
+    params:
+      title: Редактирование группы "%Group%"|{ %Group%: Group.name }|
+      display: [ name, roles ]
+      actions:
+        list: ~
+  delete: ~

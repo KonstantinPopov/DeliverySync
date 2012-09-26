@@ -10,6 +10,8 @@ params:
       label:  Ключ
     deliveryServices:
       label:  Транспортные компании
+    manager:
+      label:   Менеджер
     
 
 builders:
@@ -25,17 +27,17 @@ builders:
         newToken: ~
   filters:
     params:
-      display: [ name, token ]
+      display: [ name ]
   new:
     params:
       title: Новый клиент
-      display: [ name, token, deliveryServices ]
+      display: [ name, user, deliveryServices ]
       actions:
         list: ~
   edit:
     params:
       title: Редактирование клиента|{ %object%: Client.name }|
-      display:  [ name, token, deliveryServices ]
+      display:  [ name, user, deliveryServices ]
       actions:
         list: ~
   delete: ~

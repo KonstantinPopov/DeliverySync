@@ -41,7 +41,7 @@ class Client
     /**
      * @var string $token
      *
-     * @ORM\Column(name="token", type="string", length=32, nullable = true)
+     * @ORM\Column(name="token", type="string", length=50, nullable = true)
      */
     private $token;
     
@@ -178,6 +178,11 @@ class Client
     public function getUser()
     {
         return $this->user;
+    }
+    
+    public function __toString()
+    {
+        return $this->getName();
     }
     
 }

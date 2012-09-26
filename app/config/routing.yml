@@ -1,3 +1,13 @@
+NitraManagerBundle_admin_nitra_manager_bundle_Group:
+    resource: "@NitraManagerBundle/Controller/Group/"
+    type:     admingenerator
+    prefix:   /group
+
+NitraManagerBundle_admin_nitra_manager_bundle_Role:
+    resource: "@NitraManagerBundle/Controller/Role/"
+    type:     admingenerator
+    prefix:   /role
+
 Nitra_DeliveryBundle_Client_newToken:
     resource: "@NitraDeliveryBundle/Controller/Client"
     type:     annotation
@@ -6,6 +16,8 @@ Nitra_DeliveryBundle_Client_newToken:
 NitraDeliveryBundle_Synchronization:
   pattern:  /sync/{key}
   defaults:  { _controller: NitraDeliveryBundle:Sync:synchronization }
+#  requirements:
+#    _scheme:  https
 
 NitraDeliveryBundle_admin_nitra_delivery_bundle_Client:
     resource: "@NitraDeliveryBundle/Controller/Client/"

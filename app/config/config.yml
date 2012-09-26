@@ -72,6 +72,9 @@ fos_user:
     db_driver: orm
     firewall_name: main
     user_class: Nitra\ManagerBundle\Entity\Manager
+    
+    group:
+      group_class:  Nitra\ManagerBundle\Entity\Group
 
 admingenerator_generator:
     base_admin_template: ::base_admin.html.twig

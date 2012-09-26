@@ -28,12 +28,21 @@ security:
             anonymous:    true
 
     access_control:
-        - { path: ^/login$, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/, role: ROLE_ADMIN }
+        - { path: ^/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/resetting, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/delivery-city, roles: [ ROLE_MANAGER, ROLE_ADMIN ] }
+        - { path: ^/delivery, roles: [ ROLE_MANAGER, ROLE_ADMIN ] }
+        - { path: ^/client, roles: [ ROLE_CLIENT, ROLE_ADMIN ] }
+        - { path: ^/department, roles: ROLE_ADMIN }
+        - { path: ^/group, roles: ROLE_ADMIN }
+        - { path: ^/role, roles: ROLE_ADMIN }
+        - { path: ^/city, roles: ROLE_ADMIN }
+        - { path: ^/region, roles: ROLE_ADMIN }
+        - { path: ^/manager, roles: ROLE_ADMIN }
         - { path: ^/sync, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
 
     role_hierarchy:
+        ROLE_USER:          ROLE_MANAGER, ROLE_CLIENT
         ROLE_ADMIN:       ROLE_USER
         ROLE_SUPER_ADMIN: ROLE_ADMIN

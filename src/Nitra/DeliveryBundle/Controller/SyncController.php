@@ -23,7 +23,10 @@ class SyncController extends Controller
                 ->where('c.token = :key')
                 ->setParameter('key',$key);
          $departments = $query->getQuery()->getResult();
-         
+         if (!count($departments))
+         {
+             $departments = array('Error' => 'No result for your key!');
+         }
          $data = json_encode($departments);
          $headers = array( 'Content-type' => 'application-json; charset=utf8' );
          $response = new Response( $data, 200, $headers );

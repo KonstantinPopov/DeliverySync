@@ -18,12 +18,16 @@ params:
       label:                      Срок действия закончился?
     roles_text:
       label:                      Привилегии
+    client:
+      label:                      Клиент
+    groups:
+      label:                      Группы
 
 builders:
   list:
     params:
       title:                      Список менеджеров
-      display:                    [ username, email, enabled, lastLogin, locked, expired, roles_text ]
+      display:                    [ username, email, enabled, lastLogin, locked, expired, client, groups ]
       actions:
         new:                      ~
       object_actions:
@@ -35,13 +39,13 @@ builders:
   new:
     params:
       title:                      Добавление нового менеджера
-      display:                    [ username, email, enabled, locked, roles, password ]
+      display:                    [ username, email, enabled, locked,  password, client, groups ]
       actions:
         list:                     ~
   edit:
     params:
       title:                      Редактирование менеджера "{{ Manager }}"
-      display:                    [ username, email, enabled, locked, roles, password ]
+      display:                    [ username, email, enabled, locked, password, client, groups ]
       actions:
         list:                     ~
   delete:                         ~

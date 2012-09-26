@@ -14,12 +14,16 @@ params:
       label:  Широта
     longitude:
       label:  Долгота
+    deliveryService:
+      label:  Транспортная компания
+    deliveryCity:
+      label:  Город
 
 builders:
   list:
     params:
       title: Список отделений
-      display: [ name, address, phone, latitude, longitude  ]
+      display: [ name, address, phone, latitude, longitude, deliveryService, deliveryCity  ]
       actions:
         new: {}
       object_actions:
@@ -28,7 +32,7 @@ builders:
       max_per_page: 20
   filters:
     params:
-      display: [ name, address, phone ]
+      display: [ name, address, phone, deliveryService, deliveryCity ]
   new:
     params:
       title: Новое отделение
