@@ -84,10 +84,15 @@ class SyncNPCommand extends ContainerAwareCommand
         foreach ($ids as $id) {
             $wareIds [] = $id['wareId'];
         }
+        
+      
         foreach ($warehouses as $wh) {
+//              var_dump($wh->city);
             $dCity = $em
                     ->getRepository('NitraDeliveryBundle:DeliveryCity')
                     ->findOneByName($wh->cityRu);
+            
+            
             if (!$dCity) {
                 $dCity = new DeliveryCity();
                 $dCity->setName($wh->cityRu);
@@ -115,11 +120,15 @@ class SyncNPCommand extends ContainerAwareCommand
                         'wareId' => $wh->wareId
                             ));
                     $department = $query->getSingleResult();
+                    
+    
                 } catch (\Doctrine\ORM\NoResultException $e) {
                     $department = new Department();
                     $em->persist($department);
                 }
             }
+           
+                            var_dump($wh);
             $department->setDeliveryCity($dCity);
             $department->setName($wh->addressRu);
             $department->setAddress($wh->addressRu);

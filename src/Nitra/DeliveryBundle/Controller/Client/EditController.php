@@ -3,7 +3,8 @@
 namespace Nitra\DeliveryBundle\Controller\Client;
 
 use Admingenerated\NitraDeliveryBundle\BaseClientController\EditController as BaseEditController;
-use Symfony\Component\HttpFoundation\RedirectResponse;use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 
 class EditController extends BaseEditController
