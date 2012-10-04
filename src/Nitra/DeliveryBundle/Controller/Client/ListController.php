@@ -33,7 +33,7 @@ class ListController extends BaseListController
         $this->getDoctrine()->getEntityManager()->flush();
         return $this->redirect($this->generateUrl('Nitra_DeliveryBundle_Client_list'));
     }
-
+   
     /*
      * Запрос на получение списка клиентов
      */
@@ -56,5 +56,5 @@ class ListController extends BaseListController
 
         return $query->getQuery();
     }
-
+  
 }

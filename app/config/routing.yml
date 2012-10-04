@@ -19,6 +19,10 @@ NitraDeliveryBundle_Synchronization:
 #  requirements:
 #    _scheme:  https
 
+NitraDeliveryBundle_geographi:
+  pattern:  /geographi
+  defaults:  { _controller: NitraDeliveryBundle:Sync:geographi }
+
 NitraDeliveryBundle_admin_nitra_delivery_bundle_Client:
     resource: "@NitraDeliveryBundle/Controller/Client/"
     type:     admingenerator
