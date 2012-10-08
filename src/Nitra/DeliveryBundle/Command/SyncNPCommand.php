@@ -128,7 +128,7 @@ class SyncNPCommand extends ContainerAwareCommand
                 }
             }
            
-                            var_dump($wh);
+//                            var_dump($wh);
             $department->setDeliveryCity($dCity);
             $department->setName($wh->addressRu);
             $department->setAddress($wh->addressRu);
