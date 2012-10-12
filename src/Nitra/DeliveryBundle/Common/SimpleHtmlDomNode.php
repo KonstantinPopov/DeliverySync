@@ -63,6 +63,10 @@ class SimpleHtmlDomNode {
     public $tag_start = 0;
     private $dom = null;
 
+    public function getDom(){
+        return $this->dom;
+    }
+    
     function __construct($dom) {
         $this->dom = $dom;
         $dom->nodes[] = $this;
