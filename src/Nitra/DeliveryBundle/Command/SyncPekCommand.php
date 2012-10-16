@@ -13,15 +13,18 @@ use Nitra\DeliveryBundle\Entity\Department;
 use Nitra\DeliveryBundle\Common\SimpleHtmlDom;
 use Nitra\DeliveryBundle\Entity\DeliveryService;
 
-class SyncPekCommand extends ContainerAwareCommand {
+class SyncPekCommand extends ContainerAwareCommand
+{
 
-    protected function configure() {
+    protected function configure()
+    {
         $this
                 ->setName('ds:sync-pek')
                 ->setDescription('Synchronizes department of Pek.');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output) {
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
         $this->warehousePekAction();
 //        // Подключение файла с классом
 ////            require_once('pecom_kabinet.php');
@@ -66,9 +69,13 @@ class SyncPekCommand extends ContainerAwareCommand {
 ////          var_dump($name_obl);
 //    }
 
+/*
+ * Получаем инфу по складам ТК
+ * 
+ */
 
-
-    public function warehousePekAction() {
+    public function warehousePekAction()
+    {
         $em = $this->getContainer()->get('doctrine')->getEntityManager('default');
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, 'http://www.pecom.ru/ru/');
@@ -78,23 +85,23 @@ class SyncPekCommand extends ContainerAwareCommand {
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         $response = curl_exec($ch);
         curl_close($ch);
+        //Создаем обьект
         $html = new SimpleHtmlDom();
         $html->load($response);
         $selectClass = $html->find('select[class=region-select]', 0); //Ищем необходимы обьект
         $cityObject = $selectClass->find('option');
-//         var_dump($cityObject);die;
-
+//Бежим по обьектам городов
         foreach ($cityObject as $city) {
             $delivery_city = $city->nodes[0]->_[4]; //выбираем названия города со складом
             $delivery_city = iconv("cp1251", "utf-8", $delivery_city);
+            // $dCity обьект города
             $dCity = $em->getRepository('NitraDeliveryBundle:DeliveryCity')->findOneByName($delivery_city);
-//            var_dump($delivery_city);die;
+            //Если данный город не найден в БД то зарисываем его
             if (!$dCity) {
                 $dCity = new DeliveryCity();
                 $dCity->setName($delivery_city);
                 $em->persist($dCity);
                 $em->flush();
-
                 $mess = 'Город ' . $delivery_city . ' успешно записан!!!';
                 $mess = iconv("utf-8", "cp1251", $mess);
                 echo $mess;
@@ -106,33 +113,38 @@ class SyncPekCommand extends ContainerAwareCommand {
         }
 
 //        $response1 = iconv("cp1251", "utf-8",  $response);
-//Извлекаем ссылки городов из javascript; $posit_text_start- начало строки;
-//$posit_text_finish -конец сторки; $leng - длтнна строки.      
-
-
+/*извлекаем ссылки городов из javascript;
+ * $posit_text_start- начало строки;
+ * $posit_text_finish -конец сторки; 
+ * $leng - длина строки.  
+ */     
         $posit_text_start = strpos($response, '$.contacts=([') + 12;
         $posit_text_finish = strpos($response, ";$('.region-select').bind('click change keyup',function(){var f=$(this).data('first');") - 1;
         $leng = $posit_text_finish - $posit_text_start;
         $textWithCity = substr($response, $posit_text_start, $leng);
         $href = json_decode($textWithCity); //получаем массив с ссылками на города.
-
- $i =0;
+//Бежим по городам
+        $i = 0;
         foreach ($href as $hrefCity) {
-            $this->chooseWarehousePek($hrefCity[2], $em, $i);
+            $this->chooseWarehousePek($hrefCity[2], $em, $i);// получаем данные по складу
             $i++;
         }
-
 
         return $response;
     }
 
-    public function chooseWarehousePek($href, $em, $i) {
-
+    /*Получаем инфу по складам
+     * $href -- ссылка га склад
+     * $i позиция города в меню(что бы пробежаться по всем города, и выбрать название города)
+     */
+    public function chooseWarehousePek($href, $em, $i)
+    {
         $em = $em;
+        //$pek - обьект DeliveryService, для ТК ПЭК
         $pek = $em
                 ->getRepository('NitraDeliveryBundle:DeliveryService')
                 ->findOneByName('ПЭК');
-        //Получаем все ид складов.
+        //Получаем все ид складов, для ТК ПЭК
         $pek_id = $pek->getId();
         $query = $em
                 ->createQuery('SELECT d.wareId FROM NitraDeliveryBundle:Department d 
@@ -161,8 +173,8 @@ class SyncPekCommand extends ContainerAwareCommand {
 
         $html = new SimpleHtmlDom();
         $html->load($response);
+        $divFromWareIdClass = $html->find('div[class=news-detail]', 0); //Получаем необходимый обьект в котором хранится вся нужная инф-ция по складу
 
-        $divFromWareIdClass = $html->find('div[class=news-detail]', 0); //Ищем необходимый обьект
 //если существует обьект с данными по складу, то выбираем их
         if ($divFromWareIdClass != null) {
             $WareId = $divFromWareIdClass->find('a[class=print_bt]'); //ищем необходтиій элемент
@@ -171,12 +183,10 @@ class SyncPekCommand extends ContainerAwareCommand {
             $waresId = substr($WareId, $qq + 3); //Выбараем id склада 
             $addressWare = $divFromWareIdClass->innertext(); //обьект div в которм хранится информация о складе 
             $html1 = new SimpleHtmlDom();
-            $html1->load($addressWare); //
+            $html1->load($addressWare);
 
             $cd = $html1->nodes[0]->children[0]; //получаем дочернии едементы div-а
-            //
-            //
-             $cityWar = $html->find('select[option selected=" "] '); //ищем необходтиій элемент
+            $cityWar = $html->find('select[option selected=" "] '); //ищем необходтимый элемент
             $NamecityWar = $cityWar[$i]->nodes[0]->_[4];
 //               $cityWar1 = $html->find('select[option selected=" "] '); //ищем необходтиій элемент
 //            var_dump($cityWar1);
@@ -213,7 +223,7 @@ class SyncPekCommand extends ContainerAwareCommand {
             if (in_array($waresId, $wareIds) === FALSE) {
 //                  var_dump($NamecityWar);
                 $NamecityWar = iconv("cp1251", "utf-8", $NamecityWar);
-              
+
                 $address = iconv("cp1251", "utf-8", $address);
                 $phone = iconv("cp1251", "utf-8", $phone);
 

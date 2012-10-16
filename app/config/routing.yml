@@ -22,6 +22,10 @@ NitraDeliveryBundle_Synchronization:
 NitraDeliveryBundle_geographi:
   pattern:  /geographi
   defaults:  { _controller: NitraDeliveryBundle:Sync:geographi }
+  
+NitraDeliveryBundle_warehousePek:
+  pattern:  /warehouse-pek
+  defaults:  { _controller: NitraDeliveryBundle:Sync:warehousePek }
 
 NitraDeliveryBundle_admin_nitra_delivery_bundle_Client:
     resource: "@NitraDeliveryBundle/Controller/Client/"

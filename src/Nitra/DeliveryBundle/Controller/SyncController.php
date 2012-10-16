@@ -7,9 +7,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Nitra\DeliveryBundle\Entity\Department;
 use Nitra\DeliveryBundle\Common\SimpleHtmlDom;
 
-class SyncController extends Controller {
+class SyncController extends Controller
+{
 
-    public function synchronizationAction($key) {
+    public function synchronizationAction($key)
+    {
         $em = $this->getDoctrine()->getEntityManager();
 
         $query = $em->createQueryBuilder()
@@ -31,7 +33,13 @@ class SyncController extends Controller {
         return $response;
     }
 
-    public function geographiAction() {
+    /*
+     * Получаем регионы России с сайта Gismetio
+     *  @return $response html страничка 
+     */
+
+    public function geographiAction()
+    {
         $em = $this->getDoctrine()->getEntityManager();
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, 'http://www.gismeteo.ua/catalog/russia/');
@@ -41,18 +49,19 @@ class SyncController extends Controller {
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         $response = curl_exec($ch);
         curl_close($ch);
-//var_dump($response);die;
-        $html = new SimpleHtmlDom();
+
+        $html = new SimpleHtmlDom(); //получаем обьект
         $html->load($response);
-        $divClass = $html->find('div[class=districts subregions wrap]', 0);
-        $aObject = $divClass->find('li a');
-        $array_region = array();
+        $divClass = $html->find('div[class=districts subregions wrap]', 0); //ищем обьект с названием регионов
+        $aObject = $divClass->find('li a'); //ищем обьекты "а" с названием региона и ссылками на города региона
+        $array_region = array(); //массив регионов
         foreach ($aObject as $t) {
             $region = $t->nodes[0]->_[4]; //выбираем названия региона
             $action = $t->attr['href']; //выбираем ссылку для городов региона
             $array_region[$region] = $action;
-            $Reg = $em->getRepository('NitraGeoBundle:Region')->findByName($region);
 
+            $Reg = $em->getRepository('NitraGeoBundle:Region')->findByName($region); //ищем в базе регионы с таким названием 
+//если не находим такого региона то добавляем его
             if (!$Reg) {
                 $Reg = new \Nitra\GeoBundle\Entity\Region();
                 $Reg->setName($region);
@@ -71,7 +80,13 @@ class SyncController extends Controller {
         return $response;
     }
 
-    public function geographiCityAction($em, $region, $action) {
+    /*
+     * Получаем города региона с сайта Gismetio
+     * $region - обьект  региона, $action -- ссылка на города региона
+     */
+
+    public function geographiCityAction($em, $region, $action)
+    {
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, 'http://www.gismeteo.ua' . $action);
@@ -84,15 +99,14 @@ class SyncController extends Controller {
 
         $html = new SimpleHtmlDom();
         $html->load($response);
-        $divClass = $html->find('div[class=subregions wrap]', 0);
-        $aObject = $divClass->find('li a');
+        $divClass = $html->find('div[class=subregions wrap]', 0); //поиск обьекта содержащего информацию по городам
+        $aObject = $divClass->find('li a'); // поиск обьетка содержащего инф по городу.
 
         foreach ($aObject as $t) {
-            $city = $t->nodes[0]->_[4];
-
+            $city = $t->nodes[0]->_[4]; // выбираем названия города в обьекте
             $City_Reg = new \Nitra\GeoBundle\Entity\City;
-            $City_Reg->setName($city);
-            $City_Reg->setRegion($region);
+            $City_Reg->setName($city); //устанавливаем название  города
+            $City_Reg->setRegion($region); //устанавливаем название регоина
             $em->persist($City_Reg);
             $em->flush();
 //             $array_city = array();
@@ -116,7 +130,12 @@ class SyncController extends Controller {
         return $response;
     }
 
-    public function warehousePekAction() {
+    /*
+     * Получение информации по складам ТК(выполнено в таске)
+     */
+
+    public function warehousePekAction()
+    {
         $em = $this->getDoctrine()->getEntityManager();
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, 'http://www.pecom.ru/ru/');
@@ -127,22 +146,22 @@ class SyncController extends Controller {
         $response = curl_exec($ch);
         curl_close($ch);
 //        $response1 = iconv("cp1251", "utf-8",  $response);
-//Извлекаем ссылки городов из javascript; $posit_text_start- начало строки;
-//$posit_text_finish -конец сторки; $leng - длтнна строки.      
+//Извлекаем ссылки городов из javascript;@ $posit_text_start- начало строки;
+//@$posit_text_finish -конец сторки; @ $leng - длтнна строки.      
         $posit_text_start = strpos($response, '$.contacts=([') + 12;
         $posit_text_finish = strpos($response, ";$('.region-select').bind('click change keyup',function(){var f=$(this).data('first');") - 1;
         $leng = $posit_text_finish - $posit_text_start;
         $textWithCity = substr($response, $posit_text_start, $leng);
         $href = json_decode($textWithCity); //получаем массив с ссылками на города.
-        $i =0;
+        $i = 0; // бежим по городам складов
         foreach ($href as $hrefCity) {
-            $this->chooseWarehousePek($hrefCity[2], $i);
+            $this->chooseWarehousePek($hrefCity[2], $i); // вызываем функцию для получение инфы о складахс
             $i++;
         }
 
         $html = new SimpleHtmlDom();
         $html->load($response);
-        $selectClass = $html->find('select[class=region-select]', 0); //Ищем необходимы обьект
+        $selectClass = $html->find('select[class=region-select]', 0); //Ищем необходимы обьект  с название города
         $cityObject = $selectClass->find('option');
 //         var_dump($cityObject);die;
 
@@ -170,12 +189,12 @@ class SyncController extends Controller {
         return $response;
     }
 
-    public function chooseWarehousePek($href, $i) {
+    /*
+     * Получение инфі по складам ТК, $href -  ссылка на склад ТК, $i-позиция города(для того что бы получить названия городов) 
+     */
+    public function chooseWarehousePek($href, $i)
+    {
         $array_ware = array();
-//   var_dump($hrefs);
-//        foreach ($hrefs as $href) {
-//        if ($href == '/ru/services/send/warehouses/Volgskyi/') {
-
         $em = $this->getDoctrine()->getEntityManager();
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, 'http://www.pecom.ru' . $href);
@@ -202,65 +221,57 @@ class SyncController extends Controller {
             $cd = $html1->nodes[0]->children[0]; //получаем дочернии едементы div-а
             //
             $cityWar = $html->find('select[class=region-select] '); //ищем необходтиій элемент
-           $NamecityWar = $cityWar[0]->children[0]->nodes[0]->_[4];
-           
-               $cityWar1 = $html->find('select[option selected=" "] '); //ищем необходтиій элемент
+            $NamecityWar = $cityWar[0]->children[0]->nodes[0]->_[4];
+
+            $cityWar1 = $html->find('select[option selected=" "] '); //ищем необходимый элемент
             var_dump($cityWar1[$i]->nodes[0]->_[4]);
-//            var_dump($cityWar[0]->children[0]->nodes[0]->_[4]);die;
+            /*
+             * $address -адресс
+             * $phone - телефон
+             */
+
             //проверка на пришедште данные, пока только определены 3 разных стр-ры
+
             if (isset($cd->getDom()->nodes[15]->_[4]) && isset($cd->getDom()->nodes[13]->_[4])) {
                 $phone = $cd->getDom()->nodes[15]->_[4]; //номер телефона склада
                 $address = $cd->getDom()->nodes[13]->_[4]; //адрес склада
             } else {
-                //bratsk
+                //такая структура приходит для Братска
 //                        var_dump(($cd->parent->children[0]->getDom()->nodes[10]->_[4]));die;
                 if (isset($cd->parent->children[0]->getDom()->nodes[10]->_[4]) && isset($cd->parent->children[0]->getDom()->nodes[8]->_[4])) {
                     $address = $cd->parent->children[0]->getDom()->nodes[8]->_[4];
                     $phone = $cd->parent->children[0]->getDom()->nodes[10]->_[4];
                 } elseif (isset($cd->parent->children[1]->getDom()->root->nodes[12]->_[4]) && isset($cd->parent->children[1]->getDom()->root->nodes[14]->_[4])) {
-
-                    //volosgi
-                    $address = $cd->parent->children[1]->getDom()->root->nodes[12]->_[4];
-                    $phone = $cd->parent->children[1]->getDom()->root->nodes[14]->_[4];
+               //такая структура приходит для Волжский
+                    $address = $cd->parent->children[1]->getDom()->root->nodes[12]->_[4]; //
+                    $phone = $cd->parent->children[1]->getDom()->root->nodes[14]->_[4]; //
                 } else {
                     echo('ошибка, данные не получены');
                 }
             }
 
-            $phone = trim(substr($phone, 50));
-            $address = trim(substr($address, 48));
-            $posit_text_start = strpos($response, 'YMaps.Placemark(new YMaps.GeoPoint(') + 36;
-            $posit_text_finish = strpos($response, '),{style: s})');
-            $leng = $posit_text_finish - $posit_text_start;
-            $textWithCity = substr($response, $posit_text_start, $leng);
-            $array_coordinat = explode(',', $textWithCity);
+            $phone = trim(substr($phone, 50)); //Получаем только номер.
+            $address = trim(substr($address, 48)); //Получаем только адрес.
+            $posit_text_start = strpos($response, 'YMaps.Placemark(new YMaps.GeoPoint(') + 36; // определяем позицию начало строки 
+            $posit_text_finish = strpos($response, '),{style: s})'); //определяем позицию конец строки 
+            $leng = $posit_text_finish - $posit_text_start; //определяем длину строки 
+            $textWithCity = substr($response, $posit_text_start, $leng); //выбираем нужную инф-ция
+            $array_coordinat = explode(',', $textWithCity); //массив с координатами
             $Latitude = trim($array_coordinat[1]); //Широта
             $Longitude = trim($array_coordinat[0]); //Долгота
-
 
             $array_ware[$waresId] = array($Latitude, $Longitude, $phone, $address,);
         } else {
             $html = new SimpleHtmlDom();
             $html->load($response);
             $divFromWareIdClass = $html->find('div[class=main-container]', 0); //Ищем необходимый обьект
-            $childDiv = $divFromWareIdClass->children[4];
-            $objTegA = $childDiv->find('a');
-//            $href_ware = array();
+            $childDiv = $divFromWareIdClass->children[4]; //получаем дочернии обьекты для нахождения ссылок
+            $objTegA = $childDiv->find('a'); //получаем все ссылки (тег а)
+            // Бежим по все ссылкам на склады, если не было найдено инф-ции по складу, в том случае когда в городе несколько складов
             foreach ($objTegA as $a) {
-
-                $href_ware[] = $a->href;
-
-                $this->chooseWarehousePek($a->href, $i);
+                $this->chooseWarehousePek($a->href, $i); // получаем инф-цию по складам
             }
-//                $this->chooseWarehousePek($href_ware);
-//                    var_dump($href_ware);
-//                    die;
         }
-
-//        var_dump($array_ware);
     }
 
-//    }
-//    }
-//      public function chooseWarehousePek($href) {}
 }
