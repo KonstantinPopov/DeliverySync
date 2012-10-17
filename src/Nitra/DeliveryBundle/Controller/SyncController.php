@@ -6,30 +6,49 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Nitra\DeliveryBundle\Entity\Department;
 use Nitra\DeliveryBundle\Common\SimpleHtmlDom;
+use Nitra\GeoBundle\Entity\Region;
+use Nitra\GeoBundle\Entity\City;
 
 class SyncController extends Controller
 {
 
     public function synchronizationAction($key)
     {
+        $key = 'e76844a78c0bc4a64a0b1ecbb752cd0cf39fdf23';
+
         $em = $this->getDoctrine()->getEntityManager();
 
         $query = $em->createQueryBuilder()
-                ->select('ds.name as delivery_service, dc.name as city, d.name as department, d.address as adres, d.phone as phone, d.latitude as latitude, d.longitude as longitude')
+                ->select(' r.id as id_region, ct.id as id_city, d.id as id_dep,d.wareId as ware_id, ds.name name_delivery, ds.id as delivery_id ,  d.address as adres, d.phone as phone,  dc.name, ct.name as name_city, r.name as name_region')
+//                ->select('ds.name as delivery_service, dc.name as city, d.name as department, d.address as adres, d.phone as phone, d.latitude as latitude, d.longitude as longitude')
                 ->from('NitraDeliveryBundle:Department', 'd')
                 ->join('d.deliveryService', 'ds')
-                ->join('ds.clients', 'c')
-                ->join('d.deliveryCity', ' dc')
-//                ->join('dc.city', 'c')
-                ->where('c.token = :key')
+                ->join('d.deliveryCity', 'dc')
+                ->join('dc.city', 'ct')
+                ->join('ct.region', 'r')
+                ->join('ds.clients', 'cl')
+                ->where('cl.token = :key')
                 ->setParameter('key', $key);
         $departments = $query->getQuery()->getResult();
+//          var_dump($departments);die;
+        
+        foreach ($departments as $dep) {
+            
+            
+            
+            $array_dep[$dep['id_region']][] =array ($dep['id_city']=>array($dep['id_dep']=>array($dep['id_region'], $dep['id_city'], $dep['name_region'], $dep['name_city'], $dep['adres'], $dep['phone'], $dep['ware_id'], $dep['delivery_id']) ));
+        }
+        
         if (!count($departments)) {
             $departments = array('Error' => 'No result for your key!');
         }
-        $data = json_encode($departments);
+        $data = json_encode($array_dep);
         $headers = array('Content-type' => 'application-json; charset=utf8');
         $response = new Response($data, 200, $headers);
+
+//var_dump($departments);
+//        die;
+
         return $response;
     }
 
@@ -184,7 +203,7 @@ class SyncController extends Controller
 //                echo$mess;
 //            }
         }
-        die;
+//        die;
 
         return $response;
     }
@@ -192,6 +211,7 @@ class SyncController extends Controller
     /*
      * Получение инфі по складам ТК, $href -  ссылка на склад ТК, $i-позиция города(для того что бы получить названия городов) 
      */
+
     public function chooseWarehousePek($href, $i)
     {
         $array_ware = array();
@@ -224,7 +244,7 @@ class SyncController extends Controller
             $NamecityWar = $cityWar[0]->children[0]->nodes[0]->_[4];
 
             $cityWar1 = $html->find('select[option selected=" "] '); //ищем необходимый элемент
-            var_dump($cityWar1[$i]->nodes[0]->_[4]);
+//            var_dump($cityWar1[$i]->nodes[0]->_[4]);
             /*
              * $address -адресс
              * $phone - телефон
@@ -242,7 +262,7 @@ class SyncController extends Controller
                     $address = $cd->parent->children[0]->getDom()->nodes[8]->_[4];
                     $phone = $cd->parent->children[0]->getDom()->nodes[10]->_[4];
                 } elseif (isset($cd->parent->children[1]->getDom()->root->nodes[12]->_[4]) && isset($cd->parent->children[1]->getDom()->root->nodes[14]->_[4])) {
-               //такая структура приходит для Волжский
+                    //такая структура приходит для Волжский
                     $address = $cd->parent->children[1]->getDom()->root->nodes[12]->_[4]; //
                     $phone = $cd->parent->children[1]->getDom()->root->nodes[14]->_[4]; //
                 } else {
