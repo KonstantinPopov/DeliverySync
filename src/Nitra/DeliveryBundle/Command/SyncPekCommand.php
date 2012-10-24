@@ -69,10 +69,10 @@ class SyncPekCommand extends ContainerAwareCommand
 ////          var_dump($name_obl);
 //    }
 
-/*
- * Получаем инфу по складам ТК
- * 
- */
+    /*
+     * Получаем инфу по складам ТК
+     * 
+     */
 
     public function warehousePekAction()
     {
@@ -113,11 +113,11 @@ class SyncPekCommand extends ContainerAwareCommand
         }
 
 //        $response1 = iconv("cp1251", "utf-8",  $response);
-/*извлекаем ссылки городов из javascript;
- * $posit_text_start- начало строки;
- * $posit_text_finish -конец сторки; 
- * $leng - длина строки.  
- */     
+        /* извлекаем ссылки городов из javascript;
+         * $posit_text_start- начало строки;
+         * $posit_text_finish -конец сторки; 
+         * $leng - длина строки.  
+         */
         $posit_text_start = strpos($response, '$.contacts=([') + 12;
         $posit_text_finish = strpos($response, ";$('.region-select').bind('click change keyup',function(){var f=$(this).data('first');") - 1;
         $leng = $posit_text_finish - $posit_text_start;
@@ -126,17 +126,18 @@ class SyncPekCommand extends ContainerAwareCommand
 //Бежим по городам
         $i = 0;
         foreach ($href as $hrefCity) {
-            $this->chooseWarehousePek($hrefCity[2], $em, $i);// получаем данные по складу
+            $this->chooseWarehousePek($hrefCity[2], $em, $i); // получаем данные по складу
             $i++;
         }
 
         return $response;
     }
 
-    /*Получаем инфу по складам
+    /* Получаем инфу по складам
      * $href -- ссылка га склад
      * $i позиция города в меню(что бы пробежаться по всем города, и выбрать название города)
      */
+
     public function chooseWarehousePek($href, $em, $i)
     {
         $em = $em;
@@ -157,12 +158,7 @@ class SyncPekCommand extends ContainerAwareCommand
         foreach ($ids as $id) {
             $wareIds [] = $id['wareId'];
         }
-//                    var_dump($wareIds);die;
-//        $array_ware = array();
-//   var_dump($hrefs);
-//        foreach ($hrefs as $href) {
-//        if ($href == '/ru/services/send/warehouses/Volgskyi/') {
-//        $em = $this->getDoctrine()->getEntityManager();
+
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, 'http://www.pecom.ru' . $href);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -174,7 +170,6 @@ class SyncPekCommand extends ContainerAwareCommand
         $html = new SimpleHtmlDom();
         $html->load($response);
         $divFromWareIdClass = $html->find('div[class=news-detail]', 0); //Получаем необходимый обьект в котором хранится вся нужная инф-ция по складу
-
 //если существует обьект с данными по складу, то выбираем их
         if ($divFromWareIdClass != null) {
             $WareId = $divFromWareIdClass->find('a[class=print_bt]'); //ищем необходтиій элемент
@@ -187,22 +182,20 @@ class SyncPekCommand extends ContainerAwareCommand
 
             $cd = $html1->nodes[0]->children[0]; //получаем дочернии едементы div-а
             $cityWar = $html->find('select[option selected=" "] '); //ищем необходтимый элемент
-            $NamecityWar = $cityWar[$i]->nodes[0]->_[4];
-//               $cityWar1 = $html->find('select[option selected=" "] '); //ищем необходтиій элемент
-//            var_dump($cityWar1);
+            $NamecityWar = $cityWar[$i]->nodes[0]->_[4]; //Выбираем название города
             //проверка на пришедшие данные, пока только определены 3 разных стр-ры
             if (isset($cd->getDom()->nodes[15]->_[4]) && isset($cd->getDom()->nodes[13]->_[4])) {
                 $phone = $cd->getDom()->nodes[15]->_[4]; //номер телефона склада
                 $address = $cd->getDom()->nodes[13]->_[4]; //адрес склада
             } else {
-                //bratsk
+                //Братск
 //                        var_dump(($cd->parent->children[0]->getDom()->nodes[10]->_[4]));die;
                 if (isset($cd->parent->children[0]->getDom()->nodes[10]->_[4]) && isset($cd->parent->children[0]->getDom()->nodes[8]->_[4])) {
                     $address = $cd->parent->children[0]->getDom()->nodes[8]->_[4];
                     $phone = $cd->parent->children[0]->getDom()->nodes[10]->_[4];
                 } elseif (isset($cd->parent->children[1]->getDom()->root->nodes[12]->_[4]) && isset($cd->parent->children[1]->getDom()->root->nodes[14]->_[4])) {
 
-                    //volosgi
+                    //Воложский
                     $address = $cd->parent->children[1]->getDom()->root->nodes[12]->_[4];
                     $phone = $cd->parent->children[1]->getDom()->root->nodes[14]->_[4];
                 } else {
@@ -221,7 +214,6 @@ class SyncPekCommand extends ContainerAwareCommand
             $Longitude = trim($array_coordinat[0]); //Долгота
             //проверяем есть ли в базе склады с таким ид
             if (in_array($waresId, $wareIds) === FALSE) {
-//                  var_dump($NamecityWar);
                 $NamecityWar = iconv("cp1251", "utf-8", $NamecityWar);
 
                 $address = iconv("cp1251", "utf-8", $address);
@@ -241,8 +233,7 @@ class SyncPekCommand extends ContainerAwareCommand
                 $department->setDeliveryService($pek);
 
                 $em->flush();
-                $array_ware[$waresId] = array($Latitude, $Longitude, $phone, $address, $pek_id, $NamecityWar);
-//                var_dump($array_ware);die;
+//                $array_ware[$waresId] = array($Latitude, $Longitude, $phone, $address, $pek_id, $NamecityWar);
             }
 
 
@@ -255,13 +246,10 @@ class SyncPekCommand extends ContainerAwareCommand
             $divFromWareIdClass = $html->find('div[class=main-container]', 0); //Ищем необходимый обьект
             $childDiv = $divFromWareIdClass->children[4];
             $objTegA = $childDiv->find('a');
-//            $href_ware = array();
             foreach ($objTegA as $a) {
                 $this->chooseWarehousePek($a->href, $em, $i);
             }
         }
-
-//        var_dump($array_ware);
     }
 
 }

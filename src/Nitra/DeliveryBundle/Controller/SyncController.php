@@ -14,12 +14,12 @@ class SyncController extends Controller
 
     public function synchronizationAction($key)
     {
-        $key = 'e76844a78c0bc4a64a0b1ecbb752cd0cf39fdf23';
+//        $key = 'e76844a78c0bc4a64a0b1ecbb752cd0cf39fdf23';
 
         $em = $this->getDoctrine()->getEntityManager();
 
         $query = $em->createQueryBuilder()
-                ->select(' r.id as id_region, ct.id as id_city, d.id as id_dep,d.wareId as ware_id, ds.name name_delivery, ds.id as delivery_id ,  d.address as adres, d.phone as phone,  dc.name, ct.name as name_city, r.name as name_region')
+                ->select(' r.id as id_region, ct.id as id_city, d.id as id_dep,d.wareId as ware_id, ds.name  as name_delivery, ds.id as delivery_id ,  d.address as adres, d.phone as phone,  d.name as name_ware, ct.name as name_city, r.name as name_region')
 //                ->select('ds.name as delivery_service, dc.name as city, d.name as department, d.address as adres, d.phone as phone, d.latitude as latitude, d.longitude as longitude')
                 ->from('NitraDeliveryBundle:Department', 'd')
                 ->join('d.deliveryService', 'ds')
@@ -30,15 +30,15 @@ class SyncController extends Controller
                 ->where('cl.token = :key')
                 ->setParameter('key', $key);
         $departments = $query->getQuery()->getResult();
-//          var_dump($departments);die;
-        
+  
+
         foreach ($departments as $dep) {
-            
-            
-            
-            $array_dep[$dep['id_region']][] =array ($dep['id_city']=>array($dep['id_dep']=>array($dep['id_region'], $dep['id_city'], $dep['name_region'], $dep['name_city'], $dep['adres'], $dep['phone'], $dep['ware_id'], $dep['delivery_id']) ));
+
+
+$array_dep[] = array('region_id'=>$dep['id_region'], 'city_id'=>$dep['id_city'], 'adres'=> $dep['adres'],  'name_ware'=>$dep['name_ware'],  'phone'=>$dep['phone'],  'ware_id'=>$dep['ware_id'],'delivery_id'=>$dep['delivery_id'],  $dep['name_region'], $dep['name_city'],'ware_id_sevices'=>$dep['id_dep'] );
+//            $array_dep[$dep['id_region']][] = array($dep['id_city'] => array($dep['id_dep'] => array($dep['id_region'], $dep['id_city'], $dep['name_region'], $dep['name_city'], $dep['adres'], $dep['name_ware'], $dep['phone'], $dep['ware_id'], $dep['delivery_id'])));
         }
-        
+
         if (!count($departments)) {
             $departments = array('Error' => 'No result for your key!');
         }
@@ -46,9 +46,7 @@ class SyncController extends Controller
         $headers = array('Content-type' => 'application-json; charset=utf8');
         $response = new Response($data, 200, $headers);
 
-//var_dump($departments);
-//        die;
-
+//        var_dump($array_dep);die;
         return $response;
     }
 
@@ -59,6 +57,11 @@ class SyncController extends Controller
 
     public function geographiAction()
     {
+        set_time_limit(0);//убираем лимит на время загрузки сценария
+        ini_set('memory_limit' , '-1');//убираем лимит на размер выполняемогог сценария
+          ini_set('max_input_time' , '-1');
+       
+        
         $em = $this->getDoctrine()->getEntityManager();
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, 'http://www.gismeteo.ua/catalog/russia/');
@@ -74,24 +77,27 @@ class SyncController extends Controller
         $divClass = $html->find('div[class=districts subregions wrap]', 0); //ищем обьект с названием регионов
         $aObject = $divClass->find('li a'); //ищем обьекты "а" с названием региона и ссылками на города региона
         $array_region = array(); //массив регионов
-        foreach ($aObject as $t) {
-            $region = $t->nodes[0]->_[4]; //выбираем названия региона
-            $action = $t->attr['href']; //выбираем ссылку для городов региона
+        foreach ($aObject as $regiony) {
+            $region = $regiony->nodes[0]->_[4]; //выбираем названия региона
+            $action = $regiony->attr['href']; //выбираем ссылку для городов региона
             $array_region[$region] = $action;
 
-            $Reg = $em->getRepository('NitraGeoBundle:Region')->findByName($region); //ищем в базе регионы с таким названием 
+            $Reg = $em->getRepository('NitraGeoBundle:Region')->findOneByName($region); //ищем в базе регионы с таким названием 
 //если не находим такого региона то добавляем его
             if (!$Reg) {
                 $Reg = new \Nitra\GeoBundle\Entity\Region();
                 $Reg->setName($region);
                 $em->persist($Reg);
+                echo '<b>Регион ' . $region . ' успешно записан!</b><br/>';
                 $em->flush();
                 $this->geographiCityAction($em, $Reg, $action);
                 $em->flush();
             } else {
-                $mess = '<b>Регион ' . $region . ' не записан!!!</b><br/>';
-//                $mess = iconv("utf-8", "cp1251", $mess);
-                echo$mess;
+                $em->flush();
+
+                $this->geographiCityAction($em, $Reg, $action);
+                $em->flush();
+                echo '<b>Регион ' . $region . ' не записан!!!</b><br/>';
             }
         }
 
@@ -106,7 +112,8 @@ class SyncController extends Controller
 
     public function geographiCityAction($em, $region, $action)
     {
-
+       
+//        var_dump($region[0]);die;
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, 'http://www.gismeteo.ua' . $action);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -123,28 +130,24 @@ class SyncController extends Controller
 
         foreach ($aObject as $t) {
             $city = $t->nodes[0]->_[4]; // выбираем названия города в обьекте
-            $City_Reg = new \Nitra\GeoBundle\Entity\City;
-            $City_Reg->setName($city); //устанавливаем название  города
-            $City_Reg->setRegion($region); //устанавливаем название регоина
-            $em->persist($City_Reg);
-            $em->flush();
-//             $array_city = array();
-//            $regions = iconv("utf-8", "cp1251", $region);
-//            $message = iconv("utf-8", "cp1251", $city);
-//            $array_citys[$regions][] = $message;
-//             $array_city[$region->Name][] = $city;
-//            if (!$City_Reg) {
-//                $City_Reg = new \Nitra\GeoBundle\Entity\City;
-//                $City_Reg->setName($city);
-//                $City_Reg->setRegion($region);
-//                $em->persist($City_Reg);
-//              $em->flush();
-//                $em->persist($City_Reg);
-//            } else {
-//                $m = '<b>Город ' . $city . ' не записан!!!</b><br/>';
-//                $k = iconv("utf-8", "cp1251", $m);
-//                echo$k;
-//            }
+//            $City_Reg = new \Nitra\GeoBundle\Entity\City;
+//            $City_Reg->setName($city); //устанавливаем название  города
+//            $City_Reg->setRegion($region); //устанавливаем название регоина
+//            $em->persist($City_Reg);
+//            $em->flush();
+
+            $City_Reg = $em->getRepository('NitraGeoBundle:City')->findByName($city); //ищем в базе регионы с таким названием 
+
+            if (!$City_Reg) {
+                 
+                $City_Reg = new \Nitra\GeoBundle\Entity\City;
+                $City_Reg->setName($city);
+                $City_Reg->setRegion($region);
+                $em->persist($City_Reg);
+                $em->flush();
+            } else {
+                echo '<b>Город ' . $city . ' не записан!!!</b><br/>';
+            }
         }
         return $response;
     }
