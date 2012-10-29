@@ -3,8 +3,8 @@ parameters:
     database_host:     localhost
     database_port:     ~
     database_name:     ds
-    database_user:     root
-    database_password: root
+    database_user:     ds
+    database_password: dsDSsync
 
     mailer_transport:  smtp
     mailer_host:       localhost
