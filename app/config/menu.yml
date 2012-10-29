@@ -3,7 +3,7 @@ millwright_menu:
         navigation: #menu type id
             renderer: null # custom renderer
             rendererOptions:
-                template: MillwrightMenuBundle:Default:knp_menu.html.twig
+                template: NitraThemeBundle::knp_menu.html.twig
                 ancestorClass: current active
                 currentClass: current_item
 
