@@ -1,3 +1,7 @@
+Default_route:
+  pattern: /
+  defaults: { _controller: NitraDeliveryBundle:DeliveryService:index }
+  
 NitraManagerBundle_admin_nitra_manager_bundle_Group:
     resource: "@NitraManagerBundle/Controller/Group/"
     type:     admingenerator
