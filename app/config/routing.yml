@@ -1,6 +1,6 @@
 Default_route:
   pattern: /
-  defaults: { _controller: NitraDeliveryBundle:DeliveryService:index }
+  defaults: { _controller: NitraDeliveryBundle:Delivery:index }
   
 NitraManagerBundle_admin_nitra_manager_bundle_Group:
     resource: "@NitraManagerBundle/Controller/Group/"
