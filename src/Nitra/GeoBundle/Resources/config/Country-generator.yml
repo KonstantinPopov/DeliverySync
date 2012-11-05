@@ -1,0 +1,35 @@
+generator: admingenerator.generator.doctrine
+params:
+  model: Nitra\GeoBundle\Entity\Country
+  namespace_prefix: Nitra
+  bundle_name: GeoBundle
+  fields:
+    name:
+      label: Название
+
+builders:
+  list:
+    params:
+      title: Список стран
+      display: [ name ]
+      actions:
+        new: ~
+      object_actions:
+        edit: ~
+        delete: ~
+  filters:
+    params:
+      display: [ name ]
+  new:
+    params:
+      title: Добавление новой страны
+      display: ~
+      actions:
+        list: ~
+  edit:
+    params:
+      title: Редактирокание страны {{ Country.name }}
+      display: ~
+      actions:
+        list: ~
+  delete: ~

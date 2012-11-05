@@ -3,28 +3,20 @@
 namespace Nitra\GeoBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Knp\DoctrineBehaviors\Model as ORMBehaviors;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
- * Nitra\GeoBundle\Entity\Region
+ * Nitra\GeoBundle\Entity\Country
  *
- * @ORM\Table(name="geo_region")
- * @ORM\Entity 
- * 
- * @UniqueEntity(fields="name", message="Регион с таким названием уже существует")
+ * @ORM\Table(name="geo_country")
+ * @ORM\Entity
+ * @UniqueEntity(fields="name", message="Страна с таким названием уже существует")
  */
-class Region
+class Country
 {
-
     use ORMBehaviors\Timestampable\Timestampable,
         ORMBehaviors\SoftDeletable\SoftDeletable;
-
-    public function __toString()
-    {
-        return $this->getName();
-    }
 
     /**
      * @var integer $id
@@ -39,22 +31,14 @@ class Region
      * @var string $name
      *
      * @ORM\Column(name="name", type="string", length=255)
-     * @Assert\NotBlank
      */
     private $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="Region", mappedBy="region")
+     * @ORM\OneToMany(targetEntity="Country", mappedBy="country")
      * 
      */
-    private $cities;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="Country", inversedBy="regions")
-     * @ORM\JoinColumn(name="country_id", referencedColumnName="id")
-     * @Assert\NotBlank
-     * */
-    private $country;
+    private $regions;
 
     /**
      * Get id
@@ -70,7 +54,7 @@ class Region
      * Set name
      *
      * @param string $name
-     * @return Region
+     * @return Country
      */
     public function setName($name)
     {
@@ -94,41 +78,40 @@ class Region
      */
     public function __construct()
     {
-        $this->cities = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->regions = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
-     * Add cities
+     * Add regions
      *
-     * @param Nitra\GeoBundle\Entity\Region $cities
-     * @return Region
+     * @param Nitra\GeoBundle\Entity\Country $regions
+     * @return Country
      */
-    public function addCitie(\Nitra\GeoBundle\Entity\Region $cities)
+    public function addRegion(\Nitra\GeoBundle\Entity\Country $regions)
     {
-        $this->cities[] = $cities;
+        $this->regions[] = $regions;
 
         return $this;
     }
 
     /**
-     * Remove cities
+     * Remove regions
      *
-     * @param Nitra\GeoBundle\Entity\Region $cities
+     * @param Nitra\GeoBundle\Entity\Country $regions
      */
-    public function removeCitie(\Nitra\GeoBundle\Entity\Region $cities)
+    public function removeRegion(\Nitra\GeoBundle\Entity\Country $regions)
     {
-        $this->cities->removeElement($cities);
+        $this->regions->removeElement($regions);
     }
 
     /**
-     * Get cities
+     * Get regions
      *
      * @return Doctrine\Common\Collections\Collection 
      */
-    public function getCities()
+    public function getRegions()
     {
-        return $this->cities;
+        return $this->regions;
     }
 
-   
 }

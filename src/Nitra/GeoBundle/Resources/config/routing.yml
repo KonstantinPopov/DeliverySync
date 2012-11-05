@@ -7,3 +7,8 @@ NitraGeoBundle_admin_nitra_geo_bundle_Region:
     resource: "@NitraGeoBundle/Controller/Region/"
     type:     admingenerator
     prefix:   /region
+    
+NitraGeoBundle_admin_nitra_geo_bundle_Country:
+    resource: "@NitraGeoBundle/Controller/Country/"
+    type:     admingenerator
+    prefix:   /country
