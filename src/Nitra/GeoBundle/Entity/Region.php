@@ -44,7 +44,7 @@ class Region
     private $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="Region", mappedBy="region")
+     * @ORM\OneToMany(targetEntity="City", mappedBy="region")
      * 
      */
     private $cities;
@@ -130,5 +130,25 @@ class Region
         return $this->cities;
     }
 
-   
+    /**
+     * Set country
+     *
+     * @param Nitra\GeoBundle\Entity\Country $country
+     * @return Region
+     */
+    public function setCountry(\Nitra\GeoBundle\Entity\Country $country = null)
+    {
+        $this->country = $country;
+        return $this;
+    }
+
+    /**
+     * Get country
+     *
+     * @return Nitra\GeoBundle\Entity\Country 
+     */
+    public function getCountry()
+    {
+        return $this->country;
+    }
 }

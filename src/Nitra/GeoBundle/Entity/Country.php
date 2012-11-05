@@ -35,8 +35,7 @@ class Country
     private $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="Country", mappedBy="country")
-     * 
+     * @ORM\OneToMany(targetEntity="Region", mappedBy="country")
      */
     private $regions;
 
@@ -114,4 +113,5 @@ class Country
         return $this->regions;
     }
 
+   
 }

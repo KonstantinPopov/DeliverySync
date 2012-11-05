@@ -1,1 +1,76 @@
 {% extends_admingenerated "NitraDeliveryBundle:DeliveryCityEdit:index.html.twig" %}
+
+
+{% block form_fieldset_NONE %}
+<fieldset class="form_block form_fieldset_NONE">
+    <div class="form_row">
+        <div class="form_field field_text field_name">
+                {% block form_name %}
+                <div class="error">
+                    {{ form_errors(form['name']) }}
+                </div>
+                {{ form_label(form['name'], 'Название города'|trans({}, 'Admin')) }}
+                {{ form_widget(form['name']) }}
+                {% endblock %}
+                </div>
+            </div>
+            <div class="form_row">
+                <div class="form_field">
+                    <label for="countryes">Страна</label>
+                    <select id="countryes">
+                        <option value="0">Выбирите страну</option>
+                        {% for country in Countries %}
+                            <option value="{{ country.id }}">{{ country.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="form_row">
+                <div class="form_field">
+                    <label for="regions">Регионы</label>
+                    <select id="regions">
+                    </select>
+                </div>
+            </div>
+            <div class="form_row">
+                <div class="form_field field_entity field_city">
+                {% block form_city %}
+                    <div class="error">
+                        {{ form_errors(form['city']) }}
+                    </div>
+                {{ form_label(form['city'], 'Город'|trans({}, 'Admin')) }}
+                {{ form_widget(form['city']) }}
+                {% endblock %}
+                </div>
+            </div>
+</fieldset>
+
+
+<script type="text/javascript">
+$('#edit_deliverycity_city').html('');
+    
+$('#countryes').change(function() {
+    $.ajax({
+      type: "POST",
+      url: "{{ path("Nitra_GeoBundle_GetRegionForCountry") }}",
+      data: { country_id: $('#countryes').val() },
+      success: function(data) {
+          $('#regions').html(data);
+          $('#edit_deliverycity_city').html('');
+      }
+    });
+});
+
+
+$('#regions').change(function() {
+    $.ajax({
+      type: "POST",
+      url: "{{ path("Nitra_GeoBundle_GetCityForRegion") }}",
+      data: { region_id: $('#regions').val() },
+      success: function(data) {
+          $('#edit_deliverycity_city').html(data);
+      }
+    });
+});
+</script>
+{% endblock %}

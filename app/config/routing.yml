@@ -46,6 +46,11 @@ NitraDeliveryBundle_admin_nitra_delivery_bundle_DeliveryCity:
     type:     admingenerator
     prefix:   /delivery-city
 
+NitraDeliveryBundle_admin_nitra_delivery_bundle_DeliveryCity_annotation:
+    resource: "@NitraDeliveryBundle/Controller/DeliveryCity/"
+    type:     annotation
+    prefix:   /delivery-city
+
 NitraDeliveryBundle_admin_nitra_delivery_bundle_Delivery:
     resource: "@NitraDeliveryBundle/Controller/Delivery/"
     type:     admingenerator
