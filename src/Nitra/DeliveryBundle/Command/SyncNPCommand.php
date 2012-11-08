@@ -74,25 +74,32 @@ class SyncNPCommand extends ContainerAwareCommand
                 ->getRepository('NitraDeliveryBundle:DeliveryService')
                 ->findOneByName('Новая почта');
         $query = $em
-                ->createQuery('SELECT d.wareId FROM NitraDeliveryBundle:Department d 
+                ->createQuery('SELECT d FROM NitraDeliveryBundle:Department d 
                                              WHERE d.deliveryService = :service ')
                 ->setParameters(array(
             'service' => $np
                 ));
+
+//        $dc = $query->getResult();
+//
+//        $cityId = array();
+//        foreach ($dc as $id) {
+//            $cId = $id->getDeliveryCity();
+//            $cityId [] = array($cId->getId(), $id->getWareId());
+//        }
         $wareIds = array();
         $ids = $query->getArrayResult();
         foreach ($ids as $id) {
             $wareIds [] = $id['wareId'];
         }
-        
-      
+
         foreach ($warehouses as $wh) {
-//              var_dump($wh->city);
+
             $dCity = $em
                     ->getRepository('NitraDeliveryBundle:DeliveryCity')
                     ->findOneByName($wh->cityRu);
-            
-            
+
+
             if (!$dCity) {
                 $dCity = new DeliveryCity();
                 $dCity->setName($wh->cityRu);
@@ -120,15 +127,13 @@ class SyncNPCommand extends ContainerAwareCommand
                         'wareId' => $wh->wareId
                             ));
                     $department = $query->getSingleResult();
-                    
-    
                 } catch (\Doctrine\ORM\NoResultException $e) {
                     $department = new Department();
                     $em->persist($department);
                 }
             }
-           
-//                            var_dump($wh);
+
+
             $department->setDeliveryCity($dCity);
             $department->setName($wh->addressRu);
             $department->setAddress($wh->addressRu);
@@ -137,7 +142,7 @@ class SyncNPCommand extends ContainerAwareCommand
             $department->setLatitude($wh->y);
             $department->setLongitude($wh->x);
             $department->setDeliveryService($np);
-
+            $department->setWareIdCity($wh->number);
             $em->flush();
         }
         foreach ($wareIds as $id) {

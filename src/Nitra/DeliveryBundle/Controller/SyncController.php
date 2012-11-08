@@ -19,7 +19,7 @@ class SyncController extends Controller
         $em = $this->getDoctrine()->getEntityManager();
 
         $query = $em->createQueryBuilder()
-                ->select(' r.id as id_region, ct.id as id_city, d.id as id_dep,d.wareId as ware_id, ds.name  as name_delivery, ds.id as delivery_id ,  d.address as adres, d.phone as phone,  d.name as name_ware, ct.name as name_city, r.name as name_region')
+                ->select(' r.id as id_region, ct.id as id_city, d.id as id_dep, d.wareIdCity as ware_id_city, d.wareId as ware_id, ds.name  as name_delivery, ds.id as delivery_id ,  d.address as adres, d.phone as phone,  d.name as name_ware, ct.name as name_city, r.name as name_region')
 //                ->select('ds.name as delivery_service, dc.name as city, d.name as department, d.address as adres, d.phone as phone, d.latitude as latitude, d.longitude as longitude')
                 ->from('NitraDeliveryBundle:Department', 'd')
                 ->join('d.deliveryService', 'ds')
@@ -35,7 +35,7 @@ class SyncController extends Controller
         foreach ($departments as $dep) {
 
 
-$array_dep[] = array('region_id'=>$dep['id_region'], 'city_id'=>$dep['id_city'], 'adres'=> $dep['adres'],  'name_ware'=>$dep['name_ware'],  'phone'=>$dep['phone'],  'ware_id'=>$dep['ware_id'],'delivery_id'=>$dep['delivery_id'],  $dep['name_region'], $dep['name_city'],'ware_id_sevices'=>$dep['id_dep'] );
+$array_dep[] = array('region_id'=>$dep['id_region'], 'city_id'=>$dep['id_city'], 'adres'=> $dep['adres'],  'name_ware'=>$dep['name_ware'],  'phone'=>$dep['phone'],  'ware_id'=>$dep['ware_id'],'delivery_id'=>$dep['delivery_id'],  $dep['name_region'], $dep['name_city'],'ware_id_sevices'=>$dep['id_dep'],'ware_id_city'=>$dep['ware_id_city'] );
 //            $array_dep[$dep['id_region']][] = array($dep['id_city'] => array($dep['id_dep'] => array($dep['id_region'], $dep['id_city'], $dep['name_region'], $dep['name_city'], $dep['adres'], $dep['name_ware'], $dep['phone'], $dep['ware_id'], $dep['delivery_id'])));
         }
 
@@ -113,7 +113,6 @@ $array_dep[] = array('region_id'=>$dep['id_region'], 'city_id'=>$dep['id_city'],
     public function geographiCityAction($em, $region, $action)
     {
        
-//        var_dump($region[0]);die;
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, 'http://www.gismeteo.ua' . $action);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);

@@ -86,6 +86,14 @@ class Department
      * @ORM\Column(name="longitude", type="decimal", precision=13, scale=8)
      */
     private $longitude;
+    
+   /**
+     *
+     * @var type string
+     * 
+     * @ORM\Column(name="ware_id_city", type = "string", length=10)
+     */
+    private $wareIdCity;
 
     /**
      *
@@ -287,6 +295,29 @@ class Department
     public function getWareId()
     {
         return $this->wareId;
+    }
+    
+    /**
+     * Set ware_id_city
+     *
+     * @param string $wareIdCity
+     * @return Department
+     */
+    public function setWareIdCity($wareIdCity)
+    {
+        $this->wareIdCity = $wareIdCity;
+
+        return $this;
+    }
+
+    /**
+     * Get ware_id_city
+     *
+     * @return string 
+     */
+    public function getWareIdCity()
+    {
+        return $this->wareIdCity;
     }
     
       public function __toString() {
