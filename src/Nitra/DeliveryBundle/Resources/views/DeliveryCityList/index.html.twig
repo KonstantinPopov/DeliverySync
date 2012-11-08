@@ -5,4 +5,5 @@
     <div><b>{{ DeliveryCity.name }}</b></div>
     <div><em>{{ DeliveryCity.getDepartments[0].getDeliveryService.name }}</em></div>
     <div><em>{{ DeliveryCity.getDepartments[0].name }}</em></div>
+    <div><a target="_blank" href="https://maps.google.com.ua/?authuser=0&f=q&hl=ru&jsv=439a&q={{ DeliveryCity.getDepartments[0].getLatitude }},%20{{ DeliveryCity.getDepartments[0].getLongitude }}&sll={{ DeliveryCity.getDepartments[0].getLatitude }},{{ DeliveryCity.getDepartments[0].getLongitude }}&source=s_q&sspn=0.003042,0.016512&vps=1&vpsrc=0"><em>Карта</em></a></div>
 {% endblock %}

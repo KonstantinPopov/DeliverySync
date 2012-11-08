@@ -14,8 +14,8 @@ builders:
     params:
       title: Список названий городов в транспортных компаниях
       display: [ name, city ]
-      actions:
-        {}
+      max_per_page:  100
+      actions:         {}
       object_actions:
         edit: ~
         delete: {}
@@ -34,4 +34,4 @@ builders:
       display: [ name, city ]
       actions:
         list: ~
-  delete: ~
+        delete: ~

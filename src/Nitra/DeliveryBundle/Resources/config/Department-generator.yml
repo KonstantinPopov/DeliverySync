@@ -24,12 +24,12 @@ builders:
     params:
       title: Список отделений
       display: [ name, address, phone, latitude, longitude, deliveryService, deliveryCity  ]
+      max_per_page:  100
       actions:
         new: {}
       object_actions:
         edit: ~
         delete: {}
-      max_per_page: 20
   filters:
     params:
       display: [ name, address, phone, deliveryService, deliveryCity ]
