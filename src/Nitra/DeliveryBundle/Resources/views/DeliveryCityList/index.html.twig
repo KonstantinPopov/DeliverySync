@@ -3,5 +3,7 @@
 
 {% block list_td_column_name %}
     <div><b>{{ DeliveryCity.name }}</b></div>
-    <div><em>{{ DeliveryCity.getDepartments[0].getDeliveryService.name }}</em></div>
+    <div><em>{{ DeliveryCity.DeliveryServiceName }}</em></div>
+    <div><em>{{ DeliveryCity.DepartmentName }}</em></div>
+    <div><em><a target="_blank" href="{{ DeliveryCity.GoogleMapsURLName | raw }}" >Карта</a></em></div>
 {% endblock %}

@@ -148,10 +148,43 @@ class DeliveryCity
     {
         return $this->departments;
     }
-    
+
     public function __toString()
     {
         return $this->getName();
+    }
+
+    /**
+     *  Метод для поиска название ТК
+     */
+    public function getDeliveryServiceName()
+    {
+        return $this->getDepartment()->getDeliveryService()->getName();
+    }
+
+    /**
+     *  Метод для поиска название склада
+     */
+    public function getDepartmentName()
+    {
+        return $this->getDepartment()->getName();
+    }
+
+    private function getDepartment()
+    {
+        return $this->departments[0];
+    }
+
+    /**
+     *  Метод для поиска ссілки на карту
+     */
+    public function getGoogleMapsURLName()
+    {
+        return 'https://maps.google.com.ua/?authuser=0&f=q&hl=ru&jsv=439a&q=' . $this->getDepartment()->getLatitude()
+                . ',%20' . $this->getDepartment()->getLongitude() .
+                '&sll=' . $this->getDepartment()->getLatitude()
+                . ',' . $this->getDepartment()->getLatitude()
+                . '&source=s_q&sspn=0.003042,0.016512&vps=1&vpsrc=0';
     }
 
 }

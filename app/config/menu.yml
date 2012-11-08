@@ -51,18 +51,18 @@ millwright_menu:
                 d_service:
                   children:
                     delivery_service:    ~
-                    department:    ~
-                    delivery_city:    ~
+                    department:          ~
+                    delivery_city:       ~
                 territory:
                   children:
-                    region:    ~
-                    city:    ~
+                    region:              ~
+                    city:                ~
                 client:
                   children:
-                    client_list:  ~
-                    managers:  ~
+                    client_list:         ~
+                    managers:            ~
                 settings:
                   children:
-                    groups:  ~
-                    roles:  ~
+                    groups:              ~
+                    roles:               ~
                   
