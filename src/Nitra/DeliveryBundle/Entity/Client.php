@@ -7,7 +7,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Knp\DoctrineBehaviors\Model as ORMBehaviors;
 
-
 /**
  * Nitra\DeliveryBundle\Entity\Client
  *
@@ -18,7 +17,8 @@ use Knp\DoctrineBehaviors\Model as ORMBehaviors;
  */
 class Client
 {
-     use ORMBehaviors\Timestampable\Timestampable,
+
+    use ORMBehaviors\Timestampable\Timestampable,
         ORMBehaviors\SoftDeletable\SoftDeletable;
 
     /**
@@ -44,7 +44,7 @@ class Client
      * @ORM\Column(name="token", type="string", length=50, nullable = true)
      */
     private $token;
-    
+
     /**
      * @ORM\OneToOne(targetEntity="Nitra\ManagerBundle\Entity\Manager", inversedBy="client")
      * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
@@ -52,7 +52,7 @@ class Client
      * */
     private $user;
 
-     /**
+    /**
      * @ORM\ManyToMany(targetEntity="DeliveryService", inversedBy="clients")
      * @ORM\JoinTable(name="client_deliveryservice")
      */
@@ -121,7 +121,6 @@ class Client
     {
         $this->deliveryServices = new \Doctrine\Common\Collections\ArrayCollection();
     }
-    
 
     /**
      * Add deliveryServices
@@ -132,7 +131,7 @@ class Client
     public function addDeliveryService(\Nitra\DeliveryBundle\Entity\DeliveryService $deliveryServices)
     {
         $this->deliveryServices[] = $deliveryServices;
-    
+
         return $this;
     }
 
@@ -155,7 +154,6 @@ class Client
     {
         return $this->deliveryServices;
     }
-  
 
     /**
      * Set user
@@ -166,7 +164,7 @@ class Client
     public function setUser(\Nitra\ManagerBundle\Entity\Manager $user = null)
     {
         $this->user = $user;
-    
+
         return $this;
     }
 
@@ -179,10 +177,10 @@ class Client
     {
         return $this->user;
     }
-    
+
     public function __toString()
     {
         return $this->getName();
     }
-    
+
 }
