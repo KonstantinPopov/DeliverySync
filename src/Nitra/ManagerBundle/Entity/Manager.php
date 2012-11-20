@@ -28,6 +28,7 @@ class Manager extends BaseUser
     
     /**
      * @ORM\OneToOne(targetEntity="Nitra\DeliveryBundle\Entity\Client", mappedBy="user")
+     * @ORM\JoinColumn(name="client_id", referencedColumnName="id")
      * @Assert\Type(type="Nitra\DeliveryBundle\Entity\Client")
      */
     private $client;

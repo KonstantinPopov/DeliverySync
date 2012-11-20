@@ -19,7 +19,6 @@
         "jms/security-extra-bundle": "1.2.*@stable",
         "jms/di-extra-bundle": "1.1.*@stable",
         "nitra/nitra-theme-bundle":"dev-master",
-        "friendsofsymfony/user-bundle":"dev-master",
         "doctrine/doctrine-fixtures-bundle": "dev-master",
         "doctrine/doctrine-migrations-bundle": "dev-master"
     },
@@ -41,5 +40,8 @@
     "extra": {
         "symfony-app-dir": "app",
         "symfony-web-dir": "web"
+    },
+    "config": {
+        "process-timeout": "10000"
     }
 }

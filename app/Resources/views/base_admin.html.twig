@@ -34,7 +34,7 @@
                 '@NitraThemeBundle/Resources/public/js/jquery-1.7.2.js'
                 '@NitraThemeBundle/Resources/public/js/jquery-ui-1.8.18.custom.min.js'
                 '@NitraThemeBundle/Resources/public/js/i18n/jquery.ui.datepicker-ru.js'
-                '@NitraThemeBundle/Resources/public/js/i18n/jquery.ui.datepicker-ua.js'
+                '@NitraThemeBundle/Resources/public/js/i18n/jquery.ui.datepicker-uk.js'
                 '@NitraThemeBundle/Resources/public/js/menu.js'
                 '@NitraThemeBundle/Resources/public/js/jquery.colorbox-min.js'
                 
@@ -68,7 +68,16 @@
         </div>
 
 
-
+         {% block flashes %}
+            {% for type, flashMessages in app.session.flashbag.all() %}
+                {% for flashMessage in flashMessages %}
+                    <div class="notification_box {{ type }}">
+                        {{ flashMessage }}
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        {% endblock %}
+            
         <div id="content">
             {% block body %}{% endblock %}
         </div>
