@@ -20,8 +20,6 @@ Nitra_DeliveryBundle_Client_newToken:
 NitraDeliveryBundle_Synchronization:
   pattern:  /sync/{key}
   defaults:  { _controller: NitraDeliveryBundle:Sync:synchronization }
-#  requirements:
-#    _scheme:  https
 
 NitraGeoBundle_Synchronization:
   pattern:  /geo-sync/{key}
@@ -86,8 +84,4 @@ fos_user_resetting:
 fos_user_change_password:
     resource: "@FOSUserBundle/Resources/config/routing/change_password.xml"
     prefix: /profile
-    
-# Internal routing configuration to handle ESI
-#_internal:
-#    resource: "@FrameworkBundle/Resources/config/routing/internal.xml"
-#    prefix:   /_internal
+

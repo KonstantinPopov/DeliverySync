@@ -40,10 +40,10 @@ security:
         - { path: ^/city, roles: ROLE_ADMIN }
         - { path: ^/region, roles: ROLE_ADMIN }
         - { path: ^/manager, roles: ROLE_ADMIN }
-        - { path: ^/sync, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
-        - { path: ^/geo-sync, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
+        - { path: ^/sync, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/geo-sync, roles: IS_AUTHENTICATED_ANONYMOUSLY }
 
     role_hierarchy:
-        ROLE_USER:          ROLE_MANAGER, ROLE_CLIENT
+        ROLE_USER:        ROLE_MANAGER, ROLE_CLIENT
         ROLE_ADMIN:       ROLE_USER
         ROLE_SUPER_ADMIN: ROLE_ADMIN
