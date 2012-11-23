@@ -23,6 +23,10 @@ NitraDeliveryBundle_Synchronization:
 #  requirements:
 #    _scheme:  https
 
+NitraGeoBundle_Synchronization:
+  pattern:  /geo_sync/{key}
+  defaults:  { _controller: NitraGeoBundle:GeoSync:synchronization }
+
 NitraDeliveryBundle_geographi:
   pattern:  /geographi
   defaults:  { _controller: NitraDeliveryBundle:Sync:geographi }
