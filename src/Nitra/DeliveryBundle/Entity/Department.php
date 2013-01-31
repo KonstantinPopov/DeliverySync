@@ -91,7 +91,7 @@ class Department
      *
      * @var type string
      * 
-     * @ORM\Column(name="ware_id_city", type = "string", length=10)
+     * @ORM\Column(name="ware_id_city", type = "string", length=10, nullable = true)
      */
     private $wareIdCity;
 
