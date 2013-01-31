@@ -159,7 +159,11 @@ class DeliveryCity
      */
     public function getDeliveryServiceName()
     {
-        return $this->getDepartment()->getDeliveryService()->getName();
+        if ($this->getDepartment()) {
+            return $this->getDepartment()->getDeliveryService()->getName();
+        }
+        else
+        {return null;}
     }
 
     /**

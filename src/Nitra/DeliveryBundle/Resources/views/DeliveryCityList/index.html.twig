@@ -3,7 +3,9 @@
 
 {% block list_td_column_name %}
     <div><b>{{ DeliveryCity.name }}</b></div>
-    <div><em>{{ DeliveryCity.DeliveryServiceName }}</em></div>
-    <div><em>{{ DeliveryCity.DepartmentName }}</em></div>
-    <div><em><a target="_blank" href="{{ DeliveryCity.GoogleMapsURLName | raw }}" >Карта</a></em></div>
+    {% if DeliveryCity.DeliveryServiceName %}
+        <div><em>{{ DeliveryCity.DeliveryServiceName }}</em></div>
+        <div><em>{{ DeliveryCity.DepartmentName }}</em></div>
+        <div><em><a target="_blank" href="{{ DeliveryCity.GoogleMapsURLName | raw }}" >Карта</a></em></div>
+    {% endif %}
 {% endblock %}
