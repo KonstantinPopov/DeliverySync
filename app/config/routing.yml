@@ -17,6 +17,10 @@ Nitra_DeliveryBundle_Client_newToken:
     type:     annotation
     prefix:   /client
     
+NitraDeliveryBundle_Synchronization_Delivery_Period:
+  pattern:  /sync-delivery-period/{key}/{cityFrom}/{cityTo}
+  defaults:  { _controller: NitraDeliveryBundle:Sync:syncDeliveryPeriod }
+
 NitraDeliveryBundle_Synchronization:
   pattern:  /sync/{key}
   defaults:  { _controller: NitraDeliveryBundle:Sync:synchronization }

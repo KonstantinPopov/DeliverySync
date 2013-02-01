@@ -161,9 +161,9 @@ class DeliveryCity
     {
         if ($this->getDepartment()) {
             return $this->getDepartment()->getDeliveryService()->getName();
+        } else {
+            return null;
         }
-        else
-        {return null;}
     }
 
     /**
@@ -189,6 +189,15 @@ class DeliveryCity
                 '&sll=' . $this->getDepartment()->getLatitude()
                 . ',' . $this->getDepartment()->getLatitude()
                 . '&source=s_q&sspn=0.003042,0.016512&vps=1&vpsrc=0';
+    }
+
+    public function getDepartmentByDS($deliveryService)
+    {
+        foreach ($this->departments as $department) {
+            if ($department->getDeliveryService()->getId() == $deliveryService->getId()) {
+                return $department;
+            }
+        }
     }
 
 }

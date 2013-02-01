@@ -46,7 +46,7 @@ class DeliveryService
     private $settings;
 
     /**
-     * @ORM\OneToMany(targetEntity="Department", mappedBy="delivery_service")
+     * @ORM\OneToMany(targetEntity="Department", mappedBy="deliveryService")
      * 
      */
     private $departments;
