@@ -1,5 +1,5 @@
 {
-    "hash": "510558c244d21247d9a7265b5513d64d",
+    "hash": "55ba74a9e5006bc988a9f31b9b029ee4",
     "packages": [
         {
             "name": "beberlei/assert",
@@ -7,24 +7,25 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/beberlei/assert.git",
-                "reference": "e06051a9fffee49e5a29678319e0e32e590b3168"
+                "reference": "86cd57fe5bb1bf7a521b319dea4a6972c59bfe90"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/beberlei/assert/archive/e06051a9fffee49e5a29678319e0e32e590b3168.zip",
-                "reference": "e06051a9fffee49e5a29678319e0e32e590b3168",
+                "url": "https://github.com/beberlei/assert/archive/86cd57fe5bb1bf7a521b319dea4a6972c59bfe90.zip",
+                "reference": "86cd57fe5bb1bf7a521b319dea4a6972c59bfe90",
                 "shasum": ""
             },
             "require": {
                 "ext-mbstring": "*"
             },
-            "time": "2012-10-25 08:38:00",
+            "time": "2013-01-27 21:50:22",
             "type": "library",
             "autoload": {
                 "psr-0": {
                     "Assert": "lib/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "authors": [
                 {
                     "name": "Benjamin Eberlei",
@@ -45,22 +46,21 @@
             "source": {
                 "type": "git",
                 "url": "git://github.com/symfony2admingenerator/AdmingeneratorGeneratorBundle.git",
-                "reference": "4a6c82dd653a8c8b2063403113f15b9ab09f36bb"
+                "reference": "609ee14a35354e275190e0668a9f343cc2bace05"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/symfony2admingenerator/AdmingeneratorGeneratorBundle/archive/4a6c82dd653a8c8b2063403113f15b9ab09f36bb.zip",
-                "reference": "4a6c82dd653a8c8b2063403113f15b9ab09f36bb",
+                "url": "https://api.github.com/repos/symfony2admingenerator/AdmingeneratorGeneratorBundle/zipball/609ee14a35354e275190e0668a9f343cc2bace05",
+                "reference": "609ee14a35354e275190e0668a9f343cc2bace05",
                 "shasum": ""
             },
             "require": {
                 "cedriclombardot/twig-generator": "dev-master",
                 "symfony/symfony": "2.1.*",
-                "knplabs/knp-menu-bundle": "dev-master",
                 "white-october/pagerfanta-bundle": "dev-master",
                 "twig/extensions": "dev-master",
-                "cedriclombardot/admingenerator-oldtheme-bundle": "dev-master",
-                "twig/twig": ">= 1.9.0"
+                "twig/twig": ">= 1.9.0",
+                "knplabs/knp-menu-bundle": ">1.0,<2.1"
             },
             "require-dev": {
                 "doctrine/common": "2.3.*",
@@ -68,16 +68,22 @@
                 "doctrine/dbal": "2.3.*"
             },
             "suggest": {
-                "cedriclombardot/admingenerator-activeadmintheme-bundle": "The rails admin theme",
-                "cedriclombardot/admingenerator-user-bundle": "Help you to overwrite the base layout of FOSUserBundle or others giving a parameter key of the container"
+                "cedriclombardot/admingenerator-user-bundle": "Help you to overwrite the base layout of FOSUserBundle or others giving a parameter key of the container",
+                "knplabs/knp-markdown-bundle": "View admingenerator documentation in your local project."
             },
-            "time": "2012-11-12 09:14:21",
+            "time": "2013-01-31 17:05:22",
             "type": "symfony-bundle",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
             "autoload": {
                 "psr-0": {
                     "Admingenerator\\GeneratorBundle": ""
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -97,52 +103,6 @@
                 "admin",
                 "generator",
                 "yaml"
-            ]
-        },
-        {
-            "name": "cedriclombardot/admingenerator-oldtheme-bundle",
-            "version": "dev-master",
-            "target-dir": "Admingenerator/OldThemeBundle",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony2admingenerator/AdmingeneratorOldThemeBundle.git",
-                "reference": "3182e813db3c6988b7ed6a750ae340f049a915f8"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://github.com/symfony2admingenerator/AdmingeneratorOldThemeBundle/archive/3182e813db3c6988b7ed6a750ae340f049a915f8.zip",
-                "reference": "3182e813db3c6988b7ed6a750ae340f049a915f8",
-                "shasum": ""
-            },
-            "require": {
-                "cedriclombardot/admingenerator-generator-bundle": "*"
-            },
-            "suggest": {
-                "cedriclombardot/admingenerator-activeadmintheme-bundle": "The rails admin theme"
-            },
-            "time": "2012-10-29 21:37:04",
-            "type": "symfony-bundle",
-            "autoload": {
-                "psr-0": {
-                    "Admingenerator\\OldThemeBundle": ""
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Cedric LOMBARDOT",
-                    "email": "cedric.lombardot@gmail.com"
-                }
-            ],
-            "description": "This bundle is the old theme for cedriclombardot/admingenerator-generator-bundle",
-            "homepage": "http://symfony2admingenerator.org/",
-            "keywords": [
-                "admin",
-                "generator",
-                "yaml",
-                "theme"
             ]
         },
         {
@@ -658,23 +618,23 @@
         },
         {
             "name": "friendsofsymfony/user-bundle",
-            "version": "v1.3.0",
+            "version": "v1.3.1",
             "target-dir": "FOS/UserBundle",
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfSymfony/FOSUserBundle",
-                "reference": "v1.3.0"
+                "reference": "v1.3.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/FriendsOfSymfony/FOSUserBundle/zipball/v1.3.0",
-                "reference": "v1.3.0",
+                "url": "https://github.com/FriendsOfSymfony/FOSUserBundle/archive/v1.3.1.zip",
+                "reference": "v1.3.1",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.2",
-                "symfony/framework-bundle": "2.1.*",
-                "symfony/security-bundle": "2.1.*"
+                "symfony/framework-bundle": ">=2.1,<2.3-dev",
+                "symfony/security-bundle": ">=2.1,<2.3-dev"
             },
             "require-dev": {
                 "twig/twig": "*",
@@ -684,7 +644,7 @@
                 "symfony/yaml": "2.1.*",
                 "symfony/validator": "2.1.*"
             },
-            "time": "2012-10-05 15:21:26",
+            "time": "2012-12-22 15:09:34",
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
@@ -696,6 +656,7 @@
                     "FOS\\UserBundle": ""
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -1022,12 +983,12 @@
             "source": {
                 "type": "git",
                 "url": "git://github.com/KnpLabs/DoctrineBehaviors.git",
-                "reference": "6add12e7d8aece6fb70cb3882cce69c12db59340"
+                "reference": "4ae4d911a94ef387f7f08636b8c65a05da2f0cb5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/KnpLabs/DoctrineBehaviors/archive/6add12e7d8aece6fb70cb3882cce69c12db59340.zip",
-                "reference": "6add12e7d8aece6fb70cb3882cce69c12db59340",
+                "url": "https://github.com/KnpLabs/DoctrineBehaviors/archive/4ae4d911a94ef387f7f08636b8c65a05da2f0cb5.zip",
+                "reference": "4ae4d911a94ef387f7f08636b8c65a05da2f0cb5",
                 "shasum": ""
             },
             "require": {
@@ -1038,13 +999,14 @@
                 "doctrine/mongodb-odm": "dev-master",
                 "doctrine/orm": ">=2.2"
             },
-            "time": "2012-11-12 08:33:06",
+            "time": "2013-01-29 13:03:39",
             "type": "library",
             "autoload": {
                 "psr-0": {
                     "Knp\\DoctrineBehaviors": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -1073,12 +1035,12 @@
             "source": {
                 "type": "git",
                 "url": "http://github.com/KnpLabs/KnpMenu.git",
-                "reference": "8dd8c07f20f19f50174dc487baa7b14f26e6bb8a"
+                "reference": "730bc37232f5f813822acf80edfbd89381ea5971"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/KnpLabs/KnpMenu/archive/8dd8c07f20f19f50174dc487baa7b14f26e6bb8a.zip",
-                "reference": "8dd8c07f20f19f50174dc487baa7b14f26e6bb8a",
+                "url": "https://github.com/KnpLabs/KnpMenu/archive/730bc37232f5f813822acf80edfbd89381ea5971.zip",
+                "reference": "730bc37232f5f813822acf80edfbd89381ea5971",
                 "shasum": ""
             },
             "require": {
@@ -1094,7 +1056,7 @@
                 "silex/silex": "for the integration with your silex application",
                 "twig/twig": "for the TwigRenderer and the integration with your templates"
             },
-            "time": "2012-11-15 17:32:11",
+            "time": "2012-12-27 13:04:16",
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -1106,6 +1068,7 @@
                     "Knp\\Menu\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -1137,19 +1100,19 @@
             "source": {
                 "type": "git",
                 "url": "http://github.com/KnpLabs/KnpMenuBundle.git",
-                "reference": "471ad25ea4fcc469f901a85bc5ca530b0bc68624"
+                "reference": "bfaa9f1a74ee590c5e6460a3139b268fce1f1885"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/KnpLabs/KnpMenuBundle/archive/471ad25ea4fcc469f901a85bc5ca530b0bc68624.zip",
-                "reference": "471ad25ea4fcc469f901a85bc5ca530b0bc68624",
+                "url": "https://github.com/KnpLabs/KnpMenuBundle/archive/bfaa9f1a74ee590c5e6460a3139b268fce1f1885.zip",
+                "reference": "bfaa9f1a74ee590c5e6460a3139b268fce1f1885",
                 "shasum": ""
             },
             "require": {
                 "knplabs/knp-menu": "2.0.*",
                 "symfony/framework-bundle": ">=2.0,<2.3-dev"
             },
-            "time": "2012-11-01 11:05:07",
+            "time": "2012-12-29 08:47:58",
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
@@ -1161,6 +1124,7 @@
                     "Knp\\Bundle\\MenuBundle": ""
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -1345,28 +1309,29 @@
             "source": {
                 "type": "git",
                 "url": "git://github.com/nitra/NitraThemeBundle.git",
-                "reference": "f8a1f8e3cd59ccd60f11bcf1ab356ea3aaea57fd"
+                "reference": "82ad9af57c9344722b5cd31543b3b5a46cb91a3b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/nitra/NitraThemeBundle/archive/f8a1f8e3cd59ccd60f11bcf1ab356ea3aaea57fd.zip",
-                "reference": "f8a1f8e3cd59ccd60f11bcf1ab356ea3aaea57fd",
+                "url": "https://github.com/nitra/NitraThemeBundle/archive/82ad9af57c9344722b5cd31543b3b5a46cb91a3b.zip",
+                "reference": "82ad9af57c9344722b5cd31543b3b5a46cb91a3b",
                 "shasum": ""
             },
             "require": {
+                "leafo/lessphp": "0.3.8",
                 "cedriclombardot/admingenerator-generator-bundle": "dev-master",
                 "zerkalica/millwright-menu-bundle": "dev-master",
                 "knplabs/doctrine-behaviors": "dev-master",
-                "leafo/lessphp": "0.3.8",
-                "friendsofsymfony/user-bundle": "1.3.0"
+                "friendsofsymfony/user-bundle": "1.3.1"
             },
-            "time": "2012-11-19 17:05:23",
+            "time": "2013-01-20 13:26:36",
             "type": "symfony-bundle",
             "autoload": {
                 "psr-0": {
                     "Nitra\\NitraThemeBundle": ""
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
