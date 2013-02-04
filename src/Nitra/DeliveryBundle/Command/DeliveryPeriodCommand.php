@@ -21,19 +21,20 @@ class DeliveryPeriodCommand extends ContainerAwareCommand
     {
         $this
                 ->setName('ds:delivery-period-np')
-                ->setDescription('Load delivery periods for (New Post) all delivery services.');
+                ->setDescription('Load delivery periods for (New Post) all delivery services.')
+                ->addOption('force', null, InputOption::VALUE_NONE, 'Update all delivery periods');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $em = $this->getContainer()->get('doctrine')->getEntityManager('default');
-        $startDate = '04.02.2013';
+        $startDate = date ("d.m.Y", strtotime("next Monday")); 
         // загрузка сроков доставки по новой почте
         $np = $em
                 ->getRepository('NitraDeliveryBundle:DeliveryService')
                 ->findOneByName('Новая почта');
         
-        $newPostLoader = new NewPostLoadDeliveryPeriod($this->getContainer()->get('kernel')->getRootDir());
+        $newPostLoader = new NewPostLoadDeliveryPeriod($this->getContainer()->get('kernel')->getRootDir(), $input->getOption('force'));
         $newPostLoader->setEntityManager($em);
         $newPostLoader->setDeliveryService($np);
         $newPostLoader->setStartDate($startDate);

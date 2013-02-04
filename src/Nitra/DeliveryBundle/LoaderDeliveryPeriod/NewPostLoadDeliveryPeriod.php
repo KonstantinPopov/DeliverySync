@@ -9,6 +9,7 @@ use Nitra\DeliveryBundle\Entity\DeliveryService as DeliveryService;
 
 class NewPostLoadDeliveryPeriod implements iLoaderDeliveryPeriod
 {
+
     //error log dir
     private $path;
     //entity manager
@@ -19,13 +20,15 @@ class NewPostLoadDeliveryPeriod implements iLoaderDeliveryPeriod
     private $apiKey;
     //транспортная компания
     private $deliveryService;
-    
-    
-    public function __construct($path)
+    //флаг принудительной загрузки всех сроков
+    private $force;
+
+    public function __construct($path, $force)
     {
         $this->path = $path;
+        $this->force = $force;
     }
-    
+
     /**
      * Устанавливает службу доставки
      */
@@ -110,12 +113,16 @@ class NewPostLoadDeliveryPeriod implements iLoaderDeliveryPeriod
             $settings = $this->deliveryService->getSettings();
             $this->setApiKey($settings[0]);
         }
-//        $departments = $this->deliveryService->getDepartments();
         $i = 1;
-
+        $date = new \DateTime();
         $deliveryCities = $this->em->getRepository('NitraDeliveryBundle:DeliveryCity')->createQueryBuilder('dc')
-                ->leftjoin('dc.departments', 'd')
-                ->where('d.deliveryService = :ds')
+                ->leftjoin('dc.departments', 'd');
+        if (!$this->force) {
+            $deliveryCities = $deliveryCities->andWhere('d.createdAt > :today')
+                    ->setParameter('today', $date->format('Y-m-d 00:00:00'));
+        }
+
+        $deliveryCities = $deliveryCities->andWhere('d.deliveryService = :ds')
                 ->setParameter('ds', $this->deliveryService)
                 ->getQuery()
                 ->execute();
@@ -146,9 +153,9 @@ class NewPostLoadDeliveryPeriod implements iLoaderDeliveryPeriod
                     $this->em->persist($deliveryPeriod);
                     $this->em->flush();
                 } catch (\Exception $e) {
-                    $fh = fopen($this->path  . '/error_np.txt', 'a');
-                    fwrite($fh,  $dCityFrom->getName() . $dCityTo->getName() . $this->deliveryService->getName() . PHP_EOL);
-                    fwrite($fh,  $e->getMessage() . PHP_EOL);
+                    $fh = fopen($this->path . '/error_np.txt', 'a');
+                    fwrite($fh, $dCityFrom->getName() . $dCityTo->getName() . $this->deliveryService->getName() . PHP_EOL);
+                    fwrite($fh, $e->getMessage() . PHP_EOL);
                     fclose($fh);
                 }
             }

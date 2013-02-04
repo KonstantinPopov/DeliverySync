@@ -9,7 +9,7 @@ use Nitra\DeliveryBundle\Entity\DeliveryService as DeliveryService;
 
 class InTimeLoadDeliveryPeriod implements iLoaderDeliveryPeriod
 {
-    
+
     //error log dir
     private $path;
     //entity manager
@@ -18,11 +18,15 @@ class InTimeLoadDeliveryPeriod implements iLoaderDeliveryPeriod
     private $startDate;
     //транспортная компания
     private $deliveryService;
-    
-    public function __construct($path)
+    //флаг принудительной загрузки всех сроков
+    private $force;
+
+    public function __construct($path, $force)
     {
         $this->path = $path;
+        $this->force = $force;
     }
+
     /**
      * Устанавливает службу доставки
      */
@@ -82,43 +86,48 @@ class InTimeLoadDeliveryPeriod implements iLoaderDeliveryPeriod
         }
 
         $i = 1;
+        $date = new \DateTime();
         $deliveryCities = $this->em->getRepository('NitraDeliveryBundle:DeliveryCity')->createQueryBuilder('dc')
-                ->leftjoin('dc.departments', 'd')
-                ->where('d.deliveryService = :ds')
+                ->leftjoin('dc.departments', 'd');
+        if (!$this->force) {
+            $deliveryCities = $deliveryCities->andWhere('d.createdAt > :today')
+                    ->setParameter('today', $date->format('Y-m-d 00:00:00'));
+        }
+        
+        $deliveryCities = $deliveryCities->andWhere('d.deliveryService = :ds')
                 ->setParameter('ds', $this->deliveryService)
                 ->getQuery()
                 ->execute();
         foreach ($deliveryCities as $dCityFrom) {
             foreach ($deliveryCities as $dCityTo) {
-                try{
-                if ($dCityFrom->getId() == $dCityTo->getId()) {
-                    continue;
-                }
-                $period = $this->getPeriod($dCityFrom->getDepartmentByDS($this->deliveryService), $dCityTo->getDepartmentByDS($this->deliveryService));
-                $deliveryPeriod = $this->em->getRepository('NitraDeliveryBundle:DeliveryPeriod')->findOneBy(array(
-                    'deliveryService' => $this->deliveryService,
-                    'cityFrom' => $dCityFrom->getCity(),
-                    'cityTo' => $dCityTo->getCity(),
-                ));
-                if ($deliveryPeriod) {
-                    $deliveryPeriod->setPeriod($period);
-                } else {
-                    $deliveryPeriod = new DeliveryPeriod();
-                    $deliveryPeriod->setDeliveryService($this->deliveryService);
-                    $deliveryPeriod->setDeliveryCityFrom($dCityFrom);
-                    $deliveryPeriod->setDeliveryCityTo($dCityTo);
-                    $deliveryPeriod->setCityFrom($dCityFrom->getCity());
-                    $deliveryPeriod->setCityTo($dCityTo->getCity());
-                    $deliveryPeriod->setPeriod($period);
-                }
+                try {
+                    if ($dCityFrom->getId() == $dCityTo->getId()) {
+                        continue;
+                    }
+                    $period = $this->getPeriod($dCityFrom->getDepartmentByDS($this->deliveryService), $dCityTo->getDepartmentByDS($this->deliveryService));
+                    $deliveryPeriod = $this->em->getRepository('NitraDeliveryBundle:DeliveryPeriod')->findOneBy(array(
+                        'deliveryService' => $this->deliveryService,
+                        'cityFrom' => $dCityFrom->getCity(),
+                        'cityTo' => $dCityTo->getCity(),
+                    ));
+                    if ($deliveryPeriod) {
+                        $deliveryPeriod->setPeriod($period);
+                    } else {
+                        $deliveryPeriod = new DeliveryPeriod();
+                        $deliveryPeriod->setDeliveryService($this->deliveryService);
+                        $deliveryPeriod->setDeliveryCityFrom($dCityFrom);
+                        $deliveryPeriod->setDeliveryCityTo($dCityTo);
+                        $deliveryPeriod->setCityFrom($dCityFrom->getCity());
+                        $deliveryPeriod->setCityTo($dCityTo->getCity());
+                        $deliveryPeriod->setPeriod($period);
+                    }
 
-                $this->em->persist($deliveryPeriod);
-                $this->em->flush();
-                }
-                catch (\Exception $e) {
+                    $this->em->persist($deliveryPeriod);
+                    $this->em->flush();
+                } catch (\Exception $e) {
                     $fh = fopen($this->path . '/error_it.txt', 'a');
-                    fwrite($fh,  $dCityFrom->getName() . $dCityTo->getName() . $this->deliveryService->getName() . PHP_EOL);
-                    fwrite($fh,  $e->getMessage() . PHP_EOL);
+                    fwrite($fh, $dCityFrom->getName() . $dCityTo->getName() . $this->deliveryService->getName() . PHP_EOL);
+                    fwrite($fh, $e->getMessage() . PHP_EOL);
                     fclose($fh);
                 }
             }

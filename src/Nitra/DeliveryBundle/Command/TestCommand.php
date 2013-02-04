@@ -13,7 +13,6 @@ use Nitra\DeliveryBundle\Entity\Department;
 use Nitra\DeliveryBundle\LoaderDeliveryPeriod\NewPostLoadDeliveryPeriod as NewPostLoadDeliveryPeriod;
 use Nitra\DeliveryBundle\LoaderDeliveryPeriod\InTimeLoadDeliveryPeriod as InTimeLoadDeliveryPeriod;
 
-
 class TestCommand extends ContainerAwareCommand
 {
 
@@ -21,13 +20,14 @@ class TestCommand extends ContainerAwareCommand
     {
         $this
                 ->setName('ds:delivery-period-it')
-                ->setDescription('Load delivery periods for (InTime) all delivery services.');
+                ->setDescription('Load delivery periods for (InTime) all delivery services.')
+                ->addOption('force', null, InputOption::VALUE_NONE, 'Update all delivery periods');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $em = $this->getContainer()->get('doctrine')->getEntityManager('default');
-        $startDate = '04.02.2013';
+        $startDate = date("d.m.Y", strtotime("next Monday"));
         // загрузка сроков доставки по новой почте
 //        $np = $em
 //                ->getRepository('NitraDeliveryBundle:DeliveryService')
@@ -38,17 +38,16 @@ class TestCommand extends ContainerAwareCommand
 //        $newPostLoader->setDeliveryService($np);
 //        $newPostLoader->setStartDate($startDate);
 //        $newPostLoader->loadDeliveryPeriod();
-        
         // загрузка сроков доставки по Интайм
         $it = $em
                 ->getRepository('NitraDeliveryBundle:DeliveryService')
                 ->findOneByName('Интайм');
-        $itLoader = new InTimeLoadDeliveryPeriod($this->getContainer()->get('kernel')->getRootDir());
+        $itLoader = new InTimeLoadDeliveryPeriod($this->getContainer()->get('kernel')->getRootDir(), $input->getOption('force'));
         $itLoader->setDeliveryService($it);
         $itLoader->setEntityManager($em);
         $itLoader->setStartDate($startDate);
         $itLoader->loadDeliveryPeriod();
-        
+
         $output->writeln('Загрузка сроков доставки по Интайм успешно завершена.');
     }
 

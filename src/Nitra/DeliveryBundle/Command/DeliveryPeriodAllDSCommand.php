@@ -20,27 +20,27 @@ class DeliveryPeriodAllDSCommand extends ContainerAwareCommand
     {
         $this
                 ->setName('ds:delivery-period')
-                ->setDescription('Load delivery periods for  all delivery services.');
+                ->setDescription('Load delivery periods for  all delivery services.')
+                ->addOption('force', null, InputOption::VALUE_NONE, 'Update all delivery periods');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $em = $this->getContainer()->get('doctrine')->getEntityManager('default');
         $date = new \DateTime();
-        $date->format('Y-m-d 00:00:00');
         $newDepartments = $em->getRepository('NitraDeliveryBundle:Department')->createQueryBuilder('d')
                 ->where('d.createdAt > :today')
                 ->setParameter('today', $date->format('Y-m-d 00:00:00'))
                 ->getQuery()
                 ->execute();
-        if (count($newDepartments) > 0) {
-            $startDate = '04.02.2013';
+        if (count($newDepartments) > 0 || $input->getOption('force')) {
+            $startDate = date("d.m.Y", strtotime("next Monday"));
             // загрузка сроков доставки по новой почте
             $np = $em
                     ->getRepository('NitraDeliveryBundle:DeliveryService')
                     ->findOneByName('Новая почта');
 
-            $newPostLoader = new NewPostLoadDeliveryPeriod($this->getContainer()->get('kernel')->getRootDir());
+            $newPostLoader = new NewPostLoadDeliveryPeriod($this->getContainer()->get('kernel')->getRootDir(), $input->getOption('force'));
             $newPostLoader->setEntityManager($em);
             $newPostLoader->setDeliveryService($np);
             $newPostLoader->setStartDate($startDate);
@@ -50,7 +50,7 @@ class DeliveryPeriodAllDSCommand extends ContainerAwareCommand
             $it = $em
                     ->getRepository('NitraDeliveryBundle:DeliveryService')
                     ->findOneByName('Интайм');
-            $itLoader = new InTimeLoadDeliveryPeriod();
+            $itLoader = new InTimeLoadDeliveryPeriod($this->getContainer()->get('kernel')->getRootDir(), $input->getOption('force'));
             $itLoader->setDeliveryService($it);
             $itLoader->setEntityManager($em);
             $itLoader->setStartDate($startDate);
