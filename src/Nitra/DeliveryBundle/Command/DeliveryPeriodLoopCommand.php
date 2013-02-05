@@ -53,9 +53,8 @@ class DeliveryPeriodLoopCommand extends ContainerAwareCommand
                     ->execute();
             $count = count($deliveryCities);
             for ($j = 0; $j<$count; $j++) {
-               $str =  shell_exec('/home/Valeriia/www/ds32/app/console ds:delivery-period-np --force ' . $j);
-               $output->writeln($str);
-//                shell_exec('/var/www/delivery_sync/app/console ds:delivery-period-np --force ' . $j);
+//               $str =  shell_exec('/home/Valeriia/www/ds32/app/console ds:delivery-period-np --force ' . $j);
+                shell_exec('/var/www/delivery_sync/app/console ds:delivery-period-np --force ' . $j);
             }
 //            // загрузка сроков доставки по Интайм
 //            $it = $em

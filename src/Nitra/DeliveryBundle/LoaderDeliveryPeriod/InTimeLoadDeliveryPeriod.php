@@ -130,7 +130,6 @@ class InTimeLoadDeliveryPeriod implements iLoaderDeliveryPeriod
                     if ($dCityFrom->getId() == $dCityTo->getId()) {
                         continue;
                     }
-                    var_dump($dCityFrom->getName(), $dCityTo->getName());
                     $period = $this->getPeriod($dCityFrom->getDepartmentByDS($this->deliveryService), $dCityTo->getDepartmentByDS($this->deliveryService));
                     $deliveryPeriod = $this->em->getRepository('NitraDeliveryBundle:DeliveryPeriod')->findOneBy(array(
                         'deliveryService' => $this->deliveryService,

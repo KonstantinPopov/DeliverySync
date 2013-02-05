@@ -87,7 +87,7 @@ class NewPostLoadDeliveryPeriod implements iLoaderDeliveryPeriod
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         $response = curl_exec($ch);
         curl_close($ch);
-        var_dump($response);
+//        var_dump($response);
         if (($response == '403 too many requests')) {
             sleep(1);
             return $this->sendResponse($dCityFrom, $dCityTo);
@@ -172,7 +172,7 @@ class NewPostLoadDeliveryPeriod implements iLoaderDeliveryPeriod
                     continue;
                 }
                 try {
-                    var_dump($dCityFrom->getName(), $dCityTo->getName());
+//                    var_dump($dCityFrom->getName(), $dCityTo->getName());
                     $period = $this->getPeriod($dCityFrom, $dCityTo);
                     if ($period) {
                         $deliveryPeriod = $this->em->getRepository('NitraDeliveryBundle:DeliveryPeriod')->findOneBy(array(
@@ -194,7 +194,7 @@ class NewPostLoadDeliveryPeriod implements iLoaderDeliveryPeriod
 
                         $this->em->persist($deliveryPeriod);
                         $this->em->flush();
-                        var_dump($i++);
+//                        var_dump($i++);
                     }
                 } catch (\Exception $e) {
                     $fh = fopen($this->path . '/error_np.txt', 'a');

@@ -71,8 +71,8 @@ class DeliveryPerioLoopITCommand extends ContainerAwareCommand
                     ->getQuery()
                     ->execute();
             for ($j = 0; $j<count($deliveryCities); $j++) {
-                shell_exec('/home/Valeriia/www/ds32/app/console ds:delivery-period-it --force ' . $j);
-//                shell_exec('/var/www/delivery_sync/app/console ds:delivery-period-it --force ' . $j);
+//                shell_exec('/home/Valeriia/www/ds32/app/console ds:delivery-period-it --force ' . $j);
+                shell_exec('/var/www/delivery_sync/app/console ds:delivery-period-it --force ' . $j);
             }
         }
         //подвязка городов в таблице delivery period
