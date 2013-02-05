@@ -22,7 +22,8 @@ class DeliveryPeriodCommand extends ContainerAwareCommand
         $this
                 ->setName('ds:delivery-period-np')
                 ->setDescription('Load delivery periods for (New Post) all delivery services.')
-                ->addOption('force', null, InputOption::VALUE_NONE, 'Update all delivery periods');
+                ->addOption('force', null, InputOption::VALUE_NONE, 'Update all delivery periods')
+                ->addArgument('iteration', InputArgument::REQUIRED, 'Iteration number');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -35,20 +36,11 @@ class DeliveryPeriodCommand extends ContainerAwareCommand
                 ->findOneByName('Новая почта');
         
         $newPostLoader = new NewPostLoadDeliveryPeriod($this->getContainer()->get('kernel')->getRootDir(), $input->getOption('force'));
+         $newPostLoader->setIteration($input->getArgument('iteration'));
         $newPostLoader->setEntityManager($em);
         $newPostLoader->setDeliveryService($np);
         $newPostLoader->setStartDate($startDate);
         $newPostLoader->loadDeliveryPeriod();
-        
-        // загрузка сроков доставки по Интайм
-//        $it = $em
-//                ->getRepository('NitraDeliveryBundle:DeliveryService')
-//                ->findOneByName('Интайм');
-//        $itLoader = new InTimeLoadDeliveryPeriod();
-//        $itLoader->setDeliveryService($it);
-//        $itLoader->setEntityManager($em);
-//        $itLoader->setStartDate($startDate);
-//        $itLoader->loadDeliveryPeriod();
         
         $output->writeln('Загрузка сроков доставки по новой почте успешно завершена.');
     }

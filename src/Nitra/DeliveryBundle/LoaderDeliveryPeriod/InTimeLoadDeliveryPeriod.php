@@ -20,11 +20,19 @@ class InTimeLoadDeliveryPeriod implements iLoaderDeliveryPeriod
     private $deliveryService;
     //флаг принудительной загрузки всех сроков
     private $force;
+    //iteration
+    private $iteration;
 
     public function __construct($path, $force)
     {
         $this->path = $path;
         $this->force = $force;
+    }
+    
+    public function setIteration($iteration)
+    {
+        $this->iteration = $iteration;
+        return $this;
     }
 
     /**
@@ -87,7 +95,25 @@ class InTimeLoadDeliveryPeriod implements iLoaderDeliveryPeriod
 
         $i = 1;
         $date = new \DateTime();
+        
+        $deliveryCitiesFrom = $this->em->getRepository('NitraDeliveryBundle:DeliveryCity')->createQueryBuilder('dc')
+                ->distinct('dc.id')
+                ->leftjoin('dc.departments', 'd');
+        if (!$this->force) {
+            $deliveryCitiesFrom = $deliveryCitiesFrom->andWhere('d.createdAt > :today')
+                    ->setParameter('today', $date->format('Y-m-d 00:00:00'));
+        }
+
+        $deliveryCitiesFrom = $deliveryCitiesFrom->andWhere('d.deliveryService = :ds')
+                ->setParameter('ds', $this->deliveryService)
+                ->getQuery()
+                ->setFirstResult($this->iteration)
+                ->setMaxResults(1)
+                ->execute();
+        
+        
         $deliveryCities = $this->em->getRepository('NitraDeliveryBundle:DeliveryCity')->createQueryBuilder('dc')
+                ->distinct('dc.id')
                 ->leftjoin('dc.departments', 'd');
         if (!$this->force) {
             $deliveryCities = $deliveryCities->andWhere('d.createdAt > :today')
@@ -98,12 +124,13 @@ class InTimeLoadDeliveryPeriod implements iLoaderDeliveryPeriod
                 ->setParameter('ds', $this->deliveryService)
                 ->getQuery()
                 ->execute();
-        foreach ($deliveryCities as $dCityFrom) {
+        foreach ($deliveryCitiesFrom as $dCityFrom) {
             foreach ($deliveryCities as $dCityTo) {
                 try {
                     if ($dCityFrom->getId() == $dCityTo->getId()) {
                         continue;
                     }
+                    var_dump($dCityFrom->getName(), $dCityTo->getName());
                     $period = $this->getPeriod($dCityFrom->getDepartmentByDS($this->deliveryService), $dCityTo->getDepartmentByDS($this->deliveryService));
                     $deliveryPeriod = $this->em->getRepository('NitraDeliveryBundle:DeliveryPeriod')->findOneBy(array(
                         'deliveryService' => $this->deliveryService,
