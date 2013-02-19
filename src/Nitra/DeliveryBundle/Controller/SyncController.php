@@ -11,8 +11,7 @@ use Nitra\GeoBundle\Entity\City;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
-class SyncController extends Controller
-{
+class SyncController extends Controller {
 
     /**
      * Функция для синхронизации складов транспортных компаний
@@ -20,8 +19,7 @@ class SyncController extends Controller
      * @param string $key токен клиента
      * @return \Symfony\Component\HttpFoundation\Response информация по складам транспортных компаний
      */
-    public function synchronizationAction($key)
-    {
+    public function synchronizationAction($key) {
 
         $em = $this->getDoctrine()->getEntityManager();
 
@@ -61,8 +59,7 @@ class SyncController extends Controller
      * @return \Symfony\Component\HttpFoundation\Response\ json с данными
      * 
      */
-    public function syncDeliveryPeriodAction($key, $cityFrom, $cityTo)
-    {
+    public function syncDeliveryPeriodAction($key, $cityFrom, $cityTo) {
 
         $em = $this->getDoctrine()->getEntityManager();
 
@@ -74,40 +71,31 @@ class SyncController extends Controller
         } else {
             $cityF = $em->getRepository('NitraGeoBundle:City')->findOneByName($cityFrom);
             $cityT = $em->getRepository('NitraGeoBundle:City')->findOneByName($cityTo);
-            
-            $data = array();
-            foreach ($client->getDeliveryServices() as $ds) {
-                $deliveryPeriod = $em->getRepository('NitraDeliveryBundle:DeliveryPeriod')->findOneBy(array(
-                    'deliveryService' => $ds,
-                    'cityFrom' => $cityF,
-                    'cityTo' => $cityT,
-                ));
-                
-                ($deliveryPeriod)? $period=$deliveryPeriod->getPeriod(): $period = null;
-                $data[$ds->getId()] = array(
-                                                                'deliveryService' => $ds->getName(),
-                                                                'period' => $period,
-                                                                    );
+            if (!$cityF) {
+                $data = json_encode(array('Error' => 'City From is not found!'));
+            } else if (!$cityT) {
+                $data = json_encode(array('Error' => 'City To is not found!'));
+            } else {
+                $data = array();
+                foreach ($client->getDeliveryServices() as $ds) {
+                    $deliveryPeriod = $em->getRepository('NitraDeliveryBundle:DeliveryPeriod')->findOneBy(array(
+                        'deliveryService' => $ds,
+                        'cityFrom' => $cityF,
+                        'cityTo' => $cityT,
+                    ));
+
+                    ($deliveryPeriod) ? $period = $deliveryPeriod->getPeriod() : $period = null;
+                    if ($period > 20) {
+                        $period = 'error';
+                    }
+                    $data[$ds->getId()] = array(
+                        'deliveryService' => $ds->getName(),
+                        'period' => $period,
+                    );
+                }
+                $data = json_encode($data);
             }
-            $data = json_encode($data);
         }
-
-
-
-//        $query = $em->createQueryBuilder()
-//                ->select(' r.id as id_region, ct.id as id_city, d.id as id_dep, d.wareIdCity as ware_id_city, d.wareId as ware_id, ds.name  as name_delivery, ds.id as delivery_id ,  d.address as adres, d.phone as phone,  d.name as name_ware, ct.name as name_city, r.name as name_region')
-//                ->from('NitraDeliveryBundle:Department', 'd')
-//                ->join('d.deliveryService', 'ds')
-//                ->join('d.deliveryCity', 'dc')
-//                ->join('dc.city', 'ct')
-//                ->join('ct.region', 'r')
-//                ->join('ds.clients', 'cl')
-//                ->where('cl.token = :key')
-//                ->setParameter('key', $key);
-//        $departments = $query->getQuery()->getResult();
-//
-//
-//        $data = json_encode($array_dep);
         $headers = array('Content-type' => 'application-json; charset=utf8');
         $response = new Response($data, 200, $headers);
 
