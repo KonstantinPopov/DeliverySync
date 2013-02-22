@@ -29,6 +29,9 @@ class EditController extends BaseEditController
                     "DeliveryCity" => $DeliveryCity,
                     "form" => $form->createView(),
                     'Countries' => $countries,
+                    'current_country' => $DeliveryCity->getCity()->getRegion()->getCountry()->getId(),
+                    'current_region' => $DeliveryCity->getCity()->getRegion()->getId(),
+                    'current_city' => $DeliveryCity->getCity()->getId()
                 ));
     }
 

@@ -28,7 +28,7 @@ builders:
       actions:
         new: {}
       object_actions:
-        edit: ~
+#        edit: ~
         delete: {}
   filters:
     params:

@@ -72,5 +72,33 @@ $('#regions').change(function() {
       }
     });
 });
+
+$(window).load(function() {
+    $('#countryes').val({{ current_country }});
+    
+    $.ajax({
+      type: "POST",
+      url: "{{ path("Nitra_GeoBundle_GetRegionForCountry") }}",
+      data: { country_id: {{ current_country }} },
+      success: function(data) {
+          $('#regions').html(data);
+          $('#regions').val({{ current_region }});
+      }
+    });
+    
+    $.ajax({
+      type: "POST",
+      url: "{{ path("Nitra_GeoBundle_GetCityForRegion") }}",
+      data: { region_id: {{ current_region }} },
+      success: function(data) {
+          $('#edit_deliverycity_city').html(data);
+          $('#edit_deliverycity_city').val({{ current_city }});
+      }
+    });
+    
+    
+});
+
+
 </script>
 {% endblock %}
