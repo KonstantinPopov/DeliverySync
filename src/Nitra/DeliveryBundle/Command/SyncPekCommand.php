@@ -102,13 +102,13 @@ class SyncPekCommand extends ContainerAwareCommand
                 $dCity->setName($delivery_city);
                 $em->persist($dCity);
                 $em->flush();
-                $mess = 'Город ' . $delivery_city . ' успешно записан!!!';
-                $mess = iconv("utf-8", "cp1251", $mess);
-                echo $mess;
+                //$mess = 'Город ' . $delivery_city . ' успешно записан!!!';
+                //$mess = iconv("utf-8", "cp1251", $mess);
+                //cho $mess;
             } else {
-                $mess = 'Город ' . $delivery_city . ' не записан!!!';
-                $mess = iconv("utf-8", "cp1251", $mess);
-                echo$mess;
+                //$mess = 'Город ' . $delivery_city . ' не записан!!!';
+                //$mess = iconv("utf-8", "cp1251", $mess);
+                //echo$mess;
             }
         }
 
