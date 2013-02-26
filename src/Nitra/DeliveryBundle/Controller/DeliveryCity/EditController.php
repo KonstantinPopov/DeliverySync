@@ -26,9 +26,9 @@ class EditController extends BaseEditController
                 ->getResult();
 
 
-        $current_country = false;
-        $current_region = false;
-        $current_city = false;
+        $current_country = 0;
+        $current_region = 0;
+        $current_city = 0;
 
         if ($DeliveryCity->getCity()) {
             $current_country = $DeliveryCity->getCity()->getRegion()->getCountry()->getId();
