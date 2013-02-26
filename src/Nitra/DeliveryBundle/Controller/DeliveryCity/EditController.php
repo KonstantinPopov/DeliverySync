@@ -25,14 +25,25 @@ class EditController extends BaseEditController
                 ->getQuery()
                 ->getResult();
 
+
+        $current_country = false;
+        $current_region = false;
+        $current_city = false;
+
+        if ($DeliveryCity->getCity()) {
+            $current_country = $DeliveryCity->getCity()->getRegion()->getCountry()->getId();
+            $current_region = $DeliveryCity->getCity()->getRegion()->getId();
+            $current_city = $DeliveryCity->getCity()->getId();
+        }
+
         return $this->render('NitraDeliveryBundle:DeliveryCityEdit:index.html.twig', array(
                     "DeliveryCity" => $DeliveryCity,
                     "form" => $form->createView(),
                     'Countries' => $countries,
-                    'current_country' => $DeliveryCity->getCity()->getRegion()->getCountry()->getId(),
-                    'current_region' => $DeliveryCity->getCity()->getRegion()->getId(),
-                    'current_city' => $DeliveryCity->getCity()->getId()
-                ));
+                    'current_country' => $current_country,
+                    'current_region' => $current_region,
+                    'current_city' => $current_city
+        ));
     }
 
     public function updateAction($pk)
@@ -76,7 +87,7 @@ class EditController extends BaseEditController
                     "DeliveryCity" => $DeliveryCity,
                     "form" => $form->createView(),
                     'Countries' => $countries,
-                ));
+        ));
     }
 
 }
