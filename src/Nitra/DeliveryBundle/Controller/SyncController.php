@@ -11,7 +11,8 @@ use Nitra\GeoBundle\Entity\City;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 
-class SyncController extends Controller {
+class SyncController extends Controller
+{
 
     /**
      * Функция для синхронизации складов транспортных компаний
@@ -19,12 +20,26 @@ class SyncController extends Controller {
      * @param string $key токен клиента
      * @return \Symfony\Component\HttpFoundation\Response информация по складам транспортных компаний
      */
-    public function synchronizationAction($key) {
+    public function synchronizationAction($key)
+    {
 
         $em = $this->getDoctrine()->getEntityManager();
 
+        $em->getFilters()->disable('softdeleteable');
         $query = $em->createQueryBuilder()
-                ->select(' r.id as id_region, ct.id as id_city, d.id as id_dep, d.wareIdCity as ware_id_city, d.wareId as ware_id, ds.name  as name_delivery, ds.id as delivery_id ,  d.address as adres, d.phone as phone,  d.name as name_ware, ct.name as name_city, r.name as name_region')
+                ->select('r.id AS id_region,
+                    ct.id AS id_city,
+                    d.id AS id_dep,
+                    d.wareIdCity AS ware_id_city,
+                    d.wareId AS ware_id,
+                    ds.name AS name_delivery,
+                    ds.id AS delivery_id,
+                    d.address AS adres,
+                    d.phone AS phone,
+                    d.name AS name_ware,
+                    ct.name AS name_city,
+                    r.name AS name_region,
+                    d.deletedAt AS d_deletedAt')
                 ->from('NitraDeliveryBundle:Department', 'd')
                 ->join('d.deliveryService', 'ds')
                 ->join('d.deliveryCity', 'dc')
@@ -33,12 +48,25 @@ class SyncController extends Controller {
                 ->join('ds.clients', 'cl')
                 ->where('cl.token = :key')
                 ->setParameter('key', $key);
+
         $departments = $query->getQuery()->getResult();
 
 
         foreach ($departments as $dep) {
-
-            $array_dep[] = array('region_id' => $dep['id_region'], 'city_id' => $dep['id_city'], 'adres' => $dep['adres'], 'name_ware' => $dep['name_ware'], 'phone' => $dep['phone'], 'ware_id' => $dep['ware_id'], 'delivery_id' => $dep['delivery_id'], 'region_name' => $dep['name_region'], 'city_name' => $dep['name_city'], 'ware_id_sevices' => $dep['id_dep'], 'ware_id_city' => $dep['ware_id_city']);
+            $array_dep[] = array(
+                'region_id' => $dep['id_region'],
+                'city_id' => $dep['id_city'],
+                'adres' => $dep['adres'],
+                'name_ware' => $dep['name_ware'],
+                'phone' => $dep['phone'],
+                'ware_id' => $dep['ware_id'],
+                'delivery_id' => $dep['delivery_id'],
+                'region_name' => $dep['name_region'],
+                'city_name' => $dep['name_city'],
+                'ware_id_sevices' => $dep['id_dep'],
+                'ware_id_city' => $dep['ware_id_city'],
+                'is_active' => $dep['d_deletedAt'] ? 0 : 1
+            );
         }
 
         if (!count($departments)) {
@@ -59,7 +87,8 @@ class SyncController extends Controller {
      * @return \Symfony\Component\HttpFoundation\Response\ json с данными
      * 
      */
-    public function syncDeliveryPeriodAction($key, $cityFrom, $cityTo) {
+    public function syncDeliveryPeriodAction($key, $cityFrom, $cityTo)
+    {
 
         $em = $this->getDoctrine()->getEntityManager();
 

@@ -28,10 +28,22 @@ NitraDeliveryBundle_Synchronization:
 NitraGeoBundle_Synchronization:
   pattern:  /geo-sync/{key}
   defaults:  { _controller: NitraGeoBundle:GeoSync:synchronization }
+  
+NitraGeoBundle_Synchronization_Region:
+  pattern:  /geo-sync-region/{key}
+  defaults:  { _controller: NitraGeoBundle:GeoSync:synchronizationRegion }
 
-NitraDeliveryBundle_geographi:
-  pattern:  /geographi
-  defaults:  { _controller: NitraDeliveryBundle:Sync:geographi }
+NitraGeoBundle_Synchronization_City:
+  pattern:  /geo-sync-city/{key}
+  defaults:  { _controller: NitraGeoBundle:GeoSync:synchronizationCity }
+  
+NitraGeoBundle_Synchronization_Country:
+  pattern:  /geo-sync-country/{key}
+  defaults:  { _controller: NitraGeoBundle:GeoSync:synchronizationCountry }
+
+#NitraDeliveryBundle_geographi:
+#  pattern:  /geographi
+#  defaults:  { _controller: NitraDeliveryBundle:Sync:geographi }
   
 NitraDeliveryBundle_warehousePek:
   pattern:  /warehouse-pek
