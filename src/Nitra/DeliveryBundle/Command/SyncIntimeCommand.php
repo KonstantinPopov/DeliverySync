@@ -1,5 +1,4 @@
 <?php
-
 namespace Nitra\DeliveryBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -17,8 +16,8 @@ class SyncIntimeCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-                ->setName('ds:sync-it')
-                ->setDescription('Synchronizes department of InTime.');
+            ->setName('ds:sync-it')
+            ->setDescription('Synchronizes department of InTime.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -61,14 +60,14 @@ class SyncIntimeCommand extends ContainerAwareCommand
     {
         $em = $this->getContainer()->get('doctrine')->getEntityManager('default');
         $it = $em
-                ->getRepository('NitraDeliveryBundle:DeliveryService')
-                ->findOneByName('Интайм');
+            ->getRepository('NitraDeliveryBundle:DeliveryService')
+            ->findOneByName('Интайм');
         $query = $em
-                ->createQuery('SELECT d.wareId FROM NitraDeliveryBundle:Department d 
+            ->createQuery('SELECT d.wareId FROM NitraDeliveryBundle:Department d 
                                              WHERE d.deliveryService = :service ')
-                ->setParameters(array(
-            'service' => $it
-                ));
+            ->setParameters(array(
+                                 'service' => $it
+        ));
         $wareIds = array();
         $ids = $query->getArrayResult();
         foreach ($ids as $id) {
@@ -76,10 +75,14 @@ class SyncIntimeCommand extends ContainerAwareCommand
         }
         foreach ($warehouses as $wh) {
             $arr = explode(' ', $wh->Name);
-            if ($arr) {
-                $city = $arr[0];
-            } else {
+            if (strstr(strval($wh->Name), '(')) {
                 $city = $wh->Name;
+            } else {
+                if ($arr) {
+                    $city = $arr[0];
+                } else {
+                    $city = $wh->Name;
+                }
             }
             $dCity = $em
                     ->getRepository('NitraDeliveryBundle:DeliveryCity')
@@ -126,12 +129,12 @@ class SyncIntimeCommand extends ContainerAwareCommand
         }
         foreach ($wareIds as $id) {
             $query = $em
-                    ->createQuery('SELECT d FROM NitraDeliveryBundle:Department d 
+                ->createQuery('SELECT d FROM NitraDeliveryBundle:Department d 
                                              WHERE d.deliveryService = :service AND d.wareId = :wareId')
-                    ->setParameters(array(
-                'service' => $it,
-                'wareId' => $id
-                    ));
+                ->setParameters(array(
+                                     'service' => $it,
+                                     'wareId' => $id
+            ));
             $department = $query->getResult()->getFirst();
             $em->remove($department);
         }
@@ -139,3 +142,4 @@ class SyncIntimeCommand extends ContainerAwareCommand
     }
 
 }
+
