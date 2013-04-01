@@ -13,7 +13,6 @@ use Knp\DoctrineBehaviors\Model as ORMBehaviors;
  *
  * @ORM\Table(name="geo_city")
  * @ORM\Entity 
- * @UniqueEntity(fields="name", message="Город с таким названием уже существует")
  */
 class City
 {
