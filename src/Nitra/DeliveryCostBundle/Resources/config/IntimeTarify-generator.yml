@@ -1,0 +1,34 @@
+generator: admingenerator.generator.doctrine
+params:
+  model: Nitra\DeliveryCostBundle\Entity\IntimeTarify
+  namespace_prefix: Nitra
+  bundle_name: DeliveryCostBundle
+  fields: ~
+
+builders:
+  list:
+    params:
+      title: Справочник по ТК "Интайм"
+      display: ~
+      object_actions:
+        edit: 
+          params:
+            actions:
+              list: ~
+  filters:
+    params:
+      display: ~
+  
+  edit:
+    params:
+      title: "You're editing the object "
+      display: ~
+      actions:
+        list: ~
+  show:
+    params:
+      title: "You're viewing the object "
+      display: ~
+      actions:
+        list: ~
+  delete: ~

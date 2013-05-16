@@ -32,6 +32,7 @@ class AppKernel extends Kernel
             new Nitra\ManagerBundle\NitraManagerBundle(),
             new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
             new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
+            new Nitra\DeliveryCostBundle\NitraDeliveryCostBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

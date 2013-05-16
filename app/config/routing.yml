@@ -1,3 +1,29 @@
+SendData:
+  pattern: /delivery-cost/data-send/
+  defaults:  { _controller: NitraDeliveryCostBundle:Default:recieveData }
+
+NitraDeliveryCostBundle_intime_edit:
+  pattern:  /delivery-cost/intime/edit/
+  defaults:  { _controller: NitraDeliveryCostBundle:IntimeTarify/EditParams:index }
+
+NitraDeliveryCostBundle_intime_info:
+  pattern:  /delivery-cost/intime/{type}
+  defaults:  { _controller: NitraDeliveryCostBundle:IntimeTarify/Edit:index }
+    
+NitraDeliveryCostBundle_admin_nitra_delivery_cost_bundle_IntimeTarify:
+    resource: "@NitraDeliveryCostBundle/Controller/IntimeTarify/"
+    type:     admingenerator
+    prefix:   /delivery-cost/intime
+    
+NitraDeliveryCostBundle_novaposhta_info:
+  pattern:  /delivery-cost/novaposhta/{type}
+  defaults:  { _controller: NitraDeliveryCostBundle:NovaposhtaTarify/Edit:index }
+    
+NitraDeliveryCostBundle_admin_nitra_delivery_cost_bundle_NovaposhtaTarify:
+    resource: "@NitraDeliveryCostBundle/Controller/NovaposhtaTarify/"
+    type:     admingenerator
+    prefix:   /delivery-cost/novaposhta
+
 Default_route:
   pattern: "/"
   defaults: { _controller: NitraDeliveryBundle:Delivery/List:index }

@@ -1,0 +1,87 @@
+
+{% extends "::base_admin.html.twig" %}
+
+{% block stylesheets %}    {{ parent() }}
+{% endblock %}
+
+{% block javascripts %}    {{ parent() }}
+{% endblock %}    
+{% block body %}    {% block page_title %}
+<header>
+    <h1>
+        {% if type =="package-cost" %}
+            {% set type_string = 'стоимости упаковок' %}
+        {% elseif type =="doors-doors"%}
+            {% set type_string = 'тарифов по зонам при доставке "Дверь-дверь"' %}
+        {% else %}
+            {% set type_string = 'тарифов на доставку или забор грузов в населённые пункты, где есть представительства "Ин-тайм"' %}
+        {% endif %}
+        Справочник {{ type_string }}
+    </h1>
+</header>
+{% endblock %}
+<div class="admin_list main_content">
+<form method="POST"> 
+    <table {% if type != "doors-doors" %} style="table-layout: fixed; width:50%" {% endif %}>
+    {% if type == 'package-cost' %}
+        <tr class="list_thead">
+            <th class="list_thead_column">Наименование</th>
+            <th class="list_thead_column">Цена реализации за единицу, грн.</th>
+        </tr>
+        {% for package in data %}
+        <tr>
+            <td><input style="width:96%" type="text" name="package[{{ package.id }}][name]" value="{{ package.name }}" /></td>
+            <td><input style="width:96%" type="text" name="package[{{ package.id }}][cost]" value="{{ package.cost }}" /></td>
+        </tr>
+        {% endfor %}
+    {% elseif type == 'intime-agency' %}
+        <tr class="list_thead">
+            <th class="list_thead_column">Вес и обьем</th>
+            <th class="list_thead_column">Тариф для г. Киев, грн.</th>
+            <th class="list_thead_column">Тариф для других городов, грн.</th>
+        </tr>
+        {% for tarif in data %}
+            {% if tarif.city == 'Киев' %}
+            <tr>
+                <td>
+                    {%if tarif.package_type %} 
+                        {{ tarif.package_type }} 
+                    <a href="{{ path("NitraDeliveryCostBundle_intime_edit", { 'id': tarif.id, 'package_type': tarif.package_type, 'type': type  }) }}">[edit]</a>
+                    {% elseif tarif.weigth_min %}
+                        {% if tarif.weigth_max %}
+                            {{ tarif.weigth_min }} - {{ tarif.weigth_max }} кг ({{ tarif.size_min }} - {{ tarif.size_max }} м.куб)
+                             <a href="{{ path("NitraDeliveryCostBundle_intime_edit", { 'id': tarif.id, 'weigth_min': tarif.weigth_min, 'weigth_max': tarif.weigth_max, 'size_min': tarif.size_min, 'size_max': tarif.size_max, 'type': type }) }}">[edit]</a>
+                        {% else %}
+                            Свыше {{ tarif.weigth_min }} кг (свыше {{ tarif.size_min }} м.куб)
+                            <a href="{{ path("NitraDeliveryCostBundle_intime_edit", { 'id': tarif.id, 'weigth_min': tarif.weigth_min, 'size_min': tarif.size_min, 'type': type }) }}">[edit]</a>
+                        {% endif %}
+                    {% else %}
+                        Грузы, не упакованные в фирменную упаковку до {{ tarif.weigth_max }} кг или {{ tarif.size_max }} м.куб включительно
+                        <a href="{{ path("NitraDeliveryCostBundle_intime_edit", { 'id': tarif.id, 'weigth_max': tarif.weigth_max, 'size_max': tarif.size_max, 'type': type }) }}">[edit]</a>
+                    {% endif %}
+                </td>
+                <td><input style="width:96%" type="text" name="data[{{ tarif.id }}][tarif]" value="{{ tarif.tarif }}" /></td>
+                {% for tarif_city in data %}
+                    {% if tarif_city.city != 'Киев'%}
+                        {% if tarif_city.package_type and tarif.package_type and tarif_city.package_type == tarif.package_type%}
+                            <td><input style="width:96%" type="text" name="data[{{ tarif_city.id }}][tarif]" value="{{ tarif_city.tarif }}" /></td>
+                        {% elseif tarif_city.weigth_min and tarif.weigth_min and tarif_city.weigth_min == tarif.weigth_min %}
+                            <td><input style="width:96%" type="text" name="data[{{ tarif_city.id }}][tarif]" value="{{ tarif_city.tarif }}" /></td>
+                        {% elseif tarif_city.weigth_max and tarif.weigth_max and tarif_city.weigth_max == tarif.weigth_max %}
+                            <td><input style="width:96%" type="text" name="data[{{ tarif_city.id }}][tarif]" value="{{ tarif_city.tarif }}" /></td>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            </tr>
+            {% endif %}
+        {% endfor %}
+    {% else %}
+    {% endif %}
+    </table>
+    <div class="actions">
+        <input class="admin_form submit_button" type="submit" value="Save">
+        <a class="list " href="{{ path("Nitra_DeliveryCostBundle_IntimeTarify_list") }}">List</a> 
+    </div>
+</form>
+</div>
+{% endblock%}

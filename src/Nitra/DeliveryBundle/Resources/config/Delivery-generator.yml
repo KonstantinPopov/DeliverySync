@@ -8,6 +8,12 @@ params:
       label:               Название службы доставки
     settings:
       label:               Настройки
+    registration_cost:
+      label:               Стоимость оформления
+    commission:
+      label:               Комиссия
+    min_commission:
+      label:               Минимальная комиссия
 
 builders:
   list:
@@ -32,7 +38,7 @@ builders:
   edit:
     params:
       title: Редактирование "%object%"|{ %object%: DeliveryService.name }|
-      display: [ name, settings ]
+      display: [ name, settings, registration_cost, commission, min_commission ]
       actions:
         list: ~
   delete: ~

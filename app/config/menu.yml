@@ -19,6 +19,14 @@ millwright_menu:
         delivery_city:
             label:  'Города в ТК'
             route:  Nitra_DeliveryBundle_DeliveryCity_list
+        delivery_cost_calculation: 
+            label:  'Модуль расчёта стоимости доставки'
+        novaposhta:
+            label:  'Новая Почта'
+            route:  Nitra_DeliveryCostBundle_NovaposhtaTarify_list
+        intime:
+            label:  'Интайм'
+            route:  Nitra_DeliveryCostBundle_IntimeTarify_list
         territory:
             label:  'Территории'
         region:
@@ -65,4 +73,7 @@ millwright_menu:
                   children:
                     groups:              ~
                     roles:               ~
-                  
+                delivery_cost_calculation:
+                  children:
+                    novaposhta:          ~
+                    intime:              ~                      

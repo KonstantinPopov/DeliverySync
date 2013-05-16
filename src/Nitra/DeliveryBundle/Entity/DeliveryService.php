@@ -55,12 +55,37 @@ class DeliveryService
      * @ORM\ManyToMany(targetEntity="Client", mappedBy="deliveryServices")
      */
     private $clients;
-
+    
+    /**
+     * @var integer $registration_cost
+     *
+     * @ORM\Column(name="registration_cost", type="integer", length=5, nullable=true)
+     */
+     
+    private $registration_cost;
+    
+    /**
+     * @var integer $commission
+     *
+     * @ORM\Column(name="commission", type="decimal", scale=2, nullable=true)
+     */
+    
+    private $commission;
+    
+    /**
+     * @var decimal $min_commission
+     *
+     * @ORM\Column(name="min_commission", type="decimal", scale=2, nullable=true)
+     */
+    
+    private $min_commission;
+    
     /**
      * Get id
      *
      * @return integer 
      */
+    
     public function getId()
     {
         return $this->id;
@@ -191,4 +216,73 @@ class DeliveryService
         $this->clients->removeElement($clients);
     }
 
+    /**
+     * Set registration_cost
+     *
+     * @param integer $registrationCost
+     * @return DeliveryService
+     */
+    public function setRegistrationCost($registrationCost)
+    {
+        $this->registration_cost = $registrationCost;
+    
+        return $this;
+    }
+
+    /**
+     * Get registration_cost
+     *
+     * @return integer 
+     */
+    public function getRegistrationCost()
+    {
+        return $this->registration_cost;
+    }
+
+    /**
+     * Set commission
+     *
+     * @param float $commission
+     * @return DeliveryService
+     */
+    public function setCommission($commission)
+    {
+        $this->commission = $commission;
+    
+        return $this;
+    }
+
+    /**
+     * Get commission
+     *
+     * @return float 
+     */
+    public function getCommission()
+    {
+        return $this->commission;
+    }
+
+    /**
+     * Set min_commission
+     *
+     * @param float $minCommission
+     * @return DeliveryService
+     */
+    public function setMinCommission($minCommission)
+    {
+        $this->min_commission = $minCommission;
+    
+        return $this;
+    }
+
+    /**
+     * Get min_commission
+     *
+     * @return float 
+     */
+    public function getMinCommission()
+    {
+        return $this->min_commission;
+    }
+   
 }

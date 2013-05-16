@@ -1,0 +1,128 @@
+<?php
+
+namespace Nitra\DeliveryCostBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * NovaposhtaZone
+ *
+ * @ORM\Table(name="novaposhta_zone")
+ * @ORM\Entity
+ */
+
+class NovaposhtaZone
+{
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+    
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="zone_id", type="integer")
+     */
+    
+    private $zone_id;
+    
+    /**
+     * @var string $to_city
+     *
+     * @ORM\Column(name="to_city", type="string", length=255, nullable=false)
+     */
+    
+    private $to_city;
+    
+     /**
+     * @var string $from_city
+     *
+     * @ORM\Column(name="from_city", type="string", length=255, nullable=false)
+     */
+    
+    private $from_city;
+    
+    /**
+     * Get id
+     *
+     * @return integer 
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+
+    /**
+     * Set zone_id
+     *
+     * @param integer $zoneId
+     * @return NovaposhtaZone
+     */
+    public function setZoneId($zoneId)
+    {
+        $this->zone_id = $zoneId;
+    
+        return $this;
+    }
+
+    /**
+     * Get zone_id
+     *
+     * @return integer 
+     */
+    public function getZoneId()
+    {
+        return $this->zone_id;
+    }
+
+    /**
+     * Set to_city
+     *
+     * @param string $toCity
+     * @return NovaposhtaZone
+     */
+    public function setToCity($toCity)
+    {
+        $this->to_city = $toCity;
+    
+        return $this;
+    }
+
+    /**
+     * Get to_city
+     *
+     * @return string 
+     */
+    public function getToCity()
+    {
+        return $this->to_city;
+    }
+
+    /**
+     * Set from_city
+     *
+     * @param string $fromCity
+     * @return NovaposhtaZone
+     */
+    public function setFromCity($fromCity)
+    {
+        $this->from_city = $fromCity;
+    
+        return $this;
+    }
+
+    /**
+     * Get from_city
+     *
+     * @return string 
+     */
+    public function getFromCity()
+    {
+        return $this->from_city;
+    }
+}

@@ -1,0 +1,81 @@
+
+{% extends "::base_admin.html.twig" %}
+
+{% block stylesheets %}    {{ parent() }}
+{% endblock %}
+
+{% block javascripts %}    {{ parent() }}
+{% endblock %}    
+{% block body %}    {% block page_title %}
+<header>
+    <h1>
+        {% if type =="warehouse-warehouse" %}
+            {% set type_string = 'по зонам «Склад-склад»' %}
+        {% elseif type =="warehouse-doors"%}
+            {% set type_string = 'при доставке «Склад-дверь» или «Дверь-склад»' %}
+        {% else %}
+            {% set type_string = 'по зонам «Дверь-дверь»' %}
+        {% endif %}
+        Справочник по ТК "Новая почта" {{ type_string }}
+    </h1>
+</header>
+{% endblock %}
+<div class="admin_list main_content">
+<form method="POST"> 
+    <table {% if type != "doors-doors" %} style="table-layout: fixed; width:50%" {% endif %}>
+    {% if type == 'warehouse-warehouse' %}
+        <tr class="list_thead">
+            <th class="list_thead_column">Номер зоны</th>
+            <th class="list_thead_column">Тариф</th>
+        </tr>
+        {% for zone in data %}
+        <tr>
+            <td> {{ zone.zone_id }} </td>
+            <td><input style="width:96%" type="text" name="data[{{ zone.id }}][tarif]" value="{{ zone.tarif }}" /></td>
+        </tr>
+        {% endfor %}
+    {% elseif type == 'warehouse-doors' %}
+        <tr class="list_thead">
+            <th class="list_thead_column">Вес, кг</th>
+            <th class="list_thead_column">Доплата к тарифу "Склад-Склад", грн</th>
+        </tr>
+        {% for zone in data %}
+            <tr>
+                <td><input style="width:96%" type="text" name="data[{{ zone.id }}][weight]" value="{{ zone.weight }}" /></td>
+                <td><input style="width:96%" type="text" name="data[{{ zone.id }}][tarif]" value="{{ zone.tarif }}" /></td>
+            </tr>
+        {% endfor %}
+    {% elseif type == 'doors-doors' %}
+        <tr class="list_thead">
+            <th rowspan="2" class="list_thead_column">Вес, кг (фактическая либо по обьему)</th>
+            <th class="list_thead_column" colspan="6">Тарифная зона/Стоимость доставки груза, грн</th>
+        </tr>
+        <tr class="list_thead">
+            <th class="list_thead_column">1</th>
+            <th class="list_thead_column">2</th>
+            <th class="list_thead_column">3</th>
+            <th class="list_thead_column">4</th>
+            <th class="list_thead_column">5</th>
+            <th class="list_thead_column">6</th>
+        </tr>
+        {% for zone in data %}
+        <tr>
+            {% if zone.zone_id == '1' %}
+            <th class="list_thead_column"><input style="width:91%" type="text" name="data[{{ zone.id}}][weight]" value="{{ zone.weight }}" /></th>
+            {% for value in data%}
+                {% if value.weight == zone.weight %}
+                    <td><input style="width:91%" type="text" name="data[{{ value.id }}][tarif]" value="{{ value.tarif }}" /></td>
+                {% endif %}
+            {% endfor %}
+            {% endif %}
+        </tr>
+        {% endfor%}
+    {% endif %}
+    </table>
+    <div class="actions">
+        <input class="admin_form submit_button" type="submit" value="Save">
+        <a class="list " href="{{ path("Nitra_DeliveryCostBundle_NovaposhtaTarify_list") }}">List</a> 
+    </div>
+</form>
+</div>
+{% endblock%}
