@@ -38,17 +38,17 @@ class NovaposhtaTarify
     private $weight;
    
     /**
-     * @var integer $min
+     * @var decimal $min
      *
-     * @ORM\Column(name="min", type="integer", length=255, nullable=true)
+     * @ORM\Column(name="min", type="decimal", scale=3, nullable=true)
      */
     
     private $min;
     
     /**
-     * @var integer $max
+     * @var decimal $max
      *
-     * @ORM\Column(name="max", type="integer", length=255, nullable=true)
+     * @ORM\Column(name="max", type="decimal", scale=3, nullable=true)
      */
     
     private $max;

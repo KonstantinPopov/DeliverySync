@@ -22,6 +22,13 @@ class EditParamsController extends Controller
             $size_max = $get->get('size_max');
             $package_type = $get->get('package_type');
             $type = $get->get('type');
+            // определение по есть ли зоны по типу, чтобы делать корректное сохранение
+            if($type == 'doors-doors') {
+                $zone_id_status = 'p.zone_id IS NOT NULL';
+            }
+            else {
+                $zone_id_status = 'p.zone_id IS NULL';
+            }
             
             $repository = $this->getDoctrine()
                 ->getRepository('NitraDeliveryCostBundle:IntimeTarify');
@@ -31,6 +38,7 @@ class EditParamsController extends Controller
                 if($package_type) {
                     $result = $repository->createQueryBuilder('p')
                         ->andWhere('p.package_type = :package_type')
+                        ->andWhere($zone_id_status)
                         ->setParameter('package_type', $package_type)
                         ->getQuery()
                         ->getArrayResult();
@@ -50,6 +58,7 @@ class EditParamsController extends Controller
                                 ->andwhere('p.weigth_min = :weigth_min')
                                 ->andWhere('p.size_max = :size_max')
                                 ->andwhere('p.weigth_max = :weigth_max')
+                                ->andWhere($zone_id_status)
                                 ->setParameter('weigth_min', $weigth_min)
                                 ->setParameter('size_min', $size_min)
                                 ->setParameter('weigth_max', $weigth_max)
@@ -71,6 +80,7 @@ class EditParamsController extends Controller
                             $result = $repository->createQueryBuilder('p')
                                 ->andWhere('p.size_min = :size_min')
                                 ->andwhere('p.weigth_min = :weigth_min')
+                                ->andWhere($zone_id_status)
                                 ->setParameter('weigth_min', $weigth_min)
                                 ->setParameter('size_min', $size_min)
                                 ->getQuery()
@@ -89,6 +99,7 @@ class EditParamsController extends Controller
                         $result = $repository->createQueryBuilder('p')
                             ->andWhere('p.size_max = :size_max')
                             ->andwhere('p.weigth_max = :weigth_max')
+                            ->andWhere($zone_id_status)
                             ->setParameter('weigth_max', $weigth_max)
                             ->setParameter('size_max', $size_max)
                             ->getQuery()
@@ -103,6 +114,7 @@ class EditParamsController extends Controller
                         }
                     }
                 }
+                
                 return $this->forward('NitraDeliveryCostBundle:IntimeTarify\Edit:index', array('type' => $type));
         }
         

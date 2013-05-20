@@ -32,6 +32,9 @@ class EditController extends BaseEditController
                                     ->getRepository('NitraDeliveryCostBundle:IntimeTarify')
                                     ->findOneById($id);
                     $tarif->setTarif($params['tarif']);
+                    if(isset($params['tarif_extra'])) {
+                        $tarif->setTarifExtra($params['tarif_extra']);
+                    }
                     $em = $this->getDoctrine()->getEntityManager();
                     $em->persist($tarif);
                     $em->flush();
@@ -60,23 +63,16 @@ class EditController extends BaseEditController
                 break;
             
             case "doors-doors" : // тут zone_id != NULL
+                $repository = $this->getDoctrine()
+                    ->getRepository('NitraDeliveryCostBundle:IntimeTarify');
+                $query = $repository->createQueryBuilder('p')
+                    ->where("p.zone_id is not NULL")
+                    ->orderBy('p.id', 'ASC')
+                    ->getQuery()
+                    ->getArrayResult();
                 break;
         }
 //        var_dump($query);die;
-//        $repository = $this->getDoctrine()
-//            ->getRepository('NitraDeliveryCostBundle:IntimeTarify');
-        
-//        $types = array ('warehouse-warehouse'   =>  'склад-склад',
-//                        'warehouse-doors'       =>  'склад-двери',
-//                        'package-cost'           =>  'стоимость упаковок'
-//                        ); 
-              
-//        $query = $repository->createQueryBuilder('p')
-//            ->where('p.type = :type')
-//            ->setParameter('type', $types[$type])
-//            ->orderBy('p.zone_id', 'ASC')
-//            ->getQuery()
-//            ->getArrayResult();
            
         return $this->render('NitraDeliveryCostBundle:IntimeTarifyEdit:index.html.twig', array('data' => $query, 'type' => $type));
         

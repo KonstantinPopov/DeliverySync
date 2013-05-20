@@ -47,8 +47,8 @@
                     {%if tarif.package_type %} 
                         {{ tarif.package_type }} 
                     <a href="{{ path("NitraDeliveryCostBundle_intime_edit", { 'id': tarif.id, 'package_type': tarif.package_type, 'type': type  }) }}">[edit]</a>
-                    {% elseif tarif.weigth_min %}
-                        {% if tarif.weigth_max %}
+                    {% elseif tarif.weigth_min and tarif.weigth_min != 0 %}
+                        {% if tarif.weigth_max and tarif.weigth_max != 9999 %}
                             {{ tarif.weigth_min }} - {{ tarif.weigth_max }} кг ({{ tarif.size_min }} - {{ tarif.size_max }} м.куб)
                              <a href="{{ path("NitraDeliveryCostBundle_intime_edit", { 'id': tarif.id, 'weigth_min': tarif.weigth_min, 'weigth_max': tarif.weigth_max, 'size_min': tarif.size_min, 'size_max': tarif.size_max, 'type': type }) }}">[edit]</a>
                         {% else %}
@@ -63,19 +63,64 @@
                 <td><input style="width:96%" type="text" name="data[{{ tarif.id }}][tarif]" value="{{ tarif.tarif }}" /></td>
                 {% for tarif_city in data %}
                     {% if tarif_city.city != 'Киев'%}
-                        {% if tarif_city.package_type and tarif.package_type and tarif_city.package_type == tarif.package_type%}
+                        {% if tarif_city.package_type and tarif_city.package_type == tarif.package_type%}
                             <td><input style="width:96%" type="text" name="data[{{ tarif_city.id }}][tarif]" value="{{ tarif_city.tarif }}" /></td>
-                        {% elseif tarif_city.weigth_min and tarif.weigth_min and tarif_city.weigth_min == tarif.weigth_min %}
+                        {% elseif tarif_city.weigth_min and tarif_city.weigth_min != 0 and tarif_city.weigth_min == tarif.weigth_min %}
                             <td><input style="width:96%" type="text" name="data[{{ tarif_city.id }}][tarif]" value="{{ tarif_city.tarif }}" /></td>
-                        {% elseif tarif_city.weigth_max and tarif.weigth_max and tarif_city.weigth_max == tarif.weigth_max %}
-                            <td><input style="width:96%" type="text" name="data[{{ tarif_city.id }}][tarif]" value="{{ tarif_city.tarif }}" /></td>
+                        {% elseif tarif_city.weigth_min == 0 and tarif_city.weigth_min == tarif.weigth_min and tarif_city.weigth_max and tarif_city.weigth_max == tarif.weigth_max %}
+                            <td><input style="width:96%" type="text" name="data[{{ tarif_city.id }}][tarif]" value="{{ tarif_city.tarif }}" /></td>    
                         {% endif %}
                     {% endif %}
                 {% endfor %}
             </tr>
             {% endif %}
         {% endfor %}
-    {% else %}
+    {% else %} {# type == 'doors-doors' #}
+            <tr class="list_thead">
+            <th rowspan="2" class="list_thead_column">Общий вес отправителя</th>
+            <th class="list_thead_column" colspan="8">Тарифны, грн</th>
+        </tr>
+        <tr class="list_thead">
+            <th class="list_thead_column">Зона 1</th>
+            <th class="list_thead_column">Зона 2</th>
+            <th class="list_thead_column">Зона 3</th>
+            <th class="list_thead_column">Зона 4</th>
+            <th class="list_thead_column">Зона 5</th>
+            <th class="list_thead_column">Зона 6</th>
+            <th class="list_thead_column">Зона 7</th>
+            <th class="list_thead_column">Зона 8</th>
+        </tr>
+        {% for tarif in data %}
+        <tr>
+            {% if tarif.zone_id == '1' %}
+                <th class="list_thead_column">
+                    {%if tarif.package_type %} 
+                        {{ tarif.package_type }} 
+                        <a href="{{ path("NitraDeliveryCostBundle_intime_edit", { 'id': tarif.id, 'package_type': tarif.package_type, 'type': type  }) }}">[edit]</a>
+                    {% elseif tarif.weigth_min and tarif.weigth_min != 0 and tarif.weigth_max and tarif.weigth_max != 9999 %}
+                        {{ tarif.weigth_min }} - {{ tarif.weigth_max }} кг ({{ tarif.size_min }} - {{ tarif.size_max }} м.куб)
+                        <a href="{{ path("NitraDeliveryCostBundle_intime_edit", { 'id': tarif.id, 'weigth_min': tarif.weigth_min, 'weigth_max': tarif.weigth_max, 'size_min': tarif.size_min, 'size_max': tarif.size_max, 'type': type }) }}">[edit]</a>
+                    {% else %}
+                        Грузы, не упакованные в фирменную упаковку до {{ tarif.weigth_max }} кг или {{ tarif.size_max }} м.куб включительно
+                        <a href="{{ path("NitraDeliveryCostBundle_intime_edit", { 'id': tarif.id, 'weigth_max': tarif.weigth_max, 'size_max': tarif.size_max, 'type': type }) }}">[edit]</a>
+                    {% endif %}
+                </th>
+                {% for value in data%}
+                    {% if value.package_type and value.package_type == tarif.package_type %}
+                        <td><input style="width:91%; font-size: 12px; font-weight: bold;" type="text" name="data[{{ value.id }}][tarif]" value="{{ value.tarif }}" /></td>
+                    {% elseif value.weigth_min and value.weigth_max and value.weigth_min == tarif.weigth_min and value.weigth_max == tarif.weigth_max %}
+                        <td>
+                            <input style="width:91%; font-size: 12px; font-weight: bold;" type="text" name="data[{{ value.id }}][tarif]" value="{{ value.tarif }}" />
+                            <input style="width:91%; font-size: 10px;" type="text" name="data[{{ value.id }}][tarif_extra]" value="{{ value.tarif_extra }}" />
+                        </td>
+                    {% elseif value.weigth_max and value.weigth_max !=9999 and value.weigth_max == tarif.weigth_max %}
+                        <td><input style="width:91%; font-size: 12px; font-weight: bold;" type="text" name="data[{{ value.id }}][tarif]" value="{{ value.tarif }}" /></td>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </tr>
+        
+        {% endfor%}
     {% endif %}
     </table>
     <div class="actions">

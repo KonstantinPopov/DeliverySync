@@ -30,6 +30,8 @@ class LoadIntimeTarifyData implements FixtureInterface
         $tarif->setCity('Киев');
         $tarif->setWeigthMax(10);
         $tarif->setSizeMax(0.04);
+        $tarif->setWeigthMin(0);
+        $tarif->setSizeMin(0);
         $tarif->setTarif(35.00);
         $manager->persist($tarif);
         $manager->flush();
@@ -98,6 +100,8 @@ class LoadIntimeTarifyData implements FixtureInterface
         $tarif->setCity('Киев');
         $tarif->setWeigthMin(5000);
         $tarif->setSizeMin(20.00);
+        $tarif->setWeigthMax(10);
+        $tarif->setSizeMax(0.04);
         $tarif->setTarif(600.00);
         $manager->persist($tarif);
         $manager->flush();
@@ -120,6 +124,8 @@ class LoadIntimeTarifyData implements FixtureInterface
         $tarif = new IntimeTarify();
         $tarif->setWeigthMax(10);
         $tarif->setSizeMax(0.04);
+        $tarif->setWeigthMin(0);
+        $tarif->setSizeMin(0);
         $tarif->setTarif(35.00);
         $manager->persist($tarif);
         $manager->flush();
@@ -181,9 +187,106 @@ class LoadIntimeTarifyData implements FixtureInterface
         $tarif = new IntimeTarify();
         $tarif->setWeigthMin(5000);
         $tarif->setSizeMin(20.00);
+        $tarif->setWeigthMax(9999);
+        $tarif->setSizeMax(99);
         $tarif->setTarif(500.00);
         $manager->persist($tarif);
         $manager->flush();
+        
+        // для справочника Ин-тайм по зонам при доставке "Дверь-дверь"
+        // для всех зон одинаковое, чтоб время не тратить
+        for($i = 1; $i<9; $i++) {
+            
+            $tarif = new IntimeTarify();
+            $tarif->setZoneId($i);
+            $tarif->setPackageType('Конверт фирменный');
+            $tarif->setTarif(41.00);
+            $manager->persist($tarif);
+            $manager->flush();
+            
+            $tarif = new IntimeTarify();
+            $tarif->setZoneId($i);
+            $tarif->setPackageType('Пакет фирменный');
+            $tarif->setTarif(46.00);
+            $manager->persist($tarif);
+            $manager->flush();
+            
+            $tarif = new IntimeTarify();
+            $tarif->setZoneId($i);
+            $tarif->setWeigthMax(10);
+            $tarif->setSizeMax(0.05);
+            $tarif->setWeigthMin(0);
+            $tarif->setSizeMin(0);
+            $tarif->setTarif(66.00);
+            $manager->persist($tarif);
+            $manager->flush();
+            
+            $tarif = new IntimeTarify();
+            $tarif->setZoneId($i);
+            $tarif->setWeigthMin(11);
+            $tarif->setWeigthMax(50);
+            $tarif->setSizeMin(0.06);
+            $tarif->setSizeMax(0.25);
+            $tarif->setTarif(66.00);
+            $tarif->setTarifExtra(0.90);
+            $manager->persist($tarif);
+            $manager->flush();
+            
+            $tarif = new IntimeTarify();
+            $tarif->setZoneId($i);
+            $tarif->setWeigthMin(51);
+            $tarif->setWeigthMax(100);
+            $tarif->setSizeMin(0.26);
+            $tarif->setSizeMax(0.50);
+            $tarif->setTarif(103.00);
+            $tarif->setTarifExtra(0.90);
+            $manager->persist($tarif);
+            $manager->flush();
+            
+            $tarif = new IntimeTarify();
+            $tarif->setZoneId($i);
+            $tarif->setWeigthMin(101);
+            $tarif->setWeigthMax(300);
+            $tarif->setSizeMin(0.51);
+            $tarif->setSizeMax(1.50);
+            $tarif->setTarif(148.00);
+            $tarif->setTarifExtra(0.90);
+            $manager->persist($tarif);
+            $manager->flush();
+            
+            $tarif = new IntimeTarify();
+            $tarif->setZoneId($i);
+            $tarif->setWeigthMin(301);
+            $tarif->setWeigthMax(500);
+            $tarif->setSizeMin(1.51);
+            $tarif->setSizeMax(2.50);
+            $tarif->setTarif(328.00);
+            $tarif->setTarifExtra(0.90);
+            $manager->persist($tarif);
+            $manager->flush();
+            
+            $tarif = new IntimeTarify();
+            $tarif->setZoneId($i);
+            $tarif->setWeigthMin(501);
+            $tarif->setWeigthMax(1000);
+            $tarif->setSizeMin(2.51);
+            $tarif->setSizeMax(5.00);
+            $tarif->setTarif(508.00);
+            $tarif->setTarifExtra(0.90);
+            $manager->persist($tarif);
+            $manager->flush();
+            
+            $tarif = new IntimeTarify();
+            $tarif->setZoneId($i);
+            $tarif->setWeigthMin(1001);
+            $tarif->setWeigthMax(1500);
+            $tarif->setSizeMin(5.01);
+            $tarif->setSizeMax(7.50);
+            $tarif->setTarif(958.00);
+            $tarif->setTarifExtra(0.90);
+            $manager->persist($tarif);
+            $manager->flush();
+        }
     }
 }
 
