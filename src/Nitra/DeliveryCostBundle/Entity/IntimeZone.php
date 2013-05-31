@@ -64,10 +64,19 @@ class IntimeZone
     private $tarif_for_sector;
     
     /**
+     * @var decimal $update_status
+     *
+     * @ORM\Column(name="update_status", type="string", length=255, nullable=true)
+     */
+    
+    private $update_status;
+    
+    /**
      * Get id
      *
      * @return integer 
      */
+    
     public function getId()
     {
         return $this->id;

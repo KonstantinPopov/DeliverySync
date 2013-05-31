@@ -92,6 +92,14 @@ class IntimeTarify
      */
     
     private $tarif_extra;
+    
+    /**
+     * @var decimal $update_status
+     *
+     * @ORM\Column(name="update_status", type="string", length=255, nullable=true)
+     */
+    
+    private $update_status;
 
     /**
      * Get id
@@ -308,5 +316,28 @@ class IntimeTarify
     public function getTarifExtra()
     {
         return $this->tarif_extra;
+    }
+
+    /**
+     * Set update_status
+     *
+     * @param string $updateStatus
+     * @return IntimeTarify
+     */
+    public function setUpdateStatus($updateStatus)
+    {
+        $this->update_status = $updateStatus;
+    
+        return $this;
+    }
+
+    /**
+     * Get update_status
+     *
+     * @return string 
+     */
+    public function getUpdateStatus()
+    {
+        return $this->update_status;
     }
 }

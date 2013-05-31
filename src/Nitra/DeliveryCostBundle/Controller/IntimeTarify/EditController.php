@@ -52,7 +52,7 @@ class EditController extends BaseEditController
                     ->getArrayResult();
                 break;
             
-            case "intime-agency" : //тут zone_id = NULL
+            case "intime-agency" : //тут zone_id IS NULL
                 $repository = $this->getDoctrine()
                     ->getRepository('NitraDeliveryCostBundle:IntimeTarify');
                 $query = $repository->createQueryBuilder('p')
@@ -62,7 +62,7 @@ class EditController extends BaseEditController
                     ->getArrayResult();
                 break;
             
-            case "doors-doors" : // тут zone_id != NULL
+            case "doors-doors" : // тут zone_id IS NOT NULL
                 $repository = $this->getDoctrine()
                     ->getRepository('NitraDeliveryCostBundle:IntimeTarify');
                 $query = $repository->createQueryBuilder('p')
