@@ -1552,36 +1552,6 @@
             "time": "2012-08-22 21:56:31"
         },
         {
-            "name": "petr/nitraschemabundle",
-            "version": "dev-master",
-            "target-dir": "Nitra/SchemaBundle",
-            "source": {
-                "type": "git",
-                "url": "git@192.168.1.8:petr/nitraschemabundle.git",
-                "reference": "53dc58345b6f7fbf6fd9eaa92bdaf9ee4493803b"
-            },
-            "type": "symfony-bundle",
-            "autoload": {
-                "psr-0": {
-                    "Nitra\\SchemaBundle\\": ""
-                }
-            },
-            "license": [
-                "CC-BY-NC-ND-3.0"
-            ],
-            "authors": [
-                {
-                    "name": "Nitra Labs",
-                    "homepage": "http://nitralabs.com"
-                }
-            ],
-            "description": "nitra schema bundle",
-            "keywords": [
-                "schema"
-            ],
-            "time": "2013-06-03 10:16:18"
-        },
-        {
             "name": "sensio/distribution-bundle",
             "version": "v2.1.3",
             "target-dir": "Sensio/Bundle/DistributionBundle",
