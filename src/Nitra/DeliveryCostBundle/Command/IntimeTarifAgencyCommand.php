@@ -17,7 +17,9 @@ class IntimeTarifAgencyCommand extends ContainerAwareCommand
     
     static $task_name = 'intimeTarif:agency';
     
-    static $em = NULL; 
+    static $em = NULL;
+    
+    static $task_log_path = NULL;
    
     protected function configure() 
     {
@@ -27,7 +29,7 @@ class IntimeTarifAgencyCommand extends ContainerAwareCommand
     // в случае возникновения перехватываемых ошибок
     public static function exception_handler($errno, $errstr, $errfile, $errline) 
     {
-        $task_log = fopen('/home/www/delivery/web/task.log', 'a');
+        $task_log = fopen(self::$task_log_path, 'a');
         $msg = date('H:i:s d.m.y ') . ' Таск "' . self::$task_name . '" прервался из-за следующей ошибки:' ."\n";
         $msg .= $errstr . ' в файле: ' . $errfile . ' на строчке: ' . $errline . "\n******************************\n";
         fwrite($task_log, $msg); 
@@ -69,7 +71,7 @@ class IntimeTarifAgencyCommand extends ContainerAwareCommand
             }
             
             if(self::$task_status == 'started') {
-                $task_log = fopen('/home/www/delivery/web/task.log', 'a');
+                $task_log = fopen(self::$task_log_path, 'a');
                 $msg = date('H:i:s d.m.y ') . ' Таск "' . self::$task_name . '" прервался. Ошибка неизвестна' ."\n******************************\n";
                 fwrite($task_log, $msg); 
                 fclose($task_log);
@@ -81,13 +83,15 @@ class IntimeTarifAgencyCommand extends ContainerAwareCommand
     {
         try {
             
+            self::$task_log_path = strstr(__DIR__, 'src', TRUE)."web/task.log";
+            
             self::$em = $this->getContainer()->get('doctrine')->getEntityManager();
 
             register_shutdown_function(array($this, 'data_backup'));
             set_error_handler('SELF::exception_handler', E_ALL);
 
             // запись начала выполнения таска в лог
-            $task_log = fopen('/home/www/delivery/web/task.log', 'a');
+            $task_log = fopen(self::$task_log_path, 'a');
             $msg = date('H:i:s d.m.y ') . ' Таск "' . self::$task_name . '" запущен' ."\n";
             fwrite($task_log, $msg); 
             fclose($task_log);
@@ -126,7 +130,7 @@ class IntimeTarifAgencyCommand extends ContainerAwareCommand
             else {
                 $xls_type = 'xls.load_xls5';
             }
-
+            
             $exelObj = $this->getContainer()->get($xls_type)->load($tmpfile);
 
             $exelObj->setActiveSheetIndex(0);
@@ -518,13 +522,13 @@ class IntimeTarifAgencyCommand extends ContainerAwareCommand
 
             self::$task_status = 'done';
 
-            $task_log = fopen('/home/www/delivery/web/task.log', 'a');
+            $task_log = fopen(self::$task_log_path, 'a');
             $msg = date('H:i:s d.m.y ') . ' Таск "' . self::$task_name . '" успешно выполнен' ."\n******************************\n";
             fwrite($task_log, $msg); 
             fclose($task_log);
         }
         catch (\Exception $e) {
-            $task_log = fopen('/home/www/delivery/web/task.log', 'a');
+            $task_log = fopen(self::$task_log_path, 'a');
             $msg = date('H:i:s d.m.y ') . ' Таск "' . self::$task_name . '" прервался из-за следующей ошибки:' ."\n";
             $msg .= $e->getMessage() . ' в файле: ' . $e->getFile() . ' на строчке: ' . $e->getLine() . "\nТрассировка ошибки: " . $e->getTraceAsString() . "\n******************************\n";
             fwrite($task_log, $msg); 

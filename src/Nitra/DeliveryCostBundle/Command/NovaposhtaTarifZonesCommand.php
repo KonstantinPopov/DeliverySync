@@ -20,6 +20,10 @@ class NovaposhtaTarifZonesCommand extends ContainerAwareCommand
     
     static $em = NULL; 
     
+    static $task_log_path = NULL;
+    
+    static $re_execute_path = NULL;
+    
     private $api = 'eaef11faf4f803367bb194f84180c5b8';
    
     protected function configure() 
@@ -33,7 +37,7 @@ class NovaposhtaTarifZonesCommand extends ContainerAwareCommand
     // в случае возникновения перехватываемых ошибок
     public static function exception_handler($errno, $errstr, $errfile, $errline) 
     {
-        $task_log = fopen('/home/www/delivery/web/task.log', 'a');
+        $task_log = fopen(self::$task_log_path, 'a');
         $msg = date('H:i:s d.m.y ') . ' Таск "' . self::$task_name . '" прервался из-за следующей ошибки:' ."\n";
         $msg .= $errstr . ' в файле: ' . $errfile . ' на строчке: ' . $errline . "\n******************************\n";
         fwrite($task_log, $msg); 
@@ -44,7 +48,7 @@ class NovaposhtaTarifZonesCommand extends ContainerAwareCommand
         
     }
     
-    // метод, который выподняется при завершении скрипта
+    // метод, который выполняется при завершении скрипта
     public function data_backup()
     {
         if(self::$task_status == 'started' || self::$task_status == 'aborted') {
@@ -75,7 +79,7 @@ class NovaposhtaTarifZonesCommand extends ContainerAwareCommand
             }
             
             if(self::$task_status == 'started') {
-                $task_log = fopen('/home/www/delivery/web/task.log', 'a');
+                $task_log = fopen(self::$task_log_path, 'a');
                 $msg = date('H:i:s d.m.y ') . ' Таск "' . self::$task_name . '" прервался. Ошибка неизвестна' ."\n******************************\n";
                 fwrite($task_log, $msg); 
                 fclose($task_log);
@@ -83,15 +87,20 @@ class NovaposhtaTarifZonesCommand extends ContainerAwareCommand
         }
         if(self::$task_status == 're_execute') {
             // перезапуск скрипта
-            var_dump('щас заново запустим скриптик');
-            passthru('php /home/www/delivery/app/console novaPoshtaTarif:zones re_execute');
+            passthru(self::$re_execute_path);
         }
     }
     
     protected function execute(InputInterface $input, OutputInterface $output) 
     {
         try {
+
+            self::$re_execute_path = 'php ' . strstr(__DIR__, 'src', TRUE) . 'app/console ' . self::$task_name . ' ' . self::$task_status;
+
+            self::$task_log_path = strstr(__DIR__, 'src', TRUE)."web/task.log";
+            
             self::$em = $this->getContainer()->get('doctrine')->getEntityManager();
+            
             self::$task_status = ($input->getArgument('status') == 're_execute') ? 're_execute' : self::$task_status;
 
             register_shutdown_function(array($this, 'data_backup'));
@@ -100,7 +109,7 @@ class NovaposhtaTarifZonesCommand extends ContainerAwareCommand
             // запись начала/продолжения выполнения таска в лог
             if(self::$task_status == 'started') {
 //                var_dump('запустили 1-й раз');
-                $task_log = fopen('/home/www/delivery/web/task.log', 'a');
+                $task_log = fopen(self::$task_log_path, 'a');
                 $msg = date('H:i:s d.m.y ') . ' Таск "' . self::$task_name . '" запущен' ."\n";
                 fwrite($task_log, $msg); 
                 fclose($task_log);
@@ -227,7 +236,7 @@ class NovaposhtaTarifZonesCommand extends ContainerAwareCommand
             $this->updateNovaposhtaTarify();
         }
         catch (\Exception $e) {
-            $task_log = fopen('/home/www/delivery/web/task.log', 'a');
+            $task_log = fopen(self::$task_log_path, 'a');
             $msg = date('H:i:s d.m.y ') . ' Таск "' . self::$task_name . '" прервался из-за следующей ошибки:' ."\n";
             $msg .= $e->getMessage() . ' в файле: ' . $e->getFile() . ' на строчке: ' . $e->getLine() . "\nТрассировка ошибки: " . $e->getTraceAsString() . "\n******************************\n";
             fwrite($task_log, $msg); 
@@ -252,7 +261,7 @@ class NovaposhtaTarifZonesCommand extends ContainerAwareCommand
             return $response;
         }
         catch (\Exception $e) {
-            $task_log = fopen('/home/www/delivery/web/task.log', 'a');
+            $task_log = fopen(self::$task_log_path, 'a');
             $msg = date('H:i:s d.m.y ') . ' Таск "' . self::$task_name . '" прервался из-за следующей ошибки:' ."\n";
             $msg .= $e->getMessage() . ' в файле: ' . $e->getFile() . ' на строчке: ' . $e->getLine() . "\nТрассировка ошибки: " . $e->getTraceAsString() . "\n******************************\n";
             fwrite($task_log, $msg); 
@@ -298,13 +307,13 @@ class NovaposhtaTarifZonesCommand extends ContainerAwareCommand
                 ->execute();
 
             self::$task_status = 'done';
-            $task_log = fopen('/home/www/delivery/web/task.log', 'a');
+            $task_log = fopen(self::$task_log_path, 'a');
             $msg = date('H:i:s d.m.y ') . ' Таск "' . self::$task_name . '" успешно выполнен' ."\n******************************\n";
             fwrite($task_log, $msg); 
             fclose($task_log);
         }
         catch (\Exception $e) {
-            $task_log = fopen('/home/www/delivery/web/task.log', 'a');
+            $task_log = fopen(self::$task_log_path, 'a');
             $msg = date('H:i:s d.m.y ') . ' Таск "' . self::$task_name . '" прервался из-за следующей ошибки:' ."\n";
             $msg .= $e->getMessage() . ' в файле: ' . $e->getFile() . ' на строчке: ' . $e->getLine() . "\nТрассировка ошибки: " . $e->getTraceAsString() . "\n******************************\n";
             fwrite($task_log, $msg); 
