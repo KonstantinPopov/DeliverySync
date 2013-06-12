@@ -95,7 +95,7 @@ class NovaposhtaTarifZonesCommand extends ContainerAwareCommand
     {
         try {
 
-            self::$re_execute_path = 'php ' . strstr(__DIR__, 'src', TRUE) . 'app/console ' . self::$task_name . ' ' . self::$task_status;
+            self::$re_execute_path = 'php ' . strstr(__DIR__, 'src', TRUE) . 'app/console ' . self::$task_name . ' re_execute';
 
             self::$task_log_path = strstr(__DIR__, 'src', TRUE)."web/task.log";
             
@@ -170,7 +170,6 @@ class NovaposhtaTarifZonesCommand extends ContainerAwareCommand
                     JOIN p.city c
                     ORDER BY p.id
                 ')
-                ->setMaxResults()
                 ->getResult(); 
 
             //новая почта присылает ответ с учётом коммисии, поэтому его надо будет потом отнять от результата
@@ -228,7 +227,7 @@ class NovaposhtaTarifZonesCommand extends ContainerAwareCommand
             }
 
             self::$em->flush();
-            var_dump('данные сохранены');
+//            var_dump('данные сохранены');
             if(self::$task_status == 're_execute') {
                 die();
             }
@@ -274,7 +273,7 @@ class NovaposhtaTarifZonesCommand extends ContainerAwareCommand
     {
         // получаем только что залитые цены для зон 
         try {
-            $rates_new = $em->createQuery('
+            $rates_new = self::$em->createQuery('
                   SELECT p.rate
                   FROM NitraDeliveryCostBundle:NovaposhtaZone p
                   WHERE p.rate IS NOT NULL
@@ -283,7 +282,7 @@ class NovaposhtaTarifZonesCommand extends ContainerAwareCommand
               ->getArrayResult();
 
             // получаем все тарифы по новой почте, которые необходимо обновить
-            $rates_old = $em->createQuery("
+            $rates_old = self::$em->createQuery("
                     SELECT p
                     FROM NitraDeliveryCostBundle:NovaposhtaTarify p
                     WHERE p.type ='склад-склад' 
@@ -294,10 +293,10 @@ class NovaposhtaTarifZonesCommand extends ContainerAwareCommand
             foreach($rates_old as $rate_old) {
                 if($rate_old->getTarif() != $rates_new[$rate_old->getZoneId() - 1]['rate']) {
                     $rate_old->setTarif($rates_new[$rate_old->getZoneId() - 1]['rate']);
-                    $em->persist($rate_old);
+                    self::$em->persist($rate_old);
                 }
             }
-            $em->flush();
+            self::$em->flush();
 
             // таск выполнен успешно, можно удалять старые данные
             self::$em->createQuery("
