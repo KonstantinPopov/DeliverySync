@@ -25,6 +25,7 @@ class SyncIntimeCommand extends ContainerAwareCommand
         ini_set("soap.wsdl_cache_enabled", 0);
         ini_set("soap.wsdl_cache_enabled", 0);
         ini_set("soap.wsdl_cache_limit", 0);
+        ini_set('memory_limit', '1024M');
 
         header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
         header('Cache-Control: no-store, no-cache, must-revalidate');
@@ -135,8 +136,11 @@ class SyncIntimeCommand extends ContainerAwareCommand
                                      'service' => $it,
                                      'wareId' => $id
             ));
-            $department = $query->getResult()->getFirst();
-            $em->remove($department);
+			$result = $query->getResult();
+			if(count($result)) {
+				$department = $result->getFirst();
+				$em->remove($department);
+			}
         }
         $em->flush();
     }
