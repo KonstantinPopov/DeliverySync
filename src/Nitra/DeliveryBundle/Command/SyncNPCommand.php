@@ -78,7 +78,7 @@ class SyncNPCommand extends ContainerAwareCommand
                                              WHERE d.deliveryService = :service ')
                 ->setParameters(array(
             'service' => $np
-                ));
+        ));
 
 //        $dc = $query->getResult();
 //
@@ -112,7 +112,7 @@ class SyncNPCommand extends ContainerAwareCommand
                         ->setParameters(array(
                     'service' => $np,
                     'wareId' => $wh->wareId
-                        ));
+                ));
                 $department = $query->getOneOrNullResult();
 
                 unset($wareIds[$key]);
@@ -125,7 +125,7 @@ class SyncNPCommand extends ContainerAwareCommand
                             ->setParameters(array(
                         'service' => $np,
                         'wareId' => $wh->wareId
-                            ));
+                    ));
                     $department = $query->getSingleResult();
                 } catch (\Doctrine\ORM\NoResultException $e) {
                     $department = new Department();
@@ -135,10 +135,10 @@ class SyncNPCommand extends ContainerAwareCommand
 
 
             $department->setDeliveryCity($dCity);
-            $department->setName($wh->addressRu);
-            $department->setAddress($wh->addressRu);
-            $department->setPhone($wh->phone);
-            $department->setWareId($wh->wareId);
+            $department->setName($wh->addressRu . '');
+            $department->setAddress($wh->addressRu . '');
+            $department->setPhone($wh->phone . '');
+            $department->setWareId($wh->wareId . '');
             $department->setLatitude($wh->y);
             $department->setLongitude($wh->x);
             $department->setDeliveryService($np);
@@ -152,7 +152,7 @@ class SyncNPCommand extends ContainerAwareCommand
                     ->setParameters(array(
                 'service' => $np,
                 'wareId' => $id
-                    ));
+            ));
             $department = $query->getOneOrNullResult();
             $em->remove($department);
         }
