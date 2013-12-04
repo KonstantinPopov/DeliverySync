@@ -17,23 +17,14 @@ class AppKernel extends Kernel
             new Symfony\Bundle\AsseticBundle\AsseticBundle(),
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
-            new JMS\AopBundle\JMSAopBundle(),
-            new JMS\DiExtraBundle\JMSDiExtraBundle($this),
-            new JMS\SecurityExtraBundle\JMSSecurityExtraBundle(),
-            new Knp\Bundle\MenuBundle\KnpMenuBundle(),
-            new WhiteOctober\PagerfantaBundle\WhiteOctoberPagerfantaBundle(),
-            new Admingenerator\GeneratorBundle\AdmingeneratorGeneratorBundle(),
-            new Millwright\MenuBundle\MillwrightMenuBundle(),
-            new Millwright\ConfigurationBundle\MillwrightConfigurationBundle(),
-            new FOS\UserBundle\FOSUserBundle(),
-            new Nitra\NitraThemeBundle\NitraThemeBundle(),
+            
+            new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
+            
             new Nitra\GeoBundle\NitraGeoBundle(),
             new Nitra\DeliveryBundle\NitraDeliveryBundle(),
-            new Nitra\ManagerBundle\NitraManagerBundle(),
-            new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
-            new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
             new Nitra\DeliveryCostBundle\NitraDeliveryCostBundle(),
-            new Liuggio\ExcelBundle\LiuggioExcelBundle(),
+            new Nitra\ManagerBundle\NitraManagerBundle(),
+            
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
