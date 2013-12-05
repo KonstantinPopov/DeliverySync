@@ -1,0 +1,61 @@
+{% block nlcollection_widget %}
+    {% spaceless %}
+
+<ul id="edit_{{form.vars.name}}" data-prototype='{{prototype is defined ?  form_widget(prototype) :'' }}'>
+        {% for child in form %}
+        <li>
+                {{ form_errors(child) }}
+                {{ form_widget(child) }}
+            </li>
+        {% endfor %}
+        </ul>
+
+    {% if prototype is defined %}
+        <a href="#" id="add-{{form.vars.name}}">Добавить</a>
+    {% endif %}
+
+        <script type="text/javascript">
+            $(document).ready(function() {
+
+                var {{form.vars.name}}Count = '{{ form | length }}';
+
+                $('#add-{{form.vars.name}}').click(function() {
+                        {# получение шаблона для добавления нового значения  #}
+                                    var valueList = $('#edit_{{form.vars.name}}');
+                                    var newWidget = valueList.attr('data-prototype');
+                                    newWidget = newWidget.replace(/__name__/g, {{form.vars.name}}Count);
+
+                        {{form.vars.name}}Count++;
+
+                        {# добавление нового поля и ссылка для его удаления #}
+
+                                    var newLi = $("<li></li>").append(newWidget);
+                                    $('#add-{{form.vars.name}}').before(newLi);
+                                    if ('{{allow_delete}}' == 1) {
+                                        addTagFormDeleteLink($(newLi));
+                                    }
+                                    return false;
+                                });
+
+                    {# добавление ссылки на удаление для существующих значений #}
+                            if ('{{allow_delete}}' == 1) {
+                                $('#edit_{{form.vars.name}}  li').each(function() {
+                                    addTagFormDeleteLink($(this));
+                                });
+                            }
+
+                        })
+
+                        function addTagFormDeleteLink($tagFormLi) {
+                            var $removeFormA = $('<a href="#">Удалить</a>');
+                            $tagFormLi.append($removeFormA);
+
+                            $removeFormA.on('click', function(e) {
+                                e.preventDefault();
+                                $tagFormLi.remove();
+                            });
+                        }
+            </script>
+
+    {% endspaceless %}
+{% endblock %}

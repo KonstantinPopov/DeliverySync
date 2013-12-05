@@ -3,7 +3,7 @@ millwright_menu:
         navigation: #menu type id
             renderer: null # custom renderer
             rendererOptions:
-                template: NitraThemeBundle::knp_menu.html.twig
+                template: MillwrightMenuBundle:Default:knp_menu.html.twig
                 ancestorClass: current active
                 currentClass: current_item
 
@@ -12,45 +12,45 @@ millwright_menu:
             label: 'ТК'
         delivery_service:
             label: 'Транспортные компании'
-            route:  Nitra_DeliveryBundle_Delivery_list
+#            route:  Nitra_DeliveryBundle_Delivery_list
         department:
             label:  'Отделения ТК'
-            route:  Nitra_DeliveryBundle_Department_list
+#            route:  Nitra_DeliveryBundle_Department_list
         delivery_city:
             label:  'Города в ТК'
-            route:  Nitra_DeliveryBundle_DeliveryCity_list
+#            route:  Nitra_DeliveryBundle_DeliveryCity_list
         delivery_cost_calculation: 
             label:  'Модуль расчёта стоимости доставки'
         novaposhta:
             label:  'Новая Почта'
-            route:  Nitra_DeliveryCostBundle_NovaposhtaTarify_list
+#            route:  Nitra_DeliveryCostBundle_NovaposhtaTarify_list
         intime:
             label:  'Интайм'
-            route:  Nitra_DeliveryCostBundle_IntimeTarify_list
+#            route:  Nitra_DeliveryCostBundle_IntimeTarify_list
         territory:
             label:  'Территории'
         region:
             label:  'Регионы'
-            route:  Nitra_GeoBundle_Region_list
+#            route:  Nitra_GeoBundle_Region_list
         city:
             label:  'Города'
-            route:   Nitra_GeoBundle_City_list
+#            route:   Nitra_GeoBundle_City_list
         client: 
           label:  'Клиенты'
         client_list:
           label:    'Список клиентов'
-          route:  Nitra_DeliveryBundle_Client_list
+#          route:  Nitra_DeliveryBundle_Client_list
         managers:
           label:   'Менеджеры'
-          route:  Nitra_ManagerBundle_Manager_list
+#          route:  Nitra_ManagerBundle_Manager_list
         settings:
           label:  'Настройки'
         groups:
           label:  'Группы'
-          route:  Nitra_ManagerBundle_Group_list
+#          route:  Nitra_ManagerBundle_Group_list
         roles:
           label:   'Привилегии'
-          route:  Nitra_ManagerBundle_Role_list
+#          route:  Nitra_ManagerBundle_Role_list
         
     tree: #menu containers
         main: #main container

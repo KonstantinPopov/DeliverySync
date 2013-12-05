@@ -1,92 +1,53 @@
+jms_security_extra:
+    secure_all_services: false
+    expressions: true
+
 security:
-    encoders:
-        Symfony\Component\Security\Core\User\User: plaintext
-
-    role_hierarchy:
-        ROLE_ADMIN:       ROLE_USER
-        ROLE_SUPER_ADMIN: [ROLE_USER, ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
-
     providers:
-        in_memory:
-            memory:
-                users:
-                    user:  { password: userpass, roles: [ 'ROLE_USER' ] }
-                    admin: { password: adminpass, roles: [ 'ROLE_ADMIN' ] }
+        fos_userbundle:
+            id: fos_user.user_provider.username
+
+    encoders:
+        FOS\UserBundle\Model\UserInterface: sha512
 
     firewalls:
         dev:
             pattern:  ^/(_(profiler|wdt)|css|images|js)/
-            security: false
-
-        login:
-            pattern:  ^/demo/secured/login$
-            security: false
-
-        secured_area:
-            pattern:    ^/demo/secured/
+            security: false      
+        main:
+            pattern: ^/
             form_login:
-                check_path: _security_check
-                login_path: _demo_login
-            logout:
-                path:   _demo_logout
-                target: _demo
-            #anonymous: ~
-            #http_basic:
-            #    realm: "Secured Demo Area"
+                provider: fos_userbundle
+                csrf_provider: form.csrf_provider
+                default_target_path: /delivery/
+                always_use_default_target_path: true
+            logout:       true
+            anonymous:    true
+        sec_area:
+            pattern:    ^/sync/
+            security:   false
 
     access_control:
-        #- { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https }
+        - { path: ^/$, roles: [ ROLE_MANAGER, ROLE_ADMIN ] }
+        - { path: ^/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/resetting, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/delivery-city, roles: [ ROLE_MANAGER, ROLE_ADMIN ] }
+        - { path: ^/delivery, roles: [ ROLE_MANAGER, ROLE_ADMIN ] }
+        - { path: ^/client, roles: [ ROLE_CLIENT, ROLE_ADMIN ] }
+        - { path: ^/department, roles: ROLE_ADMIN }
+        - { path: ^/group, roles: ROLE_ADMIN }
+        - { path: ^/role, roles: ROLE_ADMIN }
+        - { path: ^/city, roles: ROLE_ADMIN }
+        - { path: ^/region, roles: ROLE_ADMIN }
+        - { path: ^/manager, roles: ROLE_ADMIN }
+        - { path: ^/sync, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/sync-delivery-period, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/geo-sync, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+
+    role_hierarchy:
+        ROLE_USER:        ROLE_MANAGER, ROLE_CLIENT
+        ROLE_ADMIN:       ROLE_USER
+        ROLE_SUPER_ADMIN: ROLE_ADMIN
 
 
-
-#jms_security_extra:
-#    secure_all_services: false
-#    expressions: true
-#
-#security:
-#    providers:
-#        fos_userbundle:
-#            id: fos_user.user_provider.username
-#
-#    encoders:
-#        FOS\UserBundle\Model\UserInterface: sha512
-#
-#    firewalls:
-#        sec_area:
-#            pattern:    ^/sync/
-#            security:   false
-#        dev:
-#            pattern:  ^/(_(profiler|wdt)|css|images|js)/
-#            security: false      
-#        main:
-#            pattern: ^/
-#            form_login:
-#                provider: fos_userbundle
-#                csrf_provider: form.csrf_provider
-#                default_target_path: /delivery/
-#                always_use_default_target_path: true
-#            logout:       true
-#            anonymous:    true
-#
-#    access_control:
-#        - { path: ^/$, roles: [ ROLE_MANAGER, ROLE_ADMIN ] }
-#        - { path: ^/login$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-#        - { path: ^/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-#        - { path: ^/resetting, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-#        - { path: ^/delivery-city, roles: [ ROLE_MANAGER, ROLE_ADMIN ] }
-#        - { path: ^/delivery, roles: [ ROLE_MANAGER, ROLE_ADMIN ] }
-#        - { path: ^/client, roles: [ ROLE_CLIENT, ROLE_ADMIN ] }
-#        - { path: ^/department, roles: ROLE_ADMIN }
-#        - { path: ^/group, roles: ROLE_ADMIN }
-#        - { path: ^/role, roles: ROLE_ADMIN }
-#        - { path: ^/city, roles: ROLE_ADMIN }
-#        - { path: ^/region, roles: ROLE_ADMIN }
-#        - { path: ^/manager, roles: ROLE_ADMIN }
-#        - { path: ^/sync, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-#        - { path: ^/sync-delivery-period, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-#        - { path: ^/geo-sync, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-#
-#    role_hierarchy:
-#        ROLE_USER:        ROLE_MANAGER, ROLE_CLIENT
-#        ROLE_ADMIN:       ROLE_USER
-#        ROLE_SUPER_ADMIN: ROLE_ADMIN

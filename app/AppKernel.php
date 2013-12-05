@@ -18,12 +18,31 @@ class AppKernel extends Kernel
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             
+            // Doctrine
             new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
+            new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
             
+            // Nitra Bundle
             new Nitra\GeoBundle\NitraGeoBundle(),
             new Nitra\DeliveryBundle\NitraDeliveryBundle(),
             new Nitra\DeliveryCostBundle\NitraDeliveryCostBundle(),
             new Nitra\ManagerBundle\NitraManagerBundle(),
+            new Nitra\NlCollectionBundle\NitraNlCollectionBundle(),
+            
+            // NitraThemeBundle
+            new Knp\Bundle\MenuBundle\KnpMenuBundle(),
+            new WhiteOctober\PagerfantaBundle\WhiteOctoberPagerfantaBundle(),
+            new Admingenerator\GeneratorBundle\AdmingeneratorGeneratorBundle(),
+            new Millwright\MenuBundle\MillwrightMenuBundle(),
+            new Millwright\ConfigurationBundle\MillwrightConfigurationBundle(),
+            new FOS\UserBundle\FOSUserBundle(),
+            new FOS\JsRoutingBundle\FOSJsRoutingBundle(),
+            new Nitra\NitraThemeBundle\NitraThemeBundle(),
+            
+            // JMS
+            new JMS\AopBundle\JMSAopBundle(),
+            new JMS\DiExtraBundle\JMSDiExtraBundle($this),
+            new JMS\SecurityExtraBundle\JMSSecurityExtraBundle(),
             
         );
 
