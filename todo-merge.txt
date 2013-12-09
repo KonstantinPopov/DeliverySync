@@ -1,0 +1,21 @@
+
+
+1. миграция Version20131209144455
+doctrine:migrations:execute --up 20131209144455
+Region
+Timestampable, Blameable, SoftDeletable (createdAt to created_at, updatedAt to updated_at, deletedAt to deleted_at)
+
+2. миграция Version20131209153254 
+doctrine:migrations:execute --up 20131209153254
+Country
+
+3. миграция Version20131209162827
+doctrine:migrations:execute --up 20131209162827
+City
+
+4. миграция Version20131209175430
+doctrine:migrations:execute --up 20131209175430
+удалили Blameable для Region, Country, City 
+
+
+

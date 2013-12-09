@@ -27,7 +27,7 @@ class AppKernel extends Kernel
             new Nitra\DeliveryBundle\NitraDeliveryBundle(),
             new Nitra\DeliveryCostBundle\NitraDeliveryCostBundle(),
             new Nitra\ManagerBundle\NitraManagerBundle(),
-            new Nitra\NlCollectionBundle\NitraNlCollectionBundle(),
+//            new Nitra\NlCollectionBundle\NitraNlCollectionBundle(),
             
             // NitraThemeBundle
             new Knp\Bundle\MenuBundle\KnpMenuBundle(),
@@ -35,9 +35,9 @@ class AppKernel extends Kernel
             new Admingenerator\GeneratorBundle\AdmingeneratorGeneratorBundle(),
             new Millwright\MenuBundle\MillwrightMenuBundle(),
             new Millwright\ConfigurationBundle\MillwrightConfigurationBundle(),
+            new Nitra\NitraThemeBundle\NitraThemeBundle(),
             new FOS\UserBundle\FOSUserBundle(),
             new FOS\JsRoutingBundle\FOSJsRoutingBundle(),
-            new Nitra\NitraThemeBundle\NitraThemeBundle(),
             
             // JMS
             new JMS\AopBundle\JMSAopBundle(),

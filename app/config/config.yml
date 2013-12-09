@@ -3,6 +3,7 @@ imports:
     - { resource: security.yml }
     - { resource: menu.yml }
     - { resource: ../../vendor/nitra/doctrine-behaviors/config/orm-services.yml }
+#    - { resource: ../../vendor/knplabs/doctrine-behaviors/config/orm-services.yml }
 
 framework:
 #    esi:             ~
@@ -25,7 +26,7 @@ twig:
     strict_variables: "%kernel.debug%"
     form:
         resources:
-            - 'NitraNlCollectionBundle:Form:fields.html.twig'
+#            - 'NitraNlCollectionBundle:Form:fields.html.twig'
             - 'NitraThemeBundle:Form:fields.html.twig'
 #            - 'NitraMainBundle:Form:fields.html.twig'
 #            - 'NitraNlCollectionBundle:Form:fields.html.twig'
@@ -37,9 +38,9 @@ assetic:
     #bundles:        [ ]
     #java: /usr/bin/java
     filters:
-        cssrewrite: 
+        cssrewrite:
             apply_to: ["\.css$", "\.less$"]
-        lessphp: 
+        lessphp:
             apply_to: "\.less$"
         #closure:
         #    jar: "%kernel.root_dir%/Resources/java/compiler.jar"
@@ -64,7 +65,12 @@ doctrine:
         auto_generate_proxy_classes: "%kernel.debug%"
      #   auto_mapping: true
         default_entity_manager:   default
-        
+#        
+#        filters:
+#            softdeleteable:
+#                class: Nitra\NitraThemeBundle\Filter\SoftDeleteableFilter
+#                enabled: true        
+#        
         entity_managers:
             default:
                 filters:
@@ -77,9 +83,9 @@ doctrine:
                 connection:       default
                 auto_mapping: true 
                 naming_strategy: doctrine.orm.naming_strategy.underscore
-#                hydrators:
-#                    KeyPair: Nitra\NitraThemeBundle\Hydrators\KeyPairHydrator 
-                
+                hydrators:
+                    KeyPair: Nitra\NitraThemeBundle\Hydrators\KeyPairHydrator 
+
 # Swiftmailer Configuration
 swiftmailer:
     transport: "%mailer_transport%"

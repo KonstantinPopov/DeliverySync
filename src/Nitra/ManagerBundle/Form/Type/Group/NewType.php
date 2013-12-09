@@ -1,37 +1,21 @@
 <?php
-
 namespace Nitra\ManagerBundle\Form\Type\Group;
 
-use Symfony\Component\Form\FormBuilderInterface;
-use Admingenerated\NitraManagerBundle\Form\BaseGroupType\NewType as BaseNewType;
-use Doctrine\ORM\EntityManager;
+use Nitra\ManagerBundle\Form\Type\Group\EditType;
 
-class NewType extends BaseNewType
+/**
+ * NewType
+ */
+class NewType extends EditType
 {
-
-    protected $securityContext;
-    protected $em;
-
-    public function __construct(EntityManager $em)
-    {
-        $this->em = $em;
-    }
-
-    public function buildForm(FormBuilderInterface $builder, array $options)
-    {
-        $builder->add('name', 'text', array('required' => true,));
-        $choices = $this->em->getRepository('NitraManagerBundle:Role')->getRolesToChoice();
-        $builder->add('roles', 'choice', array('multiple' => true, 'choices' => $choices));
-    }
-
+    
+    /**
+     * Получить имя типа-формы 
+     * @return string
+     */
     public function getName()
     {
         return 'new_group';
     }
-
-    public function setSecurityContext($securityContext)
-    {
-        $this->securityContext = $securityContext;
-    }
-
+    
 }

@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "76a199d45b3943db5a83d02ee20bd5ec",
+    "hash": "2cff0f3dcdc3f31cb8e06aa67d591434",
     "packages": [
         {
             "name": "afarkas/html5shiv",
@@ -87,12 +87,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony2admingenerator/AdmingeneratorGeneratorBundle.git",
-                "reference": "d00da50cdd6efecab0473c9655b801d2dc0177cf"
+                "reference": "f611c0bd4a0390d7d55fdbdb088ffd6872eac604"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony2admingenerator/AdmingeneratorGeneratorBundle/zipball/d00da50cdd6efecab0473c9655b801d2dc0177cf",
-                "reference": "d00da50cdd6efecab0473c9655b801d2dc0177cf",
+                "url": "https://api.github.com/repos/symfony2admingenerator/AdmingeneratorGeneratorBundle/zipball/f611c0bd4a0390d7d55fdbdb088ffd6872eac604",
+                "reference": "f611c0bd4a0390d7d55fdbdb088ffd6872eac604",
                 "shasum": ""
             },
             "require": {
@@ -152,7 +152,7 @@
                 "generator",
                 "yaml"
             ],
-            "time": "2013-11-30 06:50:30"
+            "time": "2013-12-08 09:38:15"
         },
         {
             "name": "cedriclombardot/twig-generator",
@@ -1188,257 +1188,6 @@
             "time": "2012-10-05 11:15:13"
         },
         {
-            "name": "doctrine/mongodb",
-            "version": "1.0.4",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/doctrine/mongodb.git",
-                "reference": "401796e7a5ec3cea099d993fd0034235b917f1a8"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/mongodb/zipball/401796e7a5ec3cea099d993fd0034235b917f1a8",
-                "reference": "401796e7a5ec3cea099d993fd0034235b917f1a8",
-                "shasum": ""
-            },
-            "require": {
-                "doctrine/common": ">=2.1.0,<2.5-dev",
-                "ext-mongo": ">=1.2.12,<1.6-dev",
-                "php": ">=5.3.2"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Doctrine\\MongoDB": "lib/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Bulat Shakirzyanov",
-                    "email": "mallluhuct@gmail.com",
-                    "homepage": "http://avalanche123.com"
-                },
-                {
-                    "name": "Jonathan H. Wage",
-                    "email": "jonwage@gmail.com",
-                    "homepage": "http://www.jwage.com/",
-                    "role": "Creator"
-                },
-                {
-                    "name": "Kris Wallsmith",
-                    "email": "kris.wallsmith@gmail.com",
-                    "homepage": "http://kriswallsmith.net/"
-                },
-                {
-                    "name": "Jeremy Mikola",
-                    "email": "jmikola@gmail.com",
-                    "homepage": "http://jmikola.net"
-                }
-            ],
-            "description": "Doctrine MongoDB Abstraction Layer",
-            "homepage": "http://www.doctrine-project.org",
-            "keywords": [
-                "database",
-                "mongodb",
-                "persistence"
-            ],
-            "time": "2013-11-01 17:12:21"
-        },
-        {
-            "name": "doctrine/mongodb-odm",
-            "version": "1.0.0-BETA9",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/doctrine/mongodb-odm.git",
-                "reference": "4aae9b0151b6661567873700be6ac52877822d6e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/mongodb-odm/zipball/4aae9b0151b6661567873700be6ac52877822d6e",
-                "reference": "4aae9b0151b6661567873700be6ac52877822d6e",
-                "shasum": ""
-            },
-            "require": {
-                "doctrine/common": ">=2.2.0,<2.5-dev",
-                "doctrine/mongodb": "1.0.*",
-                "php": ">=5.3.2",
-                "symfony/console": "~2.0"
-            },
-            "require-dev": {
-                "symfony/yaml": "~2.0"
-            },
-            "suggest": {
-                "symfony/yaml": "Enables the YAML metadata mapping driver"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.0.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Doctrine\\ODM\\MongoDB": "lib/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Bulat Shakirzyanov",
-                    "email": "mallluhuct@gmail.com",
-                    "homepage": "http://avalanche123.com"
-                },
-                {
-                    "name": "Jonathan H. Wage",
-                    "email": "jonwage@gmail.com",
-                    "homepage": "http://www.jwage.com/",
-                    "role": "Creator"
-                },
-                {
-                    "name": "Kris Wallsmith",
-                    "email": "kris.wallsmith@gmail.com",
-                    "homepage": "http://kriswallsmith.net/"
-                },
-                {
-                    "name": "Jeremy Mikola",
-                    "email": "jmikola@gmail.com",
-                    "homepage": "http://jmikola.net"
-                }
-            ],
-            "description": "Doctrine MongoDB Object Document Mapper",
-            "homepage": "http://www.doctrine-project.org",
-            "keywords": [
-                "database",
-                "mongodb",
-                "odm",
-                "persistence"
-            ],
-            "time": "2013-06-06 19:15:45"
-        },
-        {
-            "name": "doctrine/mongodb-odm-bundle",
-            "version": "dev-master",
-            "target-dir": "Doctrine/Bundle/MongoDBBundle",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/doctrine/DoctrineMongoDBBundle.git",
-                "reference": "b7d25d7fab0149942d3a19c73c0544ef54b1bab7"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineMongoDBBundle/zipball/b7d25d7fab0149942d3a19c73c0544ef54b1bab7",
-                "reference": "b7d25d7fab0149942d3a19c73c0544ef54b1bab7",
-                "shasum": ""
-            },
-            "require": {
-                "doctrine/mongodb-odm": "~1.0.0-beta5@dev",
-                "php": ">=5.3.2",
-                "symfony/doctrine-bridge": "~2.1",
-                "symfony/framework-bundle": "~2.1",
-                "symfony/options-resolver": "~2.1"
-            },
-            "require-dev": {
-                "doctrine/data-fixtures": "@dev",
-                "symfony/form": "~2.1",
-                "symfony/yaml": "~2.1"
-            },
-            "suggest": {
-                "doctrine/data-fixtures": "Load data fixtures"
-            },
-            "type": "symfony-bundle",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "3.0-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Doctrine\\Bundle\\MongoDBBundle": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Bulat Shakirzyanov",
-                    "email": "mallluhuct@gmail.com",
-                    "homepage": "http://avalanche123.com"
-                },
-                {
-                    "name": "Jonathan H. Wage",
-                    "email": "jonwage@gmail.com",
-                    "homepage": "http://www.jwage.com/",
-                    "role": "Creator"
-                },
-                {
-                    "name": "Kris Wallsmith",
-                    "email": "kris@symfony.com"
-                }
-            ],
-            "description": "Symfony2 Doctrine MongoDB Bundle",
-            "homepage": "http://www.doctrine-project.org",
-            "keywords": [
-                "mongodb",
-                "persistence",
-                "symfony"
-            ],
-            "time": "2013-10-28 20:35:52"
-        },
-        {
-            "name": "doctrine/mongodb-odm-softdelete",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/doctrine/mongodb-odm-softdelete.git",
-                "reference": "ef69236f8b2340145984afffe22ca82a661655a2"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/mongodb-odm-softdelete/zipball/ef69236f8b2340145984afffe22ca82a661655a2",
-                "reference": "ef69236f8b2340145984afffe22ca82a661655a2",
-                "shasum": ""
-            },
-            "require": {
-                "doctrine/mongodb-odm": "*",
-                "php": ">=5.3.2"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "Doctrine\\ODM\\MongoDB\\SoftDelete": "lib/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "LGPL"
-            ],
-            "authors": [
-                {
-                    "name": "Jonathan H. Wage",
-                    "email": "jonwage@gmail.com",
-                    "homepage": "http://www.jwage.com/",
-                    "role": "Creator"
-                }
-            ],
-            "description": "Doctrine MongoDB MongoDB SoftDelete Library",
-            "homepage": "http://www.doctrine-project.org",
-            "keywords": [
-                "mongodb",
-                "persistence",
-                "softdelete"
-            ],
-            "time": "2013-07-30 16:41:12"
-        },
-        {
             "name": "doctrine/orm",
             "version": "2.3.4",
             "source": {
@@ -1632,169 +1381,18 @@
             "time": "2013-05-25 12:08:24"
         },
         {
-            "name": "gedmo/doctrine-extensions",
-            "version": "v2.3.8",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/l3pp4rd/DoctrineExtensions.git",
-                "reference": "d2bef940268e4dc5f0f050e80458169a7267813a"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/l3pp4rd/DoctrineExtensions/zipball/d2bef940268e4dc5f0f050e80458169a7267813a",
-                "reference": "d2bef940268e4dc5f0f050e80458169a7267813a",
-                "shasum": ""
-            },
-            "require": {
-                "doctrine/common": ">=2.2,<2.5-dev",
-                "php": ">=5.3.2"
-            },
-            "require-dev": {
-                "doctrine/common": ">=2.4.0-RC3",
-                "doctrine/dbal": ">=2.4.0-RC1",
-                "doctrine/mongodb": ">=1.0.3",
-                "doctrine/mongodb-odm": ">=1.0.0-BETA9",
-                "doctrine/orm": ">=2.4.0-RC1",
-                "symfony/yaml": "2.3.1"
-            },
-            "suggest": {
-                "doctrine/dbal": ">=2.3.2",
-                "doctrine/mongodb": ">=1.0.1",
-                "doctrine/mongodb-odm": ">=1.0.0-BETA7",
-                "doctrine/orm": ">=2.3.2"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.3.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Gedmo\\": "lib/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "David Buchmann",
-                    "email": "david@liip.ch"
-                },
-                {
-                    "name": "Gediminas Morkevicius",
-                    "email": "gediminas.morkevicius@gmail.com"
-                },
-                {
-                    "name": "Gustavo Falco",
-                    "email": "comfortablynumb84@gmail.com"
-                }
-            ],
-            "description": "Doctrine2 behavioral extensions",
-            "homepage": "http://gediminasm.org/",
-            "keywords": [
-                "Blameable",
-                "behaviors",
-                "doctrine2",
-                "extensions",
-                "gedmo",
-                "loggable",
-                "nestedset",
-                "sluggable",
-                "sortable",
-                "timestampable",
-                "translatable",
-                "tree",
-                "uploadable"
-            ],
-            "time": "2013-11-09 21:23:13"
-        },
-        {
-            "name": "genemu/form-bundle",
-            "version": "v2.2.1",
-            "target-dir": "Genemu/Bundle/FormBundle",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/genemu/GenemuFormBundle.git",
-                "reference": "78fcd307a69b499241d7f0fa5c1b378e77358f16"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/genemu/GenemuFormBundle/zipball/78fcd307a69b499241d7f0fa5c1b378e77358f16",
-                "reference": "78fcd307a69b499241d7f0fa5c1b378e77358f16",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.2",
-                "symfony/form": "~2.3",
-                "symfony/framework-bundle": "~2.3"
-            },
-            "require-dev": {
-                "doctrine/doctrine-bundle": "1.*",
-                "doctrine/mongodb-odm-bundle": "*",
-                "doctrine/orm": "2.*",
-                "phpunit/phpunit": "3.7.*",
-                "propel/propel-bundle": "*",
-                "symfony/doctrine-bridge": "~2.3",
-                "symfony/finder": "2.*"
-            },
-            "suggest": {
-                "symfony/doctrine-bundle": "In order to use some form types with Doctrine",
-                "symfony/finder": "For an image type",
-                "symfony/mongodb-odm-bundle": "For MongoDB integration",
-                "symfony/twig-bridge": "For integration into Twig templates"
-            },
-            "type": "symfony-bundle",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.2-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Genemu\\Bundle\\FormBundle": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Olivier Chauvel",
-                    "email": "olivier@generation-multiple.com"
-                },
-                {
-                    "name": "Community contributions",
-                    "homepage": "https://github.com/genemu/GenemuFormBundle/contributors"
-                },
-                {
-                    "name": "Bilal Amarni",
-                    "email": "bilal.amarni@gmail.com"
-                }
-            ],
-            "description": "Extra form types for your Symfony2 projects",
-            "keywords": [
-                "extra form",
-                "form"
-            ],
-            "time": "2013-07-31 22:28:58"
-        },
-        {
             "name": "incenteev/composer-parameter-handler",
-            "version": "v2.0.0",
+            "version": "v2.1.0",
             "target-dir": "Incenteev/ParameterHandler",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Incenteev/ParameterHandler.git",
-                "reference": "2310d74a751025f02221e0faf69d31440df71b73"
+                "reference": "143272a0a09c62616a3c8011fc165a10c6b35241"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Incenteev/ParameterHandler/zipball/2310d74a751025f02221e0faf69d31440df71b73",
-                "reference": "2310d74a751025f02221e0faf69d31440df71b73",
+                "url": "https://api.github.com/repos/Incenteev/ParameterHandler/zipball/143272a0a09c62616a3c8011fc165a10c6b35241",
+                "reference": "143272a0a09c62616a3c8011fc165a10c6b35241",
                 "shasum": ""
             },
             "require": {
@@ -1802,12 +1400,14 @@
                 "symfony/yaml": "~2.0"
             },
             "require-dev": {
-                "composer/composer": "*"
+                "composer/composer": "1.0.*@dev",
+                "phpspec/prophecy-phpunit": "~1.0",
+                "symfony/filesystem": "~2.2"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.0.x-dev"
+                    "dev-master": "2.1.x-dev"
                 }
             },
             "autoload": {
@@ -1830,7 +1430,7 @@
             "keywords": [
                 "parameters management"
             ],
-            "time": "2013-04-06 17:15:44"
+            "time": "2013-12-07 10:10:39"
         },
         {
             "name": "jdorn/sql-formatter",
@@ -2704,41 +2304,6 @@
             "time": "2013-09-23 08:06:55"
         },
         {
-            "name": "phpexcel/phpexcel",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ddeboer/phpexcel.git",
-                "reference": "8a3f7a02cfbb0c34b06d66b614762ebe52423dc9"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ddeboer/phpexcel/zipball/8a3f7a02cfbb0c34b06d66b614762ebe52423dc9",
-                "reference": "8a3f7a02cfbb0c34b06d66b614762ebe52423dc9",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">5.2.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "PHPExcel": "Classes"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GNU"
-            ],
-            "description": "PHPExcel - OpenXML - Create Excel2007 documents in PHP - Spreadsheet engine",
-            "homepage": "http://phpexcel.codeplex.com",
-            "keywords": [
-                "excel",
-                "xls"
-            ],
-            "time": "2013-09-10 18:57:03"
-        },
-        {
             "name": "phpoption/phpoption",
             "version": "1.3.0",
             "source": {
@@ -3009,68 +2574,6 @@
             ],
             "description": "This bundle generates code for you",
             "time": "2013-08-21 18:09:35"
-        },
-        {
-            "name": "stof/doctrine-extensions-bundle",
-            "version": "dev-master",
-            "target-dir": "Stof/DoctrineExtensionsBundle",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/stof/StofDoctrineExtensionsBundle.git",
-                "reference": "9da4489322c5442ff021c4cd3f28dd79b2a8df07"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/stof/StofDoctrineExtensionsBundle/zipball/9da4489322c5442ff021c4cd3f28dd79b2a8df07",
-                "reference": "9da4489322c5442ff021c4cd3f28dd79b2a8df07",
-                "shasum": ""
-            },
-            "require": {
-                "gedmo/doctrine-extensions": "~2.3.1",
-                "php": ">=5.3.2",
-                "symfony/framework-bundle": "~2.1"
-            },
-            "suggest": {
-                "doctrine/doctrine-bundle": "to use the ORM extensions",
-                "doctrine/mongodb-odm-bundle": "to use the MongoDB ODM extensions"
-            },
-            "type": "symfony-bundle",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.1.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Stof\\DoctrineExtensionsBundle": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Christophe Coevoet",
-                    "email": "stof@notk.org"
-                }
-            ],
-            "description": "Integration of the gedmo/doctrine-extensions with Symfony2",
-            "homepage": "https://github.com/stof/StofDoctrineExtensionsBundle",
-            "keywords": [
-                "behaviors",
-                "doctrine2",
-                "extensions",
-                "gedmo",
-                "loggable",
-                "nestedset",
-                "sluggable",
-                "sortable",
-                "timestampable",
-                "translatable",
-                "tree"
-            ],
-            "time": "2013-10-13 16:27:31"
         },
         {
             "name": "swiftmailer/swiftmailer",
@@ -3502,16 +3005,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v1.14.2",
+            "version": "v1.15.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fabpot/Twig.git",
-                "reference": "ca445842fcea4f844d68203ffa2d00f5e3cdea64"
+                "reference": "85e4ff98000157ff753d934b9f13659a953f5666"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fabpot/Twig/zipball/ca445842fcea4f844d68203ffa2d00f5e3cdea64",
-                "reference": "ca445842fcea4f844d68203ffa2d00f5e3cdea64",
+                "url": "https://api.github.com/repos/fabpot/Twig/zipball/85e4ff98000157ff753d934b9f13659a953f5666",
+                "reference": "85e4ff98000157ff753d934b9f13659a953f5666",
                 "shasum": ""
             },
             "require": {
@@ -3520,7 +3023,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.14-dev"
+                    "dev-master": "1.15-dev"
                 }
             },
             "autoload": {
@@ -3547,7 +3050,7 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2013-10-30 08:20:53"
+            "time": "2013-12-06 07:47:10"
         },
         {
             "name": "white-october/pagerfanta-bundle",
@@ -3718,17 +3221,12 @@
     ],
     "minimum-stability": "dev",
     "stability-flags": {
-        "doctrine/mongodb-odm-bundle": 20,
+        "sensio/generator-bundle": 20,
+        "nitra/nitra-theme-bundle": 20,
+        "friendsofsymfony/jsrouting-bundle": 20,
         "doctrine/doctrine-fixtures-bundle": 20,
         "doctrine/doctrine-migrations-bundle": 20,
-        "doctrine/mongodb-odm-softdelete": 20,
-        "sensio/generator-bundle": 20,
-        "jms/di-extra-bundle": 20,
-        "stof/doctrine-extensions-bundle": 20,
-        "nitra/nitra-theme-bundle": 20,
-        "phpexcel/phpexcel": 20,
-        "friendsofsymfony/jsrouting-bundle": 20,
-        "genemu/form-bundle": 20
+        "jms/di-extra-bundle": 20
     },
     "platform": {
         "php": ">=5.4.7"

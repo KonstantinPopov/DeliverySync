@@ -1,16 +1,14 @@
 <?php
-
 namespace Nitra\GeoBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Nitra\DeliveryBundle\NitraDeliveryBundle\DeliveryCity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Knp\DoctrineBehaviors\Model as ORMBehaviors;
+use Nitra\DeliveryBundle\NitraDeliveryBundle\DeliveryCity;
 
 /**
  * Nitra\GeoBundle\Entity\City
- *
  * @ORM\Table(name="geo_city")
  * @ORM\Entity 
  */
@@ -19,6 +17,8 @@ class City
     
     use ORMBehaviors\Timestampable\Timestampable,
         ORMBehaviors\SoftDeletable\SoftDeletable;
+    
+    use \Nitra\NitraThemeBundle\Traits\ValidForDelete;    
 
     /**
      * @var integer $id
@@ -33,15 +33,15 @@ class City
      * @var string $name
      *
      * @ORM\Column(name="name", type="string", length=255)
-     * @Assert\NotBlank
+     * @Assert\NotBlank(message="Не указано название города")
      */
     private $name;
 
     /**
      * @ORM\ManyToOne(targetEntity="Region", inversedBy="cities")
      * @ORM\JoinColumn(name="region_id", referencedColumnName="id")
-     * @Assert\NotBlank
-     * */
+     * @Assert\NotBlank(message="Не указан регион")
+     */
     private $region;
     
      /**
@@ -59,10 +59,24 @@ class City
     
     /**
      * @ORM\OneToMany(targetEntity="Nitra\DeliveryCostBundle\Entity\NovaposhtaZone", mappedBy="from_city")
-     * 
      */
-    
     private $from_city_id;
+    
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->delivery_cities = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+    
+    /**
+     * Entity to string
+     * @return string 
+     */
+    public function __toString() {
+        return $this->getName() . '      ' .  $this->getRegion()->getName();
+    }
     
     /**
      * Get id
@@ -83,7 +97,7 @@ class City
     public function setName($name)
     {
         $this->name = $name;
-
+    
         return $this;
     }
 
@@ -96,12 +110,19 @@ class City
     {
         return $this->name;
     }
-
-
+    
+    /**
+     * получить страну
+     * @return Nitra\GeoBundle\Entity\Country
+     */
+    public function getCountry() {
+        return $this->getRegion()->getCountry();
+    }
+    
     /**
      * Set region
      *
-     * @param Nitra\GeoBundle\Entity\Region $region
+     * @param \Nitra\GeoBundle\Entity\Region $region
      * @return City
      */
     public function setRegion(\Nitra\GeoBundle\Entity\Region $region = null)
@@ -114,29 +135,17 @@ class City
     /**
      * Get region
      *
-     * @return Nitra\GeoBundle\Entity\Region 
+     * @return \Nitra\GeoBundle\Entity\Region 
      */
     public function getRegion()
     {
         return $this->region;
     }
-    
-    public function __toString() {
-        return $this->getName() . '      ' .  $this->getRegion()->getName();
-    }
 
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->delivery_cities = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-    
     /**
      * Add delivery_cities
      *
-     * @param Nitra\DeliveryBundle\Entity\DeliveryCity $deliveryCities
+     * @param \Nitra\DeliveryBundle\Entity\DeliveryCity $deliveryCities
      * @return City
      */
     public function addDeliveryCitie(\Nitra\DeliveryBundle\Entity\DeliveryCity $deliveryCities)
@@ -149,7 +158,7 @@ class City
     /**
      * Remove delivery_cities
      *
-     * @param Nitra\DeliveryBundle\Entity\DeliveryCity $deliveryCities
+     * @param \Nitra\DeliveryBundle\Entity\DeliveryCity $deliveryCities
      */
     public function removeDeliveryCitie(\Nitra\DeliveryBundle\Entity\DeliveryCity $deliveryCities)
     {
@@ -159,76 +168,76 @@ class City
     /**
      * Get delivery_cities
      *
-     * @return Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection 
      */
     public function getDeliveryCities()
     {
         return $this->delivery_cities;
     }
-    
+
     /**
-     * Add from_city
+     * Add to_city_id
      *
-     * @param \Nitra\DeliveryCostBundle\Entity\NovaposhtaZone $fromCity
+     * @param \Nitra\DeliveryCostBundle\Entity\NovaposhtaZone $toCityId
      * @return City
      */
-    public function addFromCity(\Nitra\DeliveryCostBundle\Entity\NovaposhtaZone $fromCity)
+    public function addToCityId(\Nitra\DeliveryCostBundle\Entity\NovaposhtaZone $toCityId)
     {
-        $this->from_city[] = $fromCity;
+        $this->to_city_id[] = $toCityId;
     
         return $this;
     }
 
     /**
-     * Remove from_city
+     * Remove to_city_id
      *
-     * @param \Nitra\DeliveryCostBundle\Entity\NovaposhtaZone $fromCity
+     * @param \Nitra\DeliveryCostBundle\Entity\NovaposhtaZone $toCityId
      */
-    public function removeFromCity(\Nitra\DeliveryCostBundle\Entity\NovaposhtaZone $fromCity)
+    public function removeToCityId(\Nitra\DeliveryCostBundle\Entity\NovaposhtaZone $toCityId)
     {
-        $this->from_city->removeElement($fromCity);
+        $this->to_city_id->removeElement($toCityId);
     }
 
     /**
-     * Get from_city
+     * Get to_city_id
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getFromCity()
+    public function getToCityId()
     {
-        return $this->from_city;
+        return $this->to_city_id;
     }
 
     /**
-     * Add to_city
+     * Add from_city_id
      *
-     * @param \Nitra\DeliveryCostBundle\Entity\NovaposhtaZone $toCity
+     * @param \Nitra\DeliveryCostBundle\Entity\NovaposhtaZone $fromCityId
      * @return City
      */
-    public function addToCity(\Nitra\DeliveryCostBundle\Entity\NovaposhtaZone $toCity)
+    public function addFromCityId(\Nitra\DeliveryCostBundle\Entity\NovaposhtaZone $fromCityId)
     {
-        $this->to_city[] = $toCity;
+        $this->from_city_id[] = $fromCityId;
     
         return $this;
     }
 
     /**
-     * Remove to_city
+     * Remove from_city_id
      *
-     * @param \Nitra\DeliveryCostBundle\Entity\NovaposhtaZone $toCity
+     * @param \Nitra\DeliveryCostBundle\Entity\NovaposhtaZone $fromCityId
      */
-    public function removeToCity(\Nitra\DeliveryCostBundle\Entity\NovaposhtaZone $toCity)
+    public function removeFromCityId(\Nitra\DeliveryCostBundle\Entity\NovaposhtaZone $fromCityId)
     {
-        $this->to_city->removeElement($toCity);
+        $this->from_city_id->removeElement($fromCityId);
     }
 
     /**
-     * Get to_city
+     * Get from_city_id
      *
      * @return \Doctrine\Common\Collections\Collection 
      */
-    public function getToCity()
+    public function getFromCityId()
     {
-        return $this->to_city;
+        return $this->from_city_id;
     }
 }

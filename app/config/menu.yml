@@ -7,73 +7,298 @@ millwright_menu:
                 ancestorClass: current active
                 currentClass: current_item
 
-    items: #menu items
-        d_service:
-            label: 'ТК'
-        delivery_service:
-            label: 'Транспортные компании'
-#            route:  Nitra_DeliveryBundle_Delivery_list
-        department:
-            label:  'Отделения ТК'
-#            route:  Nitra_DeliveryBundle_Department_list
-        delivery_city:
-            label:  'Города в ТК'
-#            route:  Nitra_DeliveryBundle_DeliveryCity_list
-        delivery_cost_calculation: 
-            label:  'Модуль расчёта стоимости доставки'
-        novaposhta:
-            label:  'Новая Почта'
-#            route:  Nitra_DeliveryCostBundle_NovaposhtaTarify_list
-        intime:
-            label:  'Интайм'
-#            route:  Nitra_DeliveryCostBundle_IntimeTarify_list
-        territory:
-            label:  'Территории'
+    items: #menu items        
+#        
+        manager:
+            label:  "Пользователи"
+            
+        manager_list:
+            label:  "Менеджеры"
+            route:  Nitra_ManagerBundle_Manager_list
+            
+        manager_group:
+            label:  "Группы"
+            route:  Nitra_ManagerBundle_Group_list
+            
+        manager_role:
+            label:  "Привилегии"
+            route:  Nitra_ManagerBundle_Role_list
+            
+            
+            
+        catalog: 
+            label:  "Справочники"
+            
+        country:
+            label:  "Страны"
+            route:  Nitra_GeoBundle_Country_list
+            
         region:
-            label:  'Регионы'
-#            route:  Nitra_GeoBundle_Region_list
+            label:  "Регионы"
+            route:  Nitra_GeoBundle_Region_list
+            
         city:
-            label:  'Города'
-#            route:   Nitra_GeoBundle_City_list
-        client: 
-          label:  'Клиенты'
-        client_list:
-          label:    'Список клиентов'
-#          route:  Nitra_DeliveryBundle_Client_list
-        managers:
-          label:   'Менеджеры'
-#          route:  Nitra_ManagerBundle_Manager_list
-        settings:
-          label:  'Настройки'
-        groups:
-          label:  'Группы'
-#          route:  Nitra_ManagerBundle_Group_list
-        roles:
-          label:   'Привилегии'
-#          route:  Nitra_ManagerBundle_Role_list
-        
+            label:  "Города"
+            route:  Nitra_GeoBundle_City_list
+            
+            
+            
+            
+#        integra_root:
+#            label: 'Интегра'
+            
+#        integra_job:
+#            label: 'Прайсы'
+#            route: Nitra_IntegraBundle_Job_list
+#            
+#        integra_in_rules:
+#            label: 'Правила входящих цен'
+#            route: Nitra_IntegraBundle_InRules_list
+#            
+#        integra_out_rules:
+#            label: 'Правила выходящих цен'
+#            route: Nitra_IntegraBundle_OutRules_list
+#            
+#        catalog: 
+#            label: 'Справочники'
+#          
+#        manager:
+#            label: 'Менеджеры'
+#            route: Nitra_ManagerBundle_Manager_list
+#            roles: [ ROLE_ADMIN, ROLE_SUPER_ADMIN, ROLE_ADMIN_FILIAL ]
+#        region:
+#            label: 'Регионы'
+#            route: Nitra_GeoBundle_Region_list    
+#        city:
+#            label: 'Города'
+#            route: Nitra_GeoBundle_City_list
+#        store:
+#            label: 'Магазины'
+#            route: Nitra_MainBundle_Store_list
+#        filial:
+#            label: 'Филиалы'
+#            route: Nitra_FilialBundle_Filial_list
+#        warehouse:
+#            label: 'Склады'
+#        delivery_warehouse:
+#            label: 'Склады транспортных компаний'
+#            route: Nitra_MainBundle_DeliveryWarehouse_list
+#        own_warehouse:
+#            label: 'Свои склады'
+#            route: Nitra_MainBundle_OwnWarehouse_list
+#        supplier_warehouse:
+#            label: 'Склады поставщиков'
+#            route: Nitra_MainBundle_SupplierWarehouse_list
+#        stock_warehouse:
+#            label: 'Остатки'
+#            route: Nitra_MainBundle_StockWarehouse_list      
+#        stock_recount:
+#            label: 'Инвентаризация'
+#            route: Nitra_MainBundle_StockRecount_list
+#        movement_income:
+#            label: 'Закупки'
+#            route: Nitra_MainBundle_MovementIncome_list
+#        movement_relocation:
+#            label: 'Перемещения'
+#            route: Nitra_MainBundle_MovementRelocation_list
+#        movement_return:
+#            label: 'Возвраты'
+#            route: Nitra_MainBundle_MovementReturn_list
+#        declaration:
+#            label: 'Декларации'
+#            route: Nitra_DeclarationBundle_Declaration_list
+#        delivery:
+#            label: 'Транспортне компании'
+#            route: Nitra_MainBundle_Delivery_list
+#        supplier:
+#            label: 'Поставщики'
+#            route: Nitra_MainBundle_Supplier_list 
+#        product: 
+#            label: 'Товары'
+#            route: integra
+#        buyer:
+#            label: 'Клиенты'
+#            route: Nitra_OrderBundle_Buyer_list
+#        order:
+#            label: 'Заказы'
+#            route: Nitra_OrderBundle_Order_list
+#        account:
+#            label: 'Счета'
+#            route: Nitra_AccountBundle_Account_list
+#        finance:
+#            label: 'Финансы'
+#        expense_category:
+#            label: 'Категории расходов'
+#            route: Nitra_ExpenseBundle_Category_list
+#        expense:
+#            label: 'Расходы'
+#            route: Nitra_ExpenseBundle_Expense_list
+#        currency:
+#            label: 'Валюты'
+#            route: Nitra_MainBundle_Currency_list
+#        contract:
+#            label: 'Контракты'
+#            route: Nitra_ContractBundle_Contract_list
+#        income:
+#            label: 'Приходы'
+#            route: Nitra_IncomeBundle_Income_list
+#        account_cashflow: 
+#            label: 'Переводы средств' 
+#            route: Nitra_AccountBundle_Cashflow_list
+#        supplier_balance:
+#            label:  'Баланс'
+#            route: suppliers_accounts
+#        sms:
+#            label:  'СМС'
+#            route: ~
+
     tree: #menu containers
         main: #main container
             type: navigation # menu type id
             children:
-                d_service:
-                  children:
-                    delivery_service:    ~
-                    department:          ~
-                    delivery_city:       ~
-                territory:
-                  children:
-                    region:              ~
-                    city:                ~
-                client:
-                  children:
-                    client_list:         ~
-                    managers:            ~
-                settings:
-                  children:
-                    groups:              ~
-                    roles:               ~
-                delivery_cost_calculation:
-                  children:
-                    novaposhta:          ~
-                    intime:              ~                      
+##                order: ~
+#                integra_root:
+#                    name: Интегра
+#                    type: navigation
+##                    children: 
+##                        product: ~
+##                        integra_job:        ~
+##                        integra_in_rules:   ~                    
+##                        integra_out_rules:  ~                    
+                manager:
+                    name:   "Пользователи"
+                    children:
+                        manager_list:   ~
+                        manager_group:  ~
+                        manager_role:   ~
+                        
+                    
+                catalog:
+                    name:   "Справочники"
+                    type:   navigation
+                    children:
+#                        buyer:    ~
+#                        supplier: ~
+#                        delivery: ~
+#                        manager:  ~
+                        country:    ~
+                        region:     ~
+                        city:       ~
+#                        store:    ~
+#                        filial:   ~
+#                        account:  ~
+#                        expense_category: ~
+#                        currency: ~
+#                        sms: ~
+#                warehouse:
+#                    name: Склады
+#                    type: navigation
+#                    children:
+#                        own_warehouse:        ~
+#                        delivery_warehouse:   ~
+#                        supplier_warehouse:   ~
+#                        stock_warehouse:      ~
+#                        stock_recount: ~
+#                        movement_income: ~
+#                        movement_relocation: ~
+#                        movement_return: ~
+#                        declaration: ~
+#                finance:
+#                    name: Финансы
+#                    type: navigation
+#                    children:
+#                         expense: ~
+#                         contract: ~
+#                         income: ~
+#                         account_cashflow: ~
+#                         supplier_balance: ~
+
+
+
+
+
+
+
+
+
+
+
+#millwright_menu:
+#    renderers:
+#        navigation: #menu type id
+#            renderer: null # custom renderer
+#            rendererOptions:
+#                template: MillwrightMenuBundle:Default:knp_menu.html.twig
+#                ancestorClass: current active
+#                currentClass: current_item
+#
+#    items: #menu items
+#        d_service:
+#            label: 'ТК'
+#        delivery_service:
+#            label: 'Транспортные компании'
+##            route:  Nitra_DeliveryBundle_Delivery_list
+#        department:
+#            label:  'Отделения ТК'
+##            route:  Nitra_DeliveryBundle_Department_list
+#        delivery_city:
+#            label:  'Города в ТК'
+##            route:  Nitra_DeliveryBundle_DeliveryCity_list
+#        delivery_cost_calculation: 
+#            label:  'Модуль расчёта стоимости доставки'
+#        novaposhta:
+#            label:  'Новая Почта'
+##            route:  Nitra_DeliveryCostBundle_NovaposhtaTarify_list
+#        intime:
+#            label:  'Интайм'
+##            route:  Nitra_DeliveryCostBundle_IntimeTarify_list
+#        territory:
+#            label:  'Территории'
+#        region:
+#            label:  'Регионы'
+##            route:  Nitra_GeoBundle_Region_list
+#        city:
+#            label:  'Города'
+##            route:   Nitra_GeoBundle_City_list
+#        client: 
+#          label:  'Клиенты'
+#        client_list:
+#          label:    'Список клиентов'
+##          route:  Nitra_DeliveryBundle_Client_list
+#        managers:
+#          label:   'Менеджеры'
+##          route:  Nitra_ManagerBundle_Manager_list
+#        settings:
+#          label:  'Настройки'
+#        groups:
+#          label:  'Группы'
+##          route:  Nitra_ManagerBundle_Group_list
+#        roles:
+#          label:   'Привилегии'
+##          route:  Nitra_ManagerBundle_Role_list
+#        
+#    tree: #menu containers
+#        main: #main container
+#            type: navigation # menu type id
+#            children:
+#                d_service:
+#                  children:
+#                    delivery_service:    ~
+#                    department:          ~
+#                    delivery_city:       ~
+#                territory:
+#                  children:
+#                    region:              ~
+#                    city:                ~
+#                client:
+#                  children:
+#                    client_list:         ~
+#                    managers:            ~
+#                settings:
+#                  children:
+#                    groups:              ~
+#                    roles:               ~
+#                delivery_cost_calculation:
+#                  children:
+#                    novaposhta:          ~
+#                    intime:              ~                      

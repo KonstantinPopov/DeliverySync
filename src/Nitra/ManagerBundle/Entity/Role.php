@@ -1,5 +1,4 @@
 <?php
-
 namespace Nitra\ManagerBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -8,10 +7,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * Nitra\ManagerBundle\Entity\Role
- *
  * @ORM\Table(name="manager_role")
- * @ORM\Entity(repositoryClass="Nitra\ManagerBundle\Entity\RoleRepository")
- * 
+ * @ORM\Entity(repositoryClass="Nitra\ManagerBundle\Repository\RoleRepository")
  * @UniqueEntity(fields="name", message="Роль с таким названием уже существует")
  */
 class Role
@@ -19,7 +16,6 @@ class Role
 
     /**
      * @var integer $id
-     *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
@@ -30,20 +26,18 @@ class Role
      * @var string $name
      *
      * @ORM\Column(name="name", type="string", length=255)
-     * @Assert\NotBlank
+     * @Assert\NotBlank(message="Не указано название")
      * 
      */
     private $name;
     
      /**
      * @var string $description
-     *
      * @ORM\Column(name="description", type="string", length=255)
-     * @Assert\NotBlank
-     * 
+     * @Assert\NotBlank(message="Не указано описание")
      */
     private $description;
-
+    
     /**
      * Get id
      *
@@ -63,7 +57,7 @@ class Role
     public function setName($name)
     {
         $this->name = $name;
-
+    
         return $this;
     }
 
@@ -76,12 +70,6 @@ class Role
     {
         return $this->name;
     }
-
-    public function __toString()
-    {
-        return $this->getName();
-    }
-
 
     /**
      * Set description
@@ -105,4 +93,5 @@ class Role
     {
         return $this->description;
     }
+    
 }

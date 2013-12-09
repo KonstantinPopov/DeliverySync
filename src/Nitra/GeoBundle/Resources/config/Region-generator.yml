@@ -1,37 +1,56 @@
-generator:                  admingenerator.generator.doctrine
+generator: admingenerator.generator.doctrine
 params:
-  model:                    Nitra\GeoBundle\Entity\Region
-  namespace_prefix:         Nitra
-  bundle_name:              GeoBundle
-  fields:
-    name:
-      label:                Название региона
-
+    model: Nitra\GeoBundle\Entity\Region
+    namespace_prefix: Nitra
+    concurrency_lock: ~
+    bundle_name: GeoBundle
+    pk_requirement: ~
+    fields:
+        country:        { label: "Страна" }
+        name:           { label: "Регион" }
+    object_actions:
+        delete: ~
+    batch_actions:
+        delete: ~
 builders:
-  list:
-    params:
-      title:                 Список регионов
-      display:               [ name ]
-      sort:                  [ name, ASC ]
-      max_per_page:          50
-      actions:
-        new:                 ~
-      object_actions:
-        edit:                ~
-        delete:              ~
-  filters:
-    params:
-      display:               [ name ]
-  new:
-    params:
-      title:                 Добавление нового региона
-      display:               [ name ]
-      actions:
-        list:                ~
-  edit:
-    params:
-      title:                 Редактирование региона "{{ Region.name }}"
-      display:               [ name ]
-      actions:
-        list:                ~
-  delete:                    ~
+    list:
+        params:
+            title:          "Список регионов"
+            display:        [ country, name ]
+            sort:           [ name, ASC ]
+            max_per_page:   50
+            actions:
+                new: ~
+            object_actions:
+                edit:   ~
+                delete: ~
+    filters:
+        params:
+            display:    [ country, name ]
+    new:
+        params:
+            title:      "Добавить новый регион"
+            display:    [ name ]
+            actions:
+                save:   ~
+                list:   ~
+    edit:
+        params:
+            title:      "Редактировать регион \"%object%\"|{ %object%: Region.name }|"
+            display:    ~
+            actions:
+                save:   ~
+                list:   ~
+    show:
+        params:
+            title:      "Просмотр региона \"%object%\"|{ %object%: Region.name }|"
+            display:    [ name ]
+            actions:
+                list:   ~
+                new:    ~
+    actions:
+        params:
+            object_actions:
+                delete: ~
+            batch_actions:
+                delete: ~

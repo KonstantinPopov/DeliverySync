@@ -1,5 +1,0 @@
-services:
-    form.type.nlcollection:
-        class: Nitra\NlCollectionBundle\Form\Type\NlCollectionType
-        tags:
-            - { name: form.type, alias: nlcollection }
