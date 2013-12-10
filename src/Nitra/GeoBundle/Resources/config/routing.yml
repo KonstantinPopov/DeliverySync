@@ -1,14 +1,29 @@
+
+#NitraGeoBundleCommon:
+#    resource: "@NitraGeoBundle/Controller/City/"
+#    type:     annotation
+#    prefix:   /geo
+#
+#
+
 NitraGeoBundleCity:
     resource: "@NitraGeoBundle/Controller/City/"
     type:     admingenerator
-    prefix:   /city
+    prefix:   /geo/city
 
 NitraGeoBundleRegion:
     resource: "@NitraGeoBundle/Controller/Region/"
     type:     admingenerator
-    prefix:   /region
+    prefix:   /geo/region
     
 NitraGeoBundleCountry:
     resource: "@NitraGeoBundle/Controller/Country/"
     type:     admingenerator
-    prefix:   /country
+    prefix:   /geo/country
+    
+NitraGeoBundleFixtures:
+    resource: "@NitraGeoBundle/Controller/FixturesController.php"
+    type:     annotation
+    prefix:   /geo-fixtures
+
+    

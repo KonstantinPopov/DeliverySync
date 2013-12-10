@@ -5,7 +5,18 @@ params:
     concurrency_lock: ~
     bundle_name: ManagerBundle
     pk_requirement: ~
-    fields: ~
+    fields:
+        username:   { label: "Логин" }
+        email:      { label: "Емейл" }
+        password:   { label: "Пароль", formType: password }
+        enabled:    { label: "Включено?" }
+        lastLogin:  { label: "Последний вход" }
+        locked:     { label: "Заблокировано?"}
+        expired:    { label: "Срок действия закончился?" }
+        roles_text: { label: "Привилегии" }
+        client:     { label: "Клиент" }
+        groups:     { label: "Группы"}
+        
     object_actions:
         delete: ~
     batch_actions:
@@ -26,14 +37,14 @@ builders:
     new:
         params:
             title:      "Добавить нового менеджера"
-            display:    [ username, email, enabled, locked,  password, client ]
+            display:    [ username, email, enabled, password, client, groups ]
             actions:
                 save:   ~
                 list:   ~
     edit:
         params:
             title:      "Редактировать менеджера \"%object%\"|{ %object%: Manager.username }|"
-            display:    [ username, email, enabled, locked,  password, client ]
+            display:    [ username, email, enabled, password, client, groups ]
             actions:
                 save:   ~
                 list:   ~

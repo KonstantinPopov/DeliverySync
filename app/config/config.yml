@@ -3,7 +3,6 @@ imports:
     - { resource: security.yml }
     - { resource: menu.yml }
     - { resource: ../../vendor/nitra/doctrine-behaviors/config/orm-services.yml }
-#    - { resource: ../../vendor/knplabs/doctrine-behaviors/config/orm-services.yml }
 
 framework:
 #    esi:             ~
@@ -28,8 +27,6 @@ twig:
         resources:
 #            - 'NitraNlCollectionBundle:Form:fields.html.twig'
             - 'NitraThemeBundle:Form:fields.html.twig'
-#            - 'NitraMainBundle:Form:fields.html.twig'
-#            - 'NitraNlCollectionBundle:Form:fields.html.twig'
             
 # Assetic Configuration
 assetic:

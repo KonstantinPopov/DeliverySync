@@ -41,6 +41,27 @@ millwright_menu:
             label:  "Города"
             route:  Nitra_GeoBundle_City_list
             
+        
+        # Фикстуры эталона GeoBundle
+        geo_fixtures:
+            label:  "GeoBundle:Фикстуры"
+            roles:  [ ROLE_SUPER_ADMIN ]
+            
+        geo_fixtures_country:
+            label:  "Fixtures:Страны"
+            route:  NitraGeoBundleFixtures_country
+            roles:  [ ROLE_SUPER_ADMIN ]
+            
+        geo_fixtures_region:
+            label:  "Fixtures:Регионы"
+            route:  NitraGeoBundleFixtures_region
+            roles:  [ ROLE_SUPER_ADMIN ]
+            
+        geo_fixtures_city:
+            label:  "Fixtures:Города"
+            route:  NitraGeoBundleFixtures_city
+            roles:  [ ROLE_SUPER_ADMIN ]
+            
             
             
             
@@ -177,19 +198,18 @@ millwright_menu:
                     name:   "Справочники"
                     type:   navigation
                     children:
-#                        buyer:    ~
-#                        supplier: ~
-#                        delivery: ~
-#                        manager:  ~
                         country:    ~
                         region:     ~
                         city:       ~
-#                        store:    ~
-#                        filial:   ~
-#                        account:  ~
-#                        expense_category: ~
-#                        currency: ~
-#                        sms: ~
+                        
+                geo_fixtures:
+                    name:   "GeoBundle:Фикстуры"
+                    type:   navigation
+                    children:
+                        geo_fixtures_country:   ~
+                        geo_fixtures_region:    ~
+                        geo_fixtures_city:      ~
+                        
 #                warehouse:
 #                    name: Склады
 #                    type: navigation

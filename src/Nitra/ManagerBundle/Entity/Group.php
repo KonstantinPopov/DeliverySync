@@ -2,7 +2,6 @@
 namespace Nitra\ManagerBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use FOS\UserBundle\Entity\Group as BaseGroup;
 
@@ -10,18 +9,15 @@ use FOS\UserBundle\Entity\Group as BaseGroup;
  *
  * @ORM\Table(name = "manager_group")
  * @ORM\Entity
- * 
+ * @UniqueEntity(fields="name", message="Группа с таким названием уже существует.")
  */
 class Group extends BaseGroup
 {
-
+    /**
+     * @var array - массив привелегий
+     */
     protected $roles = array();
-
-    public function __construct()
-    {
-        
-    }
-
+    
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
@@ -38,10 +34,14 @@ class Group extends BaseGroup
     {
         return $this->id;
     }
-
+    
+    /**
+     * Entity to string
+     * @return string 
+     */
     public function __toString()
     {
-        return $this->getName();
+        return (string)$this->getName();
     }
 
 }

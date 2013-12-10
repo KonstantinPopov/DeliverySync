@@ -9,7 +9,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * Nitra\ManagerBundle\Entity\Role
  * @ORM\Table(name="manager_role")
  * @ORM\Entity(repositoryClass="Nitra\ManagerBundle\Repository\RoleRepository")
- * @UniqueEntity(fields="name", message="Роль с таким названием уже существует")
+ * @UniqueEntity(fields="name", message="Роль с таким названием уже существует.")
  */
 class Role
 {
