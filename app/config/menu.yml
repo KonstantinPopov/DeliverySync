@@ -9,6 +9,11 @@ millwright_menu:
 
     items: #menu items        
 #        
+
+        delivery_client:
+            label:  "Клиенты"
+            route:  Nitra_DeliveryBundle_Client_list
+            
         manager:
             label:  "Пользователи"
             
@@ -189,10 +194,10 @@ millwright_menu:
                 manager:
                     name:   "Пользователи"
                     children:
-                        manager_list:   ~
-                        manager_group:  ~
-                        manager_role:   ~
-                        
+                        delivery_client:    ~
+                        manager_list:       ~
+                        manager_group:      ~
+                        manager_role:       ~
                     
                 catalog:
                     name:   "Справочники"

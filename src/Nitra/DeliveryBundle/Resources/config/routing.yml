@@ -1,0 +1,6 @@
+
+NitraDeliveryBundleClient:
+    resource: "@NitraDeliveryBundle/Controller/Client/"
+    type:     admingenerator
+    prefix:   /client
+

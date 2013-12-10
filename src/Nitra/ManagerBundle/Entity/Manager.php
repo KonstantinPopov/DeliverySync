@@ -82,5 +82,5 @@ class Manager extends BaseUser
     {
         return $this->client;
     }
-    
+
 }
