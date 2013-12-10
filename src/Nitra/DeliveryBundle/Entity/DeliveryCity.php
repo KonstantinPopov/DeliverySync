@@ -1,19 +1,15 @@
 <?php
-
 namespace Nitra\DeliveryBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Nitra\GeoBundle\NitraGeoBundle\City;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Knp\DoctrineBehaviors\Model as ORMBehaviors;
 
 /**
  * Nitra\DeliveryBundle\Entity\DeliveryCity
- *
  * @ORM\Table(name="delivery_city")
- * @ORM\Entity unique po name
- * 
+ * @ORM\Entity
  * @UniqueEntity(fields="name", message="Город ТК с таким названием уже существует")
  */
 class DeliveryCity
@@ -22,9 +18,10 @@ class DeliveryCity
     use ORMBehaviors\Timestampable\Timestampable,
         ORMBehaviors\SoftDeletable\SoftDeletable;
 
+    use \Nitra\NitraThemeBundle\Traits\ValidForDelete;    
+
     /**
      * @var integer $id
-     *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
@@ -33,9 +30,8 @@ class DeliveryCity
 
     /**
      * @var string $name
-     *
      * @ORM\Column(name="name", type="string", length=255)
-     * @Assert\NotBlank
+     * @Assert\NotBlank(message="Не указано название города ТК")
      */
     private $name;
 
@@ -48,10 +44,72 @@ class DeliveryCity
 
     /**
      * @ORM\OneToMany(targetEntity="Department", mappedBy="deliveryCity")
-     * 
      */
     private $departments;
-
+    
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->departments = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+    
+    /**
+     * Entity to string
+     * @return string 
+     */
+    public function __toString()
+    {
+        return (string)$this->getName();
+    }
+    
+//    /**
+//     *  Метод для поиска название ТК
+//     */
+//    public function getDeliveryServiceName()
+//    {
+//        if ($this->getDepartment()) {
+//            return $this->getDepartment()->getDeliveryService()->getName();
+//        } else {
+//            return null;
+//        }
+//    }
+//
+//    /**
+//     *  Метод для поиска название склада
+//     */
+//    public function getDepartmentName()
+//    {
+//        return $this->getDepartment()->getName();
+//    }
+//
+//    private function getDepartment()
+//    {
+//        return $this->departments[0];
+//    }
+//
+//    /**
+//     *  Метод для поиска ссілки на карту
+//     */
+//    public function getGoogleMapsURLName()
+//    {
+//        return 'https://maps.google.com.ua/?authuser=0&f=q&hl=ru&jsv=439a&q=' . $this->getDepartment()->getLatitude()
+//                . ',%20' . $this->getDepartment()->getLongitude() .
+//                '&sll=' . $this->getDepartment()->getLatitude()
+//                . ',' . $this->getDepartment()->getLatitude()
+//                . '&source=s_q&sspn=0.003042,0.016512&vps=1&vpsrc=0';
+//    }
+//
+//    public function getDepartmentByDS($deliveryService)
+//    {
+//        foreach ($this->departments as $department) {
+//            if ($department->getDeliveryService()->getId() == $deliveryService->getId()) {
+//                return $department;
+//            }
+//        }
+//    }
+    
     /**
      * Get id
      *
@@ -71,7 +129,7 @@ class DeliveryCity
     public function setName($name)
     {
         $this->name = $name;
-
+    
         return $this;
     }
 
@@ -88,20 +146,20 @@ class DeliveryCity
     /**
      * Set city
      *
-     * @param Nitra\GeoBundle\Entity\City $city
+     * @param \Nitra\GeoBundle\Entity\City $city
      * @return DeliveryCity
      */
     public function setCity(\Nitra\GeoBundle\Entity\City $city = null)
     {
         $this->city = $city;
-
+    
         return $this;
     }
 
     /**
      * Get city
      *
-     * @return Nitra\GeoBundle\Entity\City 
+     * @return \Nitra\GeoBundle\Entity\City 
      */
     public function getCity()
     {
@@ -109,30 +167,22 @@ class DeliveryCity
     }
 
     /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->departments = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-
-    /**
      * Add departments
      *
-     * @param Nitra\DeliveryBundle\Entity\Department $departments
+     * @param \Nitra\DeliveryBundle\Entity\Department $departments
      * @return DeliveryCity
      */
     public function addDepartment(\Nitra\DeliveryBundle\Entity\Department $departments)
     {
         $this->departments[] = $departments;
-
+    
         return $this;
     }
 
     /**
      * Remove departments
      *
-     * @param Nitra\DeliveryBundle\Entity\Department $departments
+     * @param \Nitra\DeliveryBundle\Entity\Department $departments
      */
     public function removeDepartment(\Nitra\DeliveryBundle\Entity\Department $departments)
     {
@@ -142,62 +192,11 @@ class DeliveryCity
     /**
      * Get departments
      *
-     * @return Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection 
      */
     public function getDepartments()
     {
         return $this->departments;
     }
-
-    public function __toString()
-    {
-        return $this->getName();
-    }
-
-    /**
-     *  Метод для поиска название ТК
-     */
-    public function getDeliveryServiceName()
-    {
-        if ($this->getDepartment()) {
-            return $this->getDepartment()->getDeliveryService()->getName();
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     *  Метод для поиска название склада
-     */
-    public function getDepartmentName()
-    {
-        return $this->getDepartment()->getName();
-    }
-
-    private function getDepartment()
-    {
-        return $this->departments[0];
-    }
-
-    /**
-     *  Метод для поиска ссілки на карту
-     */
-    public function getGoogleMapsURLName()
-    {
-        return 'https://maps.google.com.ua/?authuser=0&f=q&hl=ru&jsv=439a&q=' . $this->getDepartment()->getLatitude()
-                . ',%20' . $this->getDepartment()->getLongitude() .
-                '&sll=' . $this->getDepartment()->getLatitude()
-                . ',' . $this->getDepartment()->getLatitude()
-                . '&source=s_q&sspn=0.003042,0.016512&vps=1&vpsrc=0';
-    }
-
-    public function getDepartmentByDS($deliveryService)
-    {
-        foreach ($this->departments as $department) {
-            if ($department->getDeliveryService()->getId() == $deliveryService->getId()) {
-                return $department;
-            }
-        }
-    }
-
+    
 }

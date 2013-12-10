@@ -1,6 +1,6 @@
 
+# Список клиентов
 NitraDeliveryBundleClient:
     resource: "@NitraDeliveryBundle/Controller/Client/"
     type:     admingenerator
     prefix:   /client
-

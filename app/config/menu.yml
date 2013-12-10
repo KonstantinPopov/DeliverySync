@@ -8,8 +8,13 @@ millwright_menu:
                 currentClass: current_item
 
     items: #menu items        
-#        
-
+        
+        delivery:
+            label:  "ТК"
+            
+        delivery_delivery:
+            label:  "Транспортные компании"
+            
         delivery_client:
             label:  "Клиенты"
             route:  Nitra_DeliveryBundle_Client_list
@@ -66,131 +71,17 @@ millwright_menu:
             label:  "Fixtures:Города"
             route:  NitraGeoBundleFixtures_city
             roles:  [ ROLE_SUPER_ADMIN ]
-            
-            
-            
-            
-#        integra_root:
-#            label: 'Интегра'
-            
-#        integra_job:
-#            label: 'Прайсы'
-#            route: Nitra_IntegraBundle_Job_list
-#            
-#        integra_in_rules:
-#            label: 'Правила входящих цен'
-#            route: Nitra_IntegraBundle_InRules_list
-#            
-#        integra_out_rules:
-#            label: 'Правила выходящих цен'
-#            route: Nitra_IntegraBundle_OutRules_list
-#            
-#        catalog: 
-#            label: 'Справочники'
-#          
-#        manager:
-#            label: 'Менеджеры'
-#            route: Nitra_ManagerBundle_Manager_list
-#            roles: [ ROLE_ADMIN, ROLE_SUPER_ADMIN, ROLE_ADMIN_FILIAL ]
-#        region:
-#            label: 'Регионы'
-#            route: Nitra_GeoBundle_Region_list    
-#        city:
-#            label: 'Города'
-#            route: Nitra_GeoBundle_City_list
-#        store:
-#            label: 'Магазины'
-#            route: Nitra_MainBundle_Store_list
-#        filial:
-#            label: 'Филиалы'
-#            route: Nitra_FilialBundle_Filial_list
-#        warehouse:
-#            label: 'Склады'
-#        delivery_warehouse:
-#            label: 'Склады транспортных компаний'
-#            route: Nitra_MainBundle_DeliveryWarehouse_list
-#        own_warehouse:
-#            label: 'Свои склады'
-#            route: Nitra_MainBundle_OwnWarehouse_list
-#        supplier_warehouse:
-#            label: 'Склады поставщиков'
-#            route: Nitra_MainBundle_SupplierWarehouse_list
-#        stock_warehouse:
-#            label: 'Остатки'
-#            route: Nitra_MainBundle_StockWarehouse_list      
-#        stock_recount:
-#            label: 'Инвентаризация'
-#            route: Nitra_MainBundle_StockRecount_list
-#        movement_income:
-#            label: 'Закупки'
-#            route: Nitra_MainBundle_MovementIncome_list
-#        movement_relocation:
-#            label: 'Перемещения'
-#            route: Nitra_MainBundle_MovementRelocation_list
-#        movement_return:
-#            label: 'Возвраты'
-#            route: Nitra_MainBundle_MovementReturn_list
-#        declaration:
-#            label: 'Декларации'
-#            route: Nitra_DeclarationBundle_Declaration_list
-#        delivery:
-#            label: 'Транспортне компании'
-#            route: Nitra_MainBundle_Delivery_list
-#        supplier:
-#            label: 'Поставщики'
-#            route: Nitra_MainBundle_Supplier_list 
-#        product: 
-#            label: 'Товары'
-#            route: integra
-#        buyer:
-#            label: 'Клиенты'
-#            route: Nitra_OrderBundle_Buyer_list
-#        order:
-#            label: 'Заказы'
-#            route: Nitra_OrderBundle_Order_list
-#        account:
-#            label: 'Счета'
-#            route: Nitra_AccountBundle_Account_list
-#        finance:
-#            label: 'Финансы'
-#        expense_category:
-#            label: 'Категории расходов'
-#            route: Nitra_ExpenseBundle_Category_list
-#        expense:
-#            label: 'Расходы'
-#            route: Nitra_ExpenseBundle_Expense_list
-#        currency:
-#            label: 'Валюты'
-#            route: Nitra_MainBundle_Currency_list
-#        contract:
-#            label: 'Контракты'
-#            route: Nitra_ContractBundle_Contract_list
-#        income:
-#            label: 'Приходы'
-#            route: Nitra_IncomeBundle_Income_list
-#        account_cashflow: 
-#            label: 'Переводы средств' 
-#            route: Nitra_AccountBundle_Cashflow_list
-#        supplier_balance:
-#            label:  'Баланс'
-#            route: suppliers_accounts
-#        sms:
-#            label:  'СМС'
-#            route: ~
 
     tree: #menu containers
         main: #main container
             type: navigation # menu type id
             children:
-##                order: ~
-#                integra_root:
-#                    name: Интегра
-#                    type: navigation
-##                    children: 
-##                        product: ~
-##                        integra_job:        ~
-##                        integra_in_rules:   ~                    
-##                        integra_out_rules:  ~                    
+                    
+                delivery:
+                    name:   "ТК"
+                    children:
+                        delivery_delivery:    ~
+                    
                 manager:
                     name:   "Пользователи"
                     children:

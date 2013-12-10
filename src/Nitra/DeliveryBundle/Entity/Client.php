@@ -14,10 +14,10 @@ use Knp\DoctrineBehaviors\Model as ORMBehaviors;
  */
 class Client
 {
-    
+
     use ORMBehaviors\Timestampable\Timestampable,
         ORMBehaviors\SoftDeletable\SoftDeletable;
-    
+
     use \Nitra\NitraThemeBundle\Traits\ValidForDelete;    
 
     /**
@@ -53,7 +53,7 @@ class Client
      * @ORM\JoinTable(name="client_deliveryservice")
      */
     private $deliveryServices;
-    
+
     /**
      * Constructor
      */
@@ -90,7 +90,7 @@ class Client
     public function setName($name)
     {
         $this->name = $name;
-    
+
         return $this;
     }
 
@@ -113,7 +113,7 @@ class Client
     public function setToken($token)
     {
         $this->token = $token;
-    
+
         return $this;
     }
 
@@ -159,7 +159,7 @@ class Client
     public function addDeliveryService(\Nitra\DeliveryBundle\Entity\DeliveryService $deliveryServices)
     {
         $this->deliveryServices[] = $deliveryServices;
-    
+
         return $this;
     }
 

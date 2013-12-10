@@ -1,5 +1,4 @@
 <?php
-
 namespace Nitra\DeliveryBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -8,11 +7,9 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Knp\DoctrineBehaviors\Model as ORMBehaviors;
 
 /**
- * Nitra\DeliveryBundle\Entity\Department
- *
+ * Nitra\DeliveryBundle\Entity\DeliveryPeriod
  * @ORM\Table(name="delivery_period")
  * @ORM\Entity 
- * 
  * @UniqueEntity(fields={"delivery_service_id", "department_from_id", "department_to_id"}, message="Период доставки для этих отделений уже существует.")
  */
 class DeliveryPeriod
@@ -20,53 +17,69 @@ class DeliveryPeriod
     
     /**
      * @var integer $id
-     *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
     
-     /**
+    /**
      * @ORM\ManyToOne(targetEntity="DeliveryService")
      * @ORM\JoinColumn(name="delivery_service_id", referencedColumnName="id")
      * @Assert\Type(type="DeliveryService")
-     * */
+     */
     private $deliveryService;
     
     /**
      * @ORM\ManyToOne(targetEntity="Nitra\GeoBundle\Entity\City")
      * @ORM\JoinColumn(name="city_from_id", referencedColumnName="id")
      * @Assert\Type(type="Nitra\GeoBundle\Entity\City")
-     * */
+     */
     private $cityFrom;
+    
     /**
      * @ORM\ManyToOne(targetEntity="Nitra\GeoBundle\Entity\City")
      * @ORM\JoinColumn(name="city_to_id", referencedColumnName="id")
      * @Assert\Type(type="Nitra\GeoBundle\Entity\City")
-     * */
+     */
     private $cityTo;
+    
     /**
      * @ORM\ManyToOne(targetEntity="DeliveryCity")
      * @ORM\JoinColumn(name="delivery_city_from_id", referencedColumnName="id")
      * @Assert\Type(type="DeliveryCity")
-     * */
+     */
     private $deliveryCityFrom;
     
     /**
      * @ORM\ManyToOne(targetEntity="DeliveryCity")
      * @ORM\JoinColumn(name="delivery_city_to_id", referencedColumnName="id")
      * @Assert\Type(type="DeliveryCity")
-     * */
+     */
     private $deliveryCityTo;
-    
     
     /**
      * @ORM\Column(name="period", type="integer")
-     * @Assert\NotBlank
+     * @Assert\NotBlank(message="Не указан период")
      */
     private $period;
-
+    
+//    /**
+//     * Constructor
+//     */
+//    public function __construct()
+//    {
+//    }
+//    
+//    /**
+//     * Entity to string
+//     * @return string 
+//     */
+//    public function __toString()
+//    {
+//        return (string)$this->getName();
+//    }
+    
     /**
      * Get id
      *
@@ -214,6 +227,5 @@ class DeliveryPeriod
     {
         return $this->deliveryCityTo;
     }
-
-
+    
 }

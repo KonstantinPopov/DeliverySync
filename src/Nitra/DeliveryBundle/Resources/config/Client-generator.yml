@@ -5,7 +5,9 @@ params:
     concurrency_lock: ~
     bundle_name: DeliveryBundle
     pk_requirement: ~
-    fields: ~
+    fields: 
+        name:               { label: "Название клиента" }
+        deliveryServices:   { label: "ТК" }        
     object_actions:
         delete: ~
     batch_actions:
@@ -13,37 +15,37 @@ params:
 builders:
     list:
         params:
-            title: List for DeliveryBundle
-            display: ~
+            title:      "Список клиентов"
+            display:    [ name, user, deliveryServices ]
             actions:
-                new: ~
+                new:    ~
             object_actions:
-                edit: ~
+                edit:   ~
                 delete: ~
     filters:
         params:
-            display: ~
+            display:    [ name ]
     new:
         params:
-            title: New object for DeliveryBundle
-            display: ~
+            title:      "Добавить нового клиента"
+            display:    [ name, user, deliveryServices ]
             actions:
-                save: ~
-                list: ~
+                save:   ~
+                list:   ~
     edit:
         params:
-            title: "You're editing the object \"%object%\"|{ %object%: Client.title }|"
-            display: ~
+            title:      "Редактировать клиента \"%object%\"|{ %object%: Client.name }|"
+            display:    [ name, user, deliveryServices ]
             actions:
-                save: ~
-                list: ~
+                save:   ~
+                list:   ~
     show:
         params:
-            title: "You're viewing the object \"%object%\"|{ %object%: Client.title }|"
-            display: ~
+            title:      "Просмотр города \"%object%\"|{ %object%: Client.name }|"
+            display:    [ name, user, deliveryServices ]
             actions:
-                list: ~
-                new: ~
+                list:   ~
+                new:    ~
     actions:
         params:
             object_actions:
