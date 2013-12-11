@@ -17,5 +17,10 @@ City
 doctrine:migrations:execute --up 20131209175430
 удалили Blameable для Region, Country, City 
 
+!!!!
+5. миграция Version20131211185646
+копируем delivery_city в delivery_cities
+
+
 
 

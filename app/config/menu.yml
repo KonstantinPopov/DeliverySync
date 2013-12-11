@@ -14,6 +14,19 @@ millwright_menu:
             
         delivery_delivery:
             label:  "Транспортные компании"
+            route:  Nitra_DeliveryBundle_Delivery_list
+            
+        delivery_warehouse:
+            label:  "Склады ТК"
+            route:  Nitra_DeliveryBundle_Warehouse_list
+            
+        delivery_delivery_old:
+            label:  "Транспортные компании Old"
+            route:  Nitra_DeliveryBundle_DeliveryService_list
+            
+        delivery_department:
+            label:  "Отделения ТК"
+#            route:  Nitra_DeliveryBundle_Delivery_list
             
         delivery_client:
             label:  "Клиенты"
@@ -80,7 +93,10 @@ millwright_menu:
                 delivery:
                     name:   "ТК"
                     children:
-                        delivery_delivery:    ~
+                        delivery_delivery:      ~
+                        delivery_warehouse:     ~
+                        delivery_delivery_old:  ~
+                        delivery_department:    ~
                     
                 manager:
                     name:   "Пользователи"

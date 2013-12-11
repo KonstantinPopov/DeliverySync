@@ -3,6 +3,8 @@ imports:
     - { resource: security.yml }
     - { resource: menu.yml }
     - { resource: ../../vendor/nitra/doctrine-behaviors/config/orm-services.yml }
+    # импортировать файл настроек для всех ТК
+    - { resource: "@NitraDeliveryBundle/Resources/config/delivery.yml" }
 
 framework:
 #    esi:             ~

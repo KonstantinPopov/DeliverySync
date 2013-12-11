@@ -26,7 +26,17 @@ class EditType extends BaseEditType
         $formOptions['constraints'] = array(new NotBlank());
         $builder->add($widget->getName(), $widget->getType()->getName(), $formOptions);
         
+        // виджет группы ТК checkbox
+        $formOptions = $this->getFormOption('deliveries', array(
+            'em' => 'default',
+            'class' => 'NitraDeliveryBundle:Delivery',
+            'multiple' => true,
+            'expanded' => true,
+            'required' => true,  'label' => 'ТК'));
+        $builder->add('deliveries', 'entity', $formOptions);    
+        
         // виджет группы пользователей checkbox
+        // todo: в перспективе удалить
         $formOptions = $this->getFormOption('deliveryServices', array(
             'em' => 'default',
             'class' => 'NitraDeliveryBundle:DeliveryService',

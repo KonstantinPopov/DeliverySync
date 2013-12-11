@@ -3,16 +3,16 @@ namespace Nitra\DeliveryBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+//use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Knp\DoctrineBehaviors\Model as ORMBehaviors;
 
 /**
- * Nitra\DeliveryBundle\Entity\DeliveryCity
- * @ORM\Table(name="delivery_city")
+ * Nitra\DeliveryBundle\Entity\City
+ * @ORM\Table(name="delivery_cities")
  * @ORM\Entity
- * @UniqueEntity(fields="name", message="Город ТК с таким названием уже существует")
  */
-class DeliveryCity
+//* @UniqueEntity(fields="name", message="Город ТК с таким названием уже существует")
+class City
 {
 
     use ORMBehaviors\Timestampable\Timestampable,
@@ -27,54 +27,62 @@ class DeliveryCity
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-
-    /**
-     * @var string $name
-     * @ORM\Column(name="name", type="string", length=255)
-     * @Assert\NotBlank(message="Не указано название города ТК")
-     */
-    private $name;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="Nitra\GeoBundle\Entity\City", inversedBy="delivery_cities")
-     * @ORM\JoinColumn(name="city_id", referencedColumnName="id")
-     * @Assert\Type(type="Nitra\GeoBundle\Entity\City")
-     * */
-    private $city;
-
-    /**
-     * @ORM\OneToMany(targetEntity="Department", mappedBy="deliveryCity")
-     */
-    private $departments;
     
     /**
-     * @ORM\OneToMany(targetEntity="Warehouse", mappedBy="warehouseCity")
+     * @ORM\ManyToOne(targetEntity="Nitra\GeoBundle\Entity\City", inversedBy="delivery_cities")
+     * @ORM\JoinColumn(name="geo_city_id", referencedColumnName="id")
+     * @Assert\Type(type="Nitra\GeoBundle\Entity\City")
      */
-    private $warehouses;
+    private $geoCity;
+    
+    /**
+     * @ORM\ManyToOne(targetEntity="Delivery", inversedBy="cities")
+     * @ORM\JoinColumn(name="delivery_id", referencedColumnName="id")
+     * @Assert\Type(type="Delivery")
+     */
+    private $delivery;
     
     /**
      * Уникальный идентификатор города в API транспортной компании
      * @var type string
-     * @ORM\Column(name="city_code", type = "string", length=100, options={"comment"="ID города в ТК"})
+     * @ORM\Column(name="city_code", type = "string", length=100, nullable = true, options={"comment"="ID города в ТК"})
      */
     private $cityCode;
     
     /**
-     * Constructor
+     * @var string $name
+     * @ORM\Column(name="name", type="string", length=255, options={"comment"="Название города"})
+     * @Assert\NotBlank(message="Не указано название города ТК")
      */
-    public function __construct()
-    {
-        $this->departments = new \Doctrine\Common\Collections\ArrayCollection();
-    }
+    private $name;
+
+
+//    /**
+//     * @ORM\OneToMany(targetEntity="Department", mappedBy="deliveryCity")
+//     */
+//    private $departments;
     
     /**
-     * Entity to string
-     * @return string 
+     * @ORM\OneToMany(targetEntity="Warehouse", mappedBy="warehouses")
      */
-    public function __toString()
-    {
-        return (string)$this->getName();
-    }
+    private $warehouses;
+//    
+//    /**
+//     * Constructor
+//     */
+//    public function __construct()
+//    {
+//        $this->departments = new \Doctrine\Common\Collections\ArrayCollection();
+//    }
+//    
+//    /**
+//     * Entity to string
+//     * @return string 
+//     */
+//    public function __toString()
+//    {
+//        return (string)$this->getName();
+//    }
     
 //    /**
 //     *  Метод для поиска название ТК
@@ -133,10 +141,33 @@ class DeliveryCity
     }
 
     /**
+     * Set cityCode
+     *
+     * @param string $cityCode
+     * @return City
+     */
+    public function setCityCode($cityCode)
+    {
+        $this->cityCode = $cityCode;
+    
+        return $this;
+    }
+
+    /**
+     * Get cityCode
+     *
+     * @return string 
+     */
+    public function getCityCode()
+    {
+        return $this->cityCode;
+    }
+
+    /**
      * Set name
      *
      * @param string $name
-     * @return DeliveryCity
+     * @return City
      */
     public function setName($name)
     {
@@ -154,61 +185,51 @@ class DeliveryCity
     {
         return $this->name;
     }
-
+    
     /**
-     * Set city
+     * Set geoCity
      *
-     * @param \Nitra\GeoBundle\Entity\City $city
-     * @return DeliveryCity
+     * @param \Nitra\GeoBundle\Entity\City $geoCity
+     * @return City
      */
-    public function setCity(\Nitra\GeoBundle\Entity\City $city = null)
+    public function setGeoCity(\Nitra\GeoBundle\Entity\City $geoCity = null)
     {
-        $this->city = $city;
+        $this->geoCity = $geoCity;
     
         return $this;
     }
 
     /**
-     * Get city
+     * Get geoCity
      *
      * @return \Nitra\GeoBundle\Entity\City 
      */
-    public function getCity()
+    public function getGeoCity()
     {
-        return $this->city;
+        return $this->geoCity;
     }
 
     /**
-     * Add departments
+     * Set delivery
      *
-     * @param \Nitra\DeliveryBundle\Entity\Department $departments
-     * @return DeliveryCity
+     * @param \Nitra\DeliveryBundle\Entity\Delivery $delivery
+     * @return City
      */
-    public function addDepartment(\Nitra\DeliveryBundle\Entity\Department $departments)
+    public function setDelivery(\Nitra\DeliveryBundle\Entity\Delivery $delivery = null)
     {
-        $this->departments[] = $departments;
+        $this->delivery = $delivery;
     
         return $this;
     }
 
     /**
-     * Remove departments
+     * Get delivery
      *
-     * @param \Nitra\DeliveryBundle\Entity\Department $departments
+     * @return \Nitra\DeliveryBundle\Entity\Delivery 
      */
-    public function removeDepartment(\Nitra\DeliveryBundle\Entity\Department $departments)
+    public function getDelivery()
     {
-        $this->departments->removeElement($departments);
-    }
-
-    /**
-     * Get departments
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getDepartments()
-    {
-        return $this->departments;
+        return $this->delivery;
     }
     
 }

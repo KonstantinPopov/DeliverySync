@@ -1,0 +1,53 @@
+generator: admingenerator.generator.doctrine
+params:
+    model: Nitra\DeliveryBundle\Entity\Delivery
+    namespace_prefix: Nitra
+    concurrency_lock: ~
+    bundle_name: DeliveryBundle
+    pk_requirement: ~
+    fields:
+        name: { label: "Название" }
+    object_actions:
+        delete: ~
+    batch_actions:
+        delete: ~
+builders:
+    list:
+        params:
+            title:      "Список служб доставки"
+            display:    [ name ]
+            actions:
+                new:    ~
+            object_actions:
+                edit:   ~
+                delete: ~
+    filters:
+        params:
+            display:    [ name ]
+    new:
+        params:
+            title:      "Добавить новую службу доставки"
+            display:    [ name, settings ]
+            actions:
+                save: ~
+                list: ~
+    edit:
+        params:
+            title:      "Редактировать службу доставки \"%object%\"|{ %object%: Delivery.name }|"
+            display:    [ name, settings ]
+            actions:
+                save:   ~
+                list:   ~
+    show:
+        params:
+            title:      "Просмотр службы доставки \"%object%\"|{ %object%: Delivery.name }|"
+            display:    ~
+            actions:
+                list:   ~
+                new:    ~
+    actions:
+        params:
+            object_actions:
+                delete: ~
+            batch_actions:
+                delete: ~

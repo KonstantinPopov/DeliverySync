@@ -1,0 +1,12 @@
+parameters:
+    
+    # Настройки ТК 
+    novaposhta:
+        # ID сущности Nitra\DeliveryBundle\Entity\Delivery
+        delivery_id: 1
+        # токен идентификатор в API ТК Новая Почта
+        api_token: eaef11faf4f803367bb194f84180c5b8
+        # ссылка Api 
+        api_url: http://orders.novaposhta.ua/xml.php
+        
+    

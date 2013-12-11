@@ -53,15 +53,22 @@ class Client
      * @ORM\JoinTable(name="client_deliveryservice")
      */
     private $deliveryServices;
-
+    
+    /**
+     * @ORM\ManyToMany(targetEntity="Delivery", inversedBy="clients")
+     * @ORM\JoinTable(name="client_delivery")
+     */
+    private $deliveries;
+    
     /**
      * Constructor
      */
     public function __construct()
     {
         $this->deliveryServices = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->deliveries = new \Doctrine\Common\Collections\ArrayCollection();
     }
-    
+        
     /**
      * Entity to string
      * @return string 
@@ -90,7 +97,7 @@ class Client
     public function setName($name)
     {
         $this->name = $name;
-
+    
         return $this;
     }
 
@@ -113,7 +120,7 @@ class Client
     public function setToken($token)
     {
         $this->token = $token;
-
+    
         return $this;
     }
 
@@ -159,7 +166,7 @@ class Client
     public function addDeliveryService(\Nitra\DeliveryBundle\Entity\DeliveryService $deliveryServices)
     {
         $this->deliveryServices[] = $deliveryServices;
-
+    
         return $this;
     }
 
@@ -182,5 +189,37 @@ class Client
     {
         return $this->deliveryServices;
     }
+
+    /**
+     * Add deliveries
+     *
+     * @param \Nitra\DeliveryBundle\Entity\Delivery $deliveries
+     * @return Client
+     */
+    public function addDeliverie(\Nitra\DeliveryBundle\Entity\Delivery $deliveries)
+    {
+        $this->deliveries[] = $deliveries;
     
+        return $this;
+    }
+
+    /**
+     * Remove deliveries
+     *
+     * @param \Nitra\DeliveryBundle\Entity\Delivery $deliveries
+     */
+    public function removeDeliverie(\Nitra\DeliveryBundle\Entity\Delivery $deliveries)
+    {
+        $this->deliveries->removeElement($deliveries);
+    }
+
+    /**
+     * Get deliveries
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getDeliveries()
+    {
+        return $this->deliveries;
+    }
 }

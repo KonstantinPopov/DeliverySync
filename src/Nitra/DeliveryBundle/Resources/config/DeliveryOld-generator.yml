@@ -1,14 +1,11 @@
 generator: admingenerator.generator.doctrine
 params:
-    model: Nitra\DeliveryBundle\Entity\Client
+    model: Nitra\DeliveryBundle\Entity\DeliveryService
     namespace_prefix: Nitra
     concurrency_lock: ~
     bundle_name: DeliveryBundle
     pk_requirement: ~
-    fields: 
-        name:       { label: "Название клиента" }
-        delivery:   { label: "ТК" }        
-        deliveryServices:   { label: "ТК DEL" }        
+    fields: ~
     object_actions:
         delete: ~
     batch_actions:
@@ -16,8 +13,8 @@ params:
 builders:
     list:
         params:
-            title:      "Список клиентов"
-            display:    [ name, user, deliveries, deliveryServices ]
+            title:      "Список служб доставки"
+            display:    [ name ]
             actions:
                 new:    ~
             object_actions:
@@ -28,22 +25,22 @@ builders:
             display:    [ name ]
     new:
         params:
-            title:      "Добавить нового клиента"
-            display:    [ name, user, deliveries, deliveryServices ]
+            title:      "Добавить новую службу доставки"
+            display:    [ name ]
             actions:
                 save:   ~
                 list:   ~
     edit:
         params:
-            title:      "Редактировать клиента \"%object%\"|{ %object%: Client.name }|"
-            display:    [ name, user, deliveryServices ]
+            title:      "Редактировать службу доставки \"%object%\"|{ %object%: DeliveryService.name }|"
+            display:    ~
             actions:
                 save:   ~
                 list:   ~
     show:
         params:
-            title:      "Просмотр города \"%object%\"|{ %object%: Client.name }|"
-            display:    [ name, user, deliveryServices ]
+            title:      "Просмотр службы доставки \"%object%\"|{ %object%: DeliveryService.name }|"
+            display:    ~
             actions:
                 list:   ~
                 new:    ~

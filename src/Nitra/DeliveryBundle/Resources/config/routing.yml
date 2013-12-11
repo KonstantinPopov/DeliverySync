@@ -1,6 +1,25 @@
 
+# Список ТК
+NitraDeliveryBundleDelivery:
+    resource: "@NitraDeliveryBundle/Controller/Delivery/"
+    type:     admingenerator
+    prefix:   /delivery
+
+# Список складов
+NitraDeliveryBundleWarehouse:
+    resource: "@NitraDeliveryBundle/Controller/Warehouse/"
+    type:     admingenerator
+    prefix:   /warehouse
+
+# Список ТК старый
+NitraDeliveryBundleDeliveryService:
+    resource: "@NitraDeliveryBundle/Controller/DeliveryService/"
+    type:     admingenerator
+    prefix:   /delivery-service
+
 # Список клиентов
 NitraDeliveryBundleClient:
     resource: "@NitraDeliveryBundle/Controller/Client/"
     type:     admingenerator
     prefix:   /client
+    
