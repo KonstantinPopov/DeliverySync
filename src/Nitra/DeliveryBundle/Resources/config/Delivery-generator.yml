@@ -14,8 +14,9 @@ params:
 builders:
     list:
         params:
-            title:      "Список служб доставки"
-            display:    [ name ]
+            title:          "Список служб доставки"
+            display:        [ name ]
+            max_per_page:   100
             actions:
                 new:    ~
             object_actions:
@@ -27,24 +28,27 @@ builders:
     new:
         params:
             title:      "Добавить новую службу доставки"
-            display:    [ name, settings ]
+            display:    [ name ]
+            sort:       [ name, ASC ]
             actions:
                 save: ~
+                save_and_List: ~
                 list: ~
     edit:
         params:
             title:      "Редактировать службу доставки \"%object%\"|{ %object%: Delivery.name }|"
-            display:    [ name, settings ]
+            display:    [ name ]
             actions:
-                save:   ~
-                list:   ~
+                save: ~
+                save_and_List: ~
+                list: ~
     show:
         params:
             title:      "Просмотр службы доставки \"%object%\"|{ %object%: Delivery.name }|"
             display:    ~
             actions:
-                list:   ~
-                new:    ~
+                list: ~
+                new: ~
     actions:
         params:
             object_actions:

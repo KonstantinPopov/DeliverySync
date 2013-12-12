@@ -19,35 +19,3 @@ class NewType extends EditType
     }
     
 }
-
-
-
-
-//
-//use Symfony\Component\Form\FormBuilderInterface;
-//use Symfony\Component\Validator\Constraints\NotBlank;
-//
-//
-///**
-// * NewType
-// */
-//class NewType extends EditType
-//{
-//    
-//    /**
-//     * buildForm
-//     */
-//    public function buildForm(FormBuilderInterface $builder, array $options)
-//    {
-//        
-//        // родитель формы
-//        parent::buildForm($builder, $options);
-//        
-//        // добавить валидатор NotBlank для виджета
-//        $widget = $builder->get('password');
-//        $formOptions = $widget->getOptions();
-//        $formOptions['constraints'] = array(new NotBlank());
-//        $builder->add($widget->getName(),  $widget->getType()->getName(), $formOptions);
-//    }    
-//    
-//}

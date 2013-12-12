@@ -5,7 +5,13 @@ params:
     concurrency_lock: ~
     bundle_name: DeliveryBundle
     pk_requirement: ~
-    fields: ~
+    fields:
+        delivery:   { label: "Транспортная компания" }
+        city:       { label: "Город" }
+        name:       { label: "Название склада" }
+        address:    { label: "Адресс склада" }
+        phone:      { label: "Телефон" }
+        updatedAt:  { label: "Обновлено" }
     object_actions:
         delete: ~
     batch_actions:
@@ -13,8 +19,10 @@ params:
 builders:
     list:
         params:
-            title: List for DeliveryBundle
-            display: ~
+            title:          "Список складов ТК"
+            display:        [ delivery, city, name, address, phone ]
+            sort:           [ name, ASC ]
+            max_per_page:   100
             actions:
                 new: ~
             object_actions:
@@ -22,25 +30,27 @@ builders:
                 delete: ~
     filters:
         params:
-            display: ~
+            display:    [ delivery, city, name, address, phone ]
     new:
         params:
-            title: New object for DeliveryBundle
-            display: ~
+            title:      "Добавить новый склад ТК"
+            display:    [ delivery, city, name, address, phone ]
             actions:
                 save: ~
+                save_and_List:  ~
                 list: ~
     edit:
         params:
-            title: "You're editing the object \"%object%\"|{ %object%: Warehouse.title }|"
-            display: ~
+            title:      "Редактировать склад ТК \"%object%\"|{ %object%: Warehouse.name }|"
+            display:    [ delivery, city, name, address, phone ]
             actions:
                 save: ~
+                save_and_List:  ~
                 list: ~
     show:
         params:
-            title: "You're viewing the object \"%object%\"|{ %object%: Warehouse.title }|"
-            display: ~
+            title:      "Просмотр склад ТК \"%object%\"|{ %object%: Warehouse.name }|"
+            display:    ~
             actions:
                 list: ~
                 new: ~

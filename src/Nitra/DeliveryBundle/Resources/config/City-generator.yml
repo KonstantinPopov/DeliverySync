@@ -1,0 +1,60 @@
+generator: admingenerator.generator.doctrine
+params:
+    model: Nitra\DeliveryBundle\Entity\City
+    namespace_prefix: Nitra
+    concurrency_lock: ~
+    bundle_name: DeliveryBundle
+    pk_requirement: ~
+    fields:
+        delivery:   { label: "Транспортная компания" }
+        geoCity:    { label: "Эталон регион" }
+        name:       { label: "Название города" }
+        updatedAt:  { label: "Обновлено" }
+    object_actions:
+        delete: ~
+    batch_actions:
+        delete: ~
+builders:
+    list:
+        params:
+            title:          "Список городов ТК"
+            display:        [ delivery, geoCity, name, updatedAt ]
+            sort:           [ name, ASC ]
+            max_per_page:   100
+            actions:
+                new: ~
+            object_actions:
+                edit: ~
+                delete: ~
+    filters:
+        params:
+            display:    [ delivery, geoCity, name ]
+    new:
+        params:
+            title:      "Добавить новый город ТК"
+            display:    [ delivery, geoCity, name ]
+            actions:
+                save: ~
+                save_and_List: ~
+                list: ~
+    edit:
+        params:
+            title:      "Редактировать город ТК \"%object%\"|{ %object%: City.name }|"
+            display:    [ delivery, geoCity, name ]
+            actions:
+                save: ~
+                save_and_List: ~
+                list: ~
+    show:
+        params:
+            title:      "Просмотр города ТК \"%object%\"|{ %object%: City.name }|"
+            display: ~
+            actions:
+                list: ~
+                new: ~
+    actions:
+        params:
+            object_actions:
+                delete: ~
+            batch_actions:
+                delete: ~

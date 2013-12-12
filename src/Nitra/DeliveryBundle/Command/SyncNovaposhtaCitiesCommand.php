@@ -4,6 +4,8 @@ namespace Nitra\DeliveryBundle\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Nitra\DeliveryBundle\Command\SyncNovaposhta;
+use Nitra\DeliveryBundle\Entity\Region as DeliveryRegion;
+use Nitra\DeliveryBundle\Entity\City as DeliveryCity;
 
 /**
  * SyncNovaposhtaCitiesCommand
@@ -72,14 +74,78 @@ class SyncNovaposhtaCitiesCommand extends SyncNovaposhta
     protected function processSync(array $responseArray, OutputInterface $output)
     {
         
+        // массив импортируемых регионов
+        $regions = array();
+        
+        // массив импортируемых городов
+        $cities = array();
+            
         // обойти массив ответа
-        foreach($responseArray as $tkCity) {
+        foreach($responseArray as $tkData) {
+            // регион
+            if ((string)$tkData->id == (string)$tkData->parentCityId) {
+                $regions[] = $tkData;
+            }
+            
+            // город
+            $cities[] = $tkData;
+        }
+        
+        // Импортировать регионы
+        foreach($regions as $region) {
+            
+            // регион в DS по ID ТК 
+            $dsRegion = $this->getEntityManager()
+                ->getRepository('NitraDeliveryBundle:Region')
+                ->findOneBy(array(
+                    'regionCode' => (string)$region->id,
+                    'delivery' => $this->getDelivery(),
+                    ));
+            
+            // регион не найден
+            if (!$dsRegion) {
+                // поиск по названию 
+                $dsRegion = $this->getEntityManager()
+                    ->getRepository('NitraDeliveryBundle:Region')
+                    ->findOneBy(array(
+                        'name' => (string)$region->nameRu,
+                        'delivery' => $this->getDelivery(),
+                        ));
+            }
+            
+            // регион не найден создать новый
+            if (!$dsRegion) {
+                $dsRegion = new DeliveryRegion();
+            }
+            
+            // установить данные 
+            $dsRegion->setDelivery($this->getDelivery());
+            $dsRegion->setRegionCode((string)$region->id);
+            $dsRegion->setName((string)$region->nameRu);
+            
+            // запомнить для сохранения
+            $this->getEntityManager()->persist($dsRegion);
+        }
+        
+        // сохранить регионы отдельно от городов
+        $this->getEntityManager()->flush();
+        
+        // Импортировать города
+        foreach($cities as $city) {
+            
+            // получить регион для города
+            $dsRegion = $this->getEntityManager()
+                ->getRepository('NitraDeliveryBundle:Region')
+                ->findOneBy(array(
+                    'regionCode' => (string)$city->parentCityId,
+                    'delivery' => $this->getDelivery(),
+                    ));
             
             // город в DS по ID ТК 
             $dsCity = $this->getEntityManager()
                 ->getRepository('NitraDeliveryBundle:City')
                 ->findOneBy(array(
-                    'cityCode' => (string)$tkCity->id,
+                    'cityCode' => (string)$city->id,
                     'delivery' => $this->getDelivery(),
                     ));
             
@@ -89,25 +155,27 @@ class SyncNovaposhtaCitiesCommand extends SyncNovaposhta
                 $dsCity = $this->getEntityManager()
                     ->getRepository('NitraDeliveryBundle:City')
                     ->findOneBy(array(
-                        'name' => (string)$tkCity->nameRu,
+                        'name' => (string)$city->nameRu,
+                        'delivery' => $this->getDelivery(),
                         ));
             }
             
             // город не найден создать новый
             if (!$dsCity) {
-                $dsCity = new \Nitra\DeliveryBundle\Entity\City();
+                $dsCity = new DeliveryCity();
             }
             
-            // установить данные города
+            // установить данные 
             $dsCity->setDelivery($this->getDelivery());
-            $dsCity->setCityCode((string)$tkCity->id);
-            $dsCity->setName((string)$tkCity->nameRu);
+            $dsCity->setRegion($dsRegion);
+            $dsCity->setCityCode((string)$city->id);
+            $dsCity->setName((string)$city->nameRu);
             
             // запомнить для сохранения
             $this->getEntityManager()->persist($dsCity);
         }
         
-        // сохранить
+        // сохранить города отдельно от регионов
         $this->getEntityManager()->flush();
     }
     

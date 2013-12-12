@@ -1,0 +1,60 @@
+generator: admingenerator.generator.doctrine
+params:
+    model: Nitra\DeliveryBundle\Entity\Region
+    namespace_prefix: Nitra
+    concurrency_lock: ~
+    bundle_name: DeliveryBundle
+    pk_requirement: ~
+    fields:
+        delivery:   { label: "Транспортная компания" }
+        geoRegion:  { label: "Эталон регион" }
+        name:       { label: "Название региона" }
+        updatedAt:  { label: "Обновлено" }
+    object_actions:
+        delete: ~
+    batch_actions:
+        delete: ~
+builders:
+    list:
+        params:
+            title:          "Список регионов ТК"
+            display:        [ delivery, geoRegion, name, updatedAt ]
+            sort:           [ name, ASC ]
+            max_per_page:   100
+            actions:
+                new: ~
+            object_actions:
+                edit: ~
+                delete: ~
+    filters:
+        params:
+            display:    [ delivery, geoRegion, name ]
+    new:
+        params:
+            title:      "Добавить новый регион ТК"
+            display:    [ delivery, geoRegion, name ]
+            actions:
+                save: ~
+                save_and_List: ~
+                list: ~
+    edit:
+        params:
+            title:      "Редактировать регион ТК \"%object%\"|{ %object%: Region.name }|"
+            display:    [ delivery, geoRegion, name ]
+            actions:
+                save: ~
+                save_and_List: ~
+                list: ~
+    show:
+        params:
+            title:      "Просмотр региона ТК \"%object%\"|{ %object%: Region.name }|"
+            display:    ~
+            actions:
+                list: ~
+                new: ~
+    actions:
+        params:
+            object_actions:
+                delete: ~
+            batch_actions:
+                delete: ~

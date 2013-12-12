@@ -4,6 +4,7 @@ namespace Nitra\DeliveryBundle\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Nitra\DeliveryBundle\Command\SyncNovaposhta;
+use Nitra\DeliveryBundle\Entity\Warehouse as DeliveryWarehouse;
 
 /**
  * SyncNovaposhtaWarehousesCommand
@@ -72,23 +73,46 @@ class SyncNovaposhtaWarehousesCommand extends SyncNovaposhta
     protected function processSync(array $responseArray, OutputInterface $output)
     {
         // обойти массив ответа
-        foreach($responseArray as $tkWarehouse) {
+        foreach($responseArray as $wh) {
             
-//            // город в DS по ID ТК 
-//            $dsCity = $this->getEntityManager()
-//                ->getRepository('NitraDeliveryBundle:DeliveryCity')
-//                ->findOneBy(array(
-//                    'cityCode' => $tkCity->id
-//                ));
+            // получить город для склада
+            $dsCity = $this->getEntityManager()
+                ->getRepository('NitraDeliveryBundle:City')
+                ->findOneBy(array(
+                    'cityCode' => (string)$wh->city_id,
+                    'delivery' => $this->getDelivery(),
+                    ));
             
-//            print "\n";            var_dump((string)$tkCity->id); print "\n";
-//            print "\n";            var_dump(get_class_methods($tkCity)); print "\n";
-            print "\n"; print_r($tkWarehouse); print "\n";
-            die;
+            // получить склад
+            $dsWarehouse = $this->getEntityManager()
+                ->getRepository('NitraDeliveryBundle:Warehouse')
+                ->findOneBy(array(
+                    'warehouseCode' => (string)$wh->wareId,
+                    'delivery' => $this->getDelivery(),
+                    ));
             
+            // склад не найден, создать склад
+            if (!$dsWarehouse) {
+                $dsWarehouse = new DeliveryWarehouse();
+            }
+            
+            // установить данные 
+            $dsWarehouse->setDelivery($this->getDelivery());
+            $dsWarehouse->setWarehouseCode((string)$wh->wareId);
+            
+            $dsWarehouse->setCity($dsCity);
+            $dsWarehouse->setName((string)$wh->addressRu);
+            $dsWarehouse->setAddress((string)$wh->addressRu);
+            $dsWarehouse->setPhone((string)$wh->phone);
+            $dsWarehouse->setLongitude((string)$wh->x);
+            $dsWarehouse->setLatitude((string)$wh->y);
+            
+            // запомнить для сохранения
+            $this->getEntityManager()->persist($dsWarehouse);
         }
         
-        print "\n"; print_r($responseArray); print "\n";
+        // сохранить склады
+        $this->getEntityManager()->flush();
     }
     
 }

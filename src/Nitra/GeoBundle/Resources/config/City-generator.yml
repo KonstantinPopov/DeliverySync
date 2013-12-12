@@ -6,8 +6,8 @@ params:
     bundle_name: GeoBundle
     pk_requirement: ~
     fields:
-        region:         { label: "Регион" }
-        name:           { label: "Город" }
+        region:     { label: "Регион" }
+        name:       { label: "Город" }
     object_actions:
         delete: ~
     batch_actions:
@@ -15,7 +15,7 @@ params:
 builders:
     list:
         params:
-            title:          "Список городов"
+            title:          "Эталон - список городов"
             display:        [ country, region, name ]
             sort:           [ name, ASC ]
             max_per_page:   50
@@ -29,21 +29,21 @@ builders:
             display:    [ region, name ]
     new:
         params:
-            title:      "Добавить новый город"
+            title:      "Эталон - добавить новый город"
             display:    [ region, name ]
             actions:
                 save:   ~
                 list:   ~
     edit:
         params:
-            title:      "Редактировать город \"%object%\"|{ %object%: City.name }|"
+            title:      "Эталон - редактировать город \"%object%\"|{ %object%: City.name }|"
             display:    [ region, name ]
             actions:
                 save:   ~
                 list:   ~
     show:
         params:
-            title:      "Просмотр города \"%object%\"|{ %object%: City.name }|"
+            title:      "Эталон - просмотр города \"%object%\"|{ %object%: City.name }|"
             display:    ~
             actions:
                 list:   ~

@@ -47,28 +47,21 @@ class Client
      * @Assert\Type(type="Nitra\ManagerBundle\Entity\Manager")
      * */
     private $user;
-
-    /**
-     * @ORM\ManyToMany(targetEntity="DeliveryService", inversedBy="clients")
-     * @ORM\JoinTable(name="client_deliveryservice")
-     */
-    private $deliveryServices;
     
     /**
      * @ORM\ManyToMany(targetEntity="Delivery", inversedBy="clients")
      * @ORM\JoinTable(name="client_delivery")
      */
     private $deliveries;
-    
+            
     /**
      * Constructor
      */
     public function __construct()
     {
-        $this->deliveryServices = new \Doctrine\Common\Collections\ArrayCollection();
         $this->deliveries = new \Doctrine\Common\Collections\ArrayCollection();
     }
-        
+    
     /**
      * Entity to string
      * @return string 
@@ -155,39 +148,6 @@ class Client
     public function getUser()
     {
         return $this->user;
-    }
-
-    /**
-     * Add deliveryServices
-     *
-     * @param \Nitra\DeliveryBundle\Entity\DeliveryService $deliveryServices
-     * @return Client
-     */
-    public function addDeliveryService(\Nitra\DeliveryBundle\Entity\DeliveryService $deliveryServices)
-    {
-        $this->deliveryServices[] = $deliveryServices;
-    
-        return $this;
-    }
-
-    /**
-     * Remove deliveryServices
-     *
-     * @param \Nitra\DeliveryBundle\Entity\DeliveryService $deliveryServices
-     */
-    public function removeDeliveryService(\Nitra\DeliveryBundle\Entity\DeliveryService $deliveryServices)
-    {
-        $this->deliveryServices->removeElement($deliveryServices);
-    }
-
-    /**
-     * Get deliveryServices
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getDeliveryServices()
-    {
-        return $this->deliveryServices;
     }
 
     /**

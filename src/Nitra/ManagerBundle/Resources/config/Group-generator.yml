@@ -24,7 +24,7 @@ builders:
                 delete: ~
     filters:
         params:
-            display:    [ name, roles ]
+            display:    [ name ]
     new:
         params:
             title:      "Добавить новую группу"

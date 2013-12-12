@@ -5,17 +5,29 @@ NitraDeliveryBundleDelivery:
     type:     admingenerator
     prefix:   /delivery
 
+# Список регионов
+NitraDeliveryBundleRegion:
+    resource: "@NitraDeliveryBundle/Controller/Region/"
+    type:     admingenerator
+    prefix:   /delivery-region
+
+# Список городов
+NitraDeliveryBundleCity:
+    resource: "@NitraDeliveryBundle/Controller/City/"
+    type:     admingenerator
+    prefix:   /delivery-city
+
 # Список складов
 NitraDeliveryBundleWarehouse:
     resource: "@NitraDeliveryBundle/Controller/Warehouse/"
     type:     admingenerator
-    prefix:   /warehouse
+    prefix:   /delivery-warehouse
 
-# Список ТК старый
-NitraDeliveryBundleDeliveryService:
-    resource: "@NitraDeliveryBundle/Controller/DeliveryService/"
-    type:     admingenerator
-    prefix:   /delivery-service
+## Список ТК старый
+#NitraDeliveryBundleDeliveryService:
+#    resource: "@NitraDeliveryBundle/Controller/DeliveryService/"
+#    type:     admingenerator
+#    prefix:   /delivery-service
 
 # Список клиентов
 NitraDeliveryBundleClient:

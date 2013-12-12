@@ -3,7 +3,7 @@ namespace Nitra\DeliveryBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-//use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Knp\DoctrineBehaviors\Model as ORMBehaviors;
 
 /**
@@ -11,7 +11,7 @@ use Knp\DoctrineBehaviors\Model as ORMBehaviors;
  * @ORM\Table(name="delivery_cities")
  * @ORM\Entity
  */
-//* @UniqueEntity(fields="name", message="Город ТК с таким названием уже существует")
+//* @UniqueEntity(fields={"delivery_id", "city_code", "name"}, message="Город ТК данной компании с таким идентификатором уже существует")
 class City
 {
 
@@ -38,9 +38,21 @@ class City
     /**
      * @ORM\ManyToOne(targetEntity="Delivery", inversedBy="cities")
      * @ORM\JoinColumn(name="delivery_id", referencedColumnName="id")
-     * @Assert\Type(type="Delivery")
+     * @Assert\Type(type="Nitra\DeliveryBundle\Entity\Delivery")
      */
     private $delivery;
+    
+    /**
+     * @ORM\ManyToOne(targetEntity="Region", inversedBy="cities")
+     * @ORM\JoinColumn(name="region_id", referencedColumnName="id")
+     * @Assert\NotBlank(message="Не указан регион")
+     */
+    private $region;
+    
+    /**
+     * @ORM\OneToMany(targetEntity="Warehouse", mappedBy="warehouses")
+     */
+    private $warehouses;
     
     /**
      * Уникальный идентификатор города в API транспортной компании
@@ -55,80 +67,23 @@ class City
      * @Assert\NotBlank(message="Не указано название города ТК")
      */
     private $name;
-
-
-//    /**
-//     * @ORM\OneToMany(targetEntity="Department", mappedBy="deliveryCity")
-//     */
-//    private $departments;
     
     /**
-     * @ORM\OneToMany(targetEntity="Warehouse", mappedBy="warehouses")
+     * Constructor
      */
-    private $warehouses;
-//    
-//    /**
-//     * Constructor
-//     */
-//    public function __construct()
-//    {
-//        $this->departments = new \Doctrine\Common\Collections\ArrayCollection();
-//    }
-//    
-//    /**
-//     * Entity to string
-//     * @return string 
-//     */
-//    public function __toString()
-//    {
-//        return (string)$this->getName();
-//    }
+    public function __construct()
+    {
+        $this->warehouses = new \Doctrine\Common\Collections\ArrayCollection();
+    }
     
-//    /**
-//     *  Метод для поиска название ТК
-//     */
-//    public function getDeliveryServiceName()
-//    {
-//        if ($this->getDepartment()) {
-//            return $this->getDepartment()->getDeliveryService()->getName();
-//        } else {
-//            return null;
-//        }
-//    }
-//
-//    /**
-//     *  Метод для поиска название склада
-//     */
-//    public function getDepartmentName()
-//    {
-//        return $this->getDepartment()->getName();
-//    }
-//
-//    private function getDepartment()
-//    {
-//        return $this->departments[0];
-//    }
-//
-//    /**
-//     *  Метод для поиска ссілки на карту
-//     */
-//    public function getGoogleMapsURLName()
-//    {
-//        return 'https://maps.google.com.ua/?authuser=0&f=q&hl=ru&jsv=439a&q=' . $this->getDepartment()->getLatitude()
-//                . ',%20' . $this->getDepartment()->getLongitude() .
-//                '&sll=' . $this->getDepartment()->getLatitude()
-//                . ',' . $this->getDepartment()->getLatitude()
-//                . '&source=s_q&sspn=0.003042,0.016512&vps=1&vpsrc=0';
-//    }
-//
-//    public function getDepartmentByDS($deliveryService)
-//    {
-//        foreach ($this->departments as $department) {
-//            if ($department->getDeliveryService()->getId() == $deliveryService->getId()) {
-//                return $department;
-//            }
-//        }
-//    }
+    /**
+     * Entity to string
+     * @return string 
+     */
+    public function __toString()
+    {
+        return (string)$this->getName();
+    }
     
     /**
      * Get id
@@ -185,7 +140,7 @@ class City
     {
         return $this->name;
     }
-    
+
     /**
      * Set geoCity
      *
@@ -231,5 +186,60 @@ class City
     {
         return $this->delivery;
     }
+
+    /**
+     * Set region
+     *
+     * @param \Nitra\DeliveryBundle\Entity\Region $region
+     * @return City
+     */
+    public function setRegion(\Nitra\DeliveryBundle\Entity\Region $region = null)
+    {
+        $this->region = $region;
     
+        return $this;
+    }
+
+    /**
+     * Get region
+     *
+     * @return \Nitra\DeliveryBundle\Entity\Region 
+     */
+    public function getRegion()
+    {
+        return $this->region;
+    }
+
+    /**
+     * Add warehouses
+     *
+     * @param \Nitra\DeliveryBundle\Entity\Warehouse $warehouses
+     * @return City
+     */
+    public function addWarehouse(\Nitra\DeliveryBundle\Entity\Warehouse $warehouses)
+    {
+        $this->warehouses[] = $warehouses;
+    
+        return $this;
+    }
+
+    /**
+     * Remove warehouses
+     *
+     * @param \Nitra\DeliveryBundle\Entity\Warehouse $warehouses
+     */
+    public function removeWarehouse(\Nitra\DeliveryBundle\Entity\Warehouse $warehouses)
+    {
+        $this->warehouses->removeElement($warehouses);
+    }
+
+    /**
+     * Get warehouses
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getWarehouses()
+    {
+        return $this->warehouses;
+    }
 }

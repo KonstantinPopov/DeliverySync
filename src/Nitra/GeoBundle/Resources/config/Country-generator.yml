@@ -6,7 +6,7 @@ params:
     bundle_name: GeoBundle
     pk_requirement: ~
     fields:
-        name:           { label: "Страна" }
+        name:       { label: "Страна" }
     object_actions:
         delete: ~
     batch_actions:
@@ -14,7 +14,7 @@ params:
 builders:
     list:
         params:
-            title:      "Список стран"
+            title:      "Эталон - список стран"
             display:    [ name ]
             sort:       [ name, ASC ]
             actions:
@@ -27,21 +27,21 @@ builders:
             display:    [ name ]
     new:
         params:
-            title:      "Добавить новую страну"
+            title:      "Эталон - добавить новую страну"
             display:    [ name ]
             actions:
                 save:   ~
                 list:   ~
     edit:
         params:
-            title:      "Редактировать страну \"%object%\"|{ %object%: Country.name }|"
+            title:      "Эталон - редактировать страну \"%object%\"|{ %object%: Country.name }|"
             display:    [ name ]
             actions:
                 save:   ~
                 list:   ~
     show:
         params:
-            title:      "Просмотр страны \"%object%\"|{ %object%: Country.name }|"
+            title:      "Эталон - просмотр страны \"%object%\"|{ %object%: Country.name }|"
             display:    [ name ]
             actions:
                 list:   ~

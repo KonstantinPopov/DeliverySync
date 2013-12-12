@@ -21,6 +21,10 @@ doctrine:migrations:execute --up 20131209175430
 5. миграция Version20131211185646
 копируем delivery_city в delivery_cities
 
-
+6. миграция  Version20131212182337
+delivery_regions 
+delivery_cities 
+delivery_warehouses 
+     
 
 

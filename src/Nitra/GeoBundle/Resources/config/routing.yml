@@ -3,19 +3,19 @@
 NitraGeoBundleCity:
     resource: "@NitraGeoBundle/Controller/City/"
     type:     admingenerator
-    prefix:   /geo/city
+    prefix:   /geo-city
 
 # Справочник эталонные регионы
 NitraGeoBundleRegion:
     resource: "@NitraGeoBundle/Controller/Region/"
     type:     admingenerator
-    prefix:   /geo/region
+    prefix:   /geo-region
     
 # Справочник эталонные страны
 NitraGeoBundleCountry:
     resource: "@NitraGeoBundle/Controller/Country/"
     type:     admingenerator
-    prefix:   /geo/country
+    prefix:   /geo-country
     
 # формирование фикстур по существующим эталонным данным
 NitraGeoBundleFixtures:
