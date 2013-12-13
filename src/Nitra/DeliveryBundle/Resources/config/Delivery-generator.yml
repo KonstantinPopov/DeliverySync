@@ -32,7 +32,7 @@ builders:
             sort:       [ name, ASC ]
             actions:
                 save: ~
-                save_and_List: ~
+                save-and-list: ~
                 list: ~
     edit:
         params:
@@ -40,7 +40,7 @@ builders:
             display:    [ name ]
             actions:
                 save: ~
-                save_and_List: ~
+                save-and-list: ~
                 list: ~
     show:
         params:

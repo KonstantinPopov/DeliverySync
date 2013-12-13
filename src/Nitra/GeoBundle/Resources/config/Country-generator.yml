@@ -17,14 +17,13 @@ builders:
             title:      "Эталон - список стран"
             display:    [ name ]
             sort:       [ name, ASC ]
-            actions:
-                new: ~
-            object_actions:
-                edit:   ~
-                delete: []
+            actions:        []
+            object_actions: []
+            
     filters:
         params:
             display:    [ name ]
+            
     new:
         params:
             title:      "Эталон - добавить новую страну"
@@ -32,6 +31,7 @@ builders:
             actions:
                 save:   ~
                 list:   ~
+                
     edit:
         params:
             title:      "Эталон - редактировать страну \"%object%\"|{ %object%: Country.name }|"
@@ -39,6 +39,7 @@ builders:
             actions:
                 save:   ~
                 list:   ~
+                
     show:
         params:
             title:      "Эталон - просмотр страны \"%object%\"|{ %object%: Country.name }|"
@@ -46,6 +47,7 @@ builders:
             actions:
                 list:   ~
                 new:    ~
+                
     actions:
         params:
             object_actions:

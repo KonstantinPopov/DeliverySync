@@ -7,7 +7,7 @@ params:
     pk_requirement: ~
     fields:
         delivery:   { label: "Транспортная компания" }
-        geoCity:    { label: "Эталон регион" }
+        geoCity:    { label: "Эталон город" }
         name:       { label: "Название города" }
         updatedAt:  { label: "Обновлено" }
     object_actions:
@@ -26,25 +26,29 @@ builders:
             object_actions:
                 edit: ~
                 delete: ~
+                
     filters:
         params:
-            display:    [ delivery, geoCity, name ]
+            display:    [ delivery, name ]
+            
     new:
         params:
             title:      "Добавить новый город ТК"
             display:    [ delivery, geoCity, name ]
             actions:
                 save: ~
-                save_and_List: ~
+                save-and-list: ~
                 list: ~
+                
     edit:
         params:
             title:      "Редактировать город ТК \"%object%\"|{ %object%: City.name }|"
             display:    [ delivery, geoCity, name ]
             actions:
                 save: ~
-                save_and_List: ~
+                save-and-list: ~
                 list: ~
+                
     show:
         params:
             title:      "Просмотр города ТК \"%object%\"|{ %object%: City.name }|"
@@ -52,6 +56,7 @@ builders:
             actions:
                 list: ~
                 new: ~
+                
     actions:
         params:
             object_actions:

@@ -19,14 +19,13 @@ builders:
             display:        [ country, name ]
             sort:           [ name, ASC ]
             max_per_page:   50
-            actions:
-                new: ~
-            object_actions:
-                edit:   ~
-                delete: ~
+            actions:        []
+            object_actions: []
+            
     filters:
         params:
             display:    [ country, name ]
+            
     new:
         params:
             title:      "Эталон - добавить новый регион"
@@ -34,6 +33,7 @@ builders:
             actions:
                 save:   ~
                 list:   ~
+                
     edit:
         params:
             title:      "Эталон - редактировать регион \"%object%\"|{ %object%: Region.name }|"
@@ -41,6 +41,7 @@ builders:
             actions:
                 save:   ~
                 list:   ~
+                
     show:
         params:
             title:      "Эталон - просмотр региона \"%object%\"|{ %object%: Region.name }|"
@@ -48,6 +49,7 @@ builders:
             actions:
                 list:   ~
                 new:    ~
+                
     actions:
         params:
             object_actions:

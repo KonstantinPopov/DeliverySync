@@ -10,8 +10,9 @@ use Knp\DoctrineBehaviors\Model as ORMBehaviors;
  * Nitra\DeliveryBundle\Entity\Client
  * @ORM\Table(name="client")
  * @ORM\Entity
- * @UniqueEntity(fields="name", message="Клиент с таким названием уже существует")
  */
+// UniqueEntity не используем потому что используем SoftDeletable
+// @UniqueEntity(fields="name", message="Клиент с таким названием уже существует")
 class Client
 {
 

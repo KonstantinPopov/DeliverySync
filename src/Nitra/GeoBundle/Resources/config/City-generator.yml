@@ -16,17 +16,16 @@ builders:
     list:
         params:
             title:          "Эталон - список городов"
-            display:        [ country, region, name ]
+            display:        [ region, name ]
             sort:           [ name, ASC ]
             max_per_page:   50
-            actions:
-                new:    ~
-            object_actions:
-                edit:   ~
-                delete: ~
+            actions:        []
+            object_actions: []
+            
     filters:
         params:
             display:    [ region, name ]
+            
     new:
         params:
             title:      "Эталон - добавить новый город"
@@ -34,6 +33,7 @@ builders:
             actions:
                 save:   ~
                 list:   ~
+                
     edit:
         params:
             title:      "Эталон - редактировать город \"%object%\"|{ %object%: City.name }|"
@@ -41,6 +41,7 @@ builders:
             actions:
                 save:   ~
                 list:   ~
+                
     show:
         params:
             title:      "Эталон - просмотр города \"%object%\"|{ %object%: City.name }|"
@@ -48,6 +49,7 @@ builders:
             actions:
                 list:   ~
                 new:    ~
+                
     actions:
         params:
             object_actions:

@@ -36,19 +36,6 @@ class Country
     private $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="Region", mappedBy="country")
-     */
-    private $regions;
-    
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->regions = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-    
-    /**
      * Entity to string
      * @return string 
      */

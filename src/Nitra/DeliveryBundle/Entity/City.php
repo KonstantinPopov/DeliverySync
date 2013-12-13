@@ -11,7 +11,8 @@ use Knp\DoctrineBehaviors\Model as ORMBehaviors;
  * @ORM\Table(name="delivery_cities")
  * @ORM\Entity
  */
-//* @UniqueEntity(fields={"delivery_id", "city_code", "name"}, message="Город ТК данной компании с таким идентификатором уже существует")
+// UniqueEntity не используем потому что используем SoftDeletable
+// @UniqueEntity(fields={"delivery_id", "city_code", "name"}, message="Город ТК данной компании с таким идентификатором уже существует")
 class City
 {
 
@@ -43,18 +44,6 @@ class City
     private $delivery;
     
     /**
-     * @ORM\ManyToOne(targetEntity="Region", inversedBy="cities")
-     * @ORM\JoinColumn(name="region_id", referencedColumnName="id")
-     * @Assert\NotBlank(message="Не указан регион")
-     */
-    private $region;
-    
-    /**
-     * @ORM\OneToMany(targetEntity="Warehouse", mappedBy="warehouses")
-     */
-    private $warehouses;
-    
-    /**
      * Уникальный идентификатор города в API транспортной компании
      * @var type string
      * @ORM\Column(name="city_code", type = "string", length=100, nullable = true, options={"comment"="ID города в ТК"})
@@ -67,14 +56,6 @@ class City
      * @Assert\NotBlank(message="Не указано название города ТК")
      */
     private $name;
-    
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->warehouses = new \Doctrine\Common\Collections\ArrayCollection();
-    }
     
     /**
      * Entity to string
@@ -186,60 +167,5 @@ class City
     {
         return $this->delivery;
     }
-
-    /**
-     * Set region
-     *
-     * @param \Nitra\DeliveryBundle\Entity\Region $region
-     * @return City
-     */
-    public function setRegion(\Nitra\DeliveryBundle\Entity\Region $region = null)
-    {
-        $this->region = $region;
     
-        return $this;
-    }
-
-    /**
-     * Get region
-     *
-     * @return \Nitra\DeliveryBundle\Entity\Region 
-     */
-    public function getRegion()
-    {
-        return $this->region;
-    }
-
-    /**
-     * Add warehouses
-     *
-     * @param \Nitra\DeliveryBundle\Entity\Warehouse $warehouses
-     * @return City
-     */
-    public function addWarehouse(\Nitra\DeliveryBundle\Entity\Warehouse $warehouses)
-    {
-        $this->warehouses[] = $warehouses;
-    
-        return $this;
-    }
-
-    /**
-     * Remove warehouses
-     *
-     * @param \Nitra\DeliveryBundle\Entity\Warehouse $warehouses
-     */
-    public function removeWarehouse(\Nitra\DeliveryBundle\Entity\Warehouse $warehouses)
-    {
-        $this->warehouses->removeElement($warehouses);
-    }
-
-    /**
-     * Get warehouses
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getWarehouses()
-    {
-        return $this->warehouses;
-    }
 }

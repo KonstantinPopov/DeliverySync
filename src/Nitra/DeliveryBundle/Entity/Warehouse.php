@@ -10,8 +10,8 @@ use Knp\DoctrineBehaviors\Model as ORMBehaviors;
  * Nitra\DeliveryBundle\Entity\Department
  * @ORM\Table(name="delivery_warehouses")
  * @ORM\Entity  
- * @UniqueEntity(fields={"delivery_id", "warehouse_code"}, message="Склад ТК данной компании с таким идентификатором уже существует")
  */
+//@UniqueEntity(fields={"delivery_id", "warehouse_code"}, message="Склад ТК данной компании с таким идентификатором уже существует")
 class Warehouse
 {
 
@@ -48,6 +48,13 @@ class Warehouse
      * @ORM\Column(name="warehouse_code", type = "string", length=100, nullable = true, options={"comment"="ID склада в ТК"})
      */
     private $warehouseCode;
+    
+    /**
+     * Номер склада (отделения) в городе в API транспортной компании
+     * @var type string
+     * @ORM\Column(name="number", type = "string", length=25, nullable = true, options={"comment"="Номер склада в городе"})
+     */
+    private $number;
     
     /**
      * @var string $name
@@ -124,7 +131,30 @@ class Warehouse
     {
         return $this->warehouseCode;
     }
+    
+    /**
+     * Set number
+     *
+     * @param string $number
+     * @return Warehouse
+     */
+    public function setNumber($number)
+    {
+        $this->number = $number;
+    
+        return $this;
+    }
 
+    /**
+     * Get number
+     *
+     * @return string 
+     */
+    public function getNumber()
+    {
+        return $this->number;
+    }    
+    
     /**
      * Set name
      *

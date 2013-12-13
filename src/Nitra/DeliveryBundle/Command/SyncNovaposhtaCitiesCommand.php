@@ -4,8 +4,7 @@ namespace Nitra\DeliveryBundle\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Nitra\DeliveryBundle\Command\SyncNovaposhta;
-use Nitra\DeliveryBundle\Entity\Region as DeliveryRegion;
-use Nitra\DeliveryBundle\Entity\City as DeliveryCity;
+use Nitra\DeliveryBundle\Entity\City;
 
 /**
  * SyncNovaposhtaCitiesCommand
@@ -73,109 +72,103 @@ class SyncNovaposhtaCitiesCommand extends SyncNovaposhta
      */
     protected function processSync(array $responseArray, OutputInterface $output)
     {
+        // получить массив не повторяющизся названий эталогов городов
+        // ключ массива ID города эталона
+        $geoCities = $this->getEntityManager()
+            ->createQueryBuilder()
+            ->select('city')
+            ->from('NitraGeoBundle:City', 'city', 'city.id')
+            ->innerJoin('city.region', 'region')
+            ->innerJoin('region.country', 'country', 'WITH', 'country.id = :country_id')->setParameter('country_id', $this->getParameter('country_id'))
+            ->groupBy('city.name')
+            ->getQuery()
+            ->execute();
         
-        // массив импортируемых регионов
-        $regions = array();
+        // массив названий эталогов городов
+        // array (ID => name)
+        $geoCityNames = array();
+        foreach($geoCities as $geoCity) {
+            $geoCityNames[$geoCity->getId()] = $geoCity->getName();
+        }
         
-        // массив импортируемых городов
-        $cities = array();
-            
+        // получить массив городов ТК
+        // array( cityCode => name )
+        $dsCities = $this->getEntityManager()
+            ->getRepository('NitraDeliveryBundle:City')
+            ->createQueryBuilder('city')
+            ->select('city.cityCode, city.name')
+            ->where('city.delivery = :delivery')->setParameter('delivery', $this->getDelivery())
+            ->getQuery()
+            ->execute(array(), 'KeyPair');
+        
         // обойти массив ответа
-        foreach($responseArray as $tkData) {
-            // регион
-            if ((string)$tkData->id == (string)$tkData->parentCityId) {
-                $regions[] = $tkData;
+        foreach($responseArray as $tkCity) {
+            
+            // проверить существует ли город в городах ТК 
+            $tkCityId = (string)$tkCity->id;
+            if (in_array($tkCityId, array_keys($dsCities))) {
+                // удаляем из массива городов 
+                // оставшиеся города в массиве ьудут удалены, по ним ТК не работает
+                unset($dsCities[$tkCityId]);
+                
+            } else {
+                // в ds нет города 
+                // добавить новый город 
+                $city = new City();
+                $city->setDelivery($this->getDelivery());
+                $city->setCityCode($tkCityId);
+                // город регион
+                if ((string)$tkCity->id == (string)$tkCity->parentCityId) {
+                    // установить город регион
+                    $city->setName((string)$tkCity->nameRu);
+                    
+                } else {
+                    // установить название города 
+                    // с указанием к какому региону он относится
+                    
+                    // название города
+                    $cityName = (string)$tkCity->nameRu;
+                    // приклеить к названию города название региона (родительского города)
+                    if ((string)$tkCity->parentCityNameRu) {
+                        $cityName .= ' (НП parent: '.(string)$tkCity->parentCityNameRu.')';
+                    }
+                    
+                    // кстановить название города
+                    $city->setName($cityName);
+                }
+                
+                // автоподвязка к эталонному городу
+                $geoCityId = array_search((string)$tkCity->nameRu, $geoCityNames);
+                if ($geoCityId) {
+                    $city->setGeoCity($geoCities[$geoCityId]);
+                }
+                
+                // запомнить для сохранения
+                $this->getEntityManager()->persist($city);                
             }
             
-            // город
-            $cities[] = $tkData;
         }
         
-        // Импортировать регионы
-        foreach($regions as $region) {
-            
-            // регион в DS по ID ТК 
-            $dsRegion = $this->getEntityManager()
-                ->getRepository('NitraDeliveryBundle:Region')
-                ->findOneBy(array(
-                    'regionCode' => (string)$region->id,
-                    'delivery' => $this->getDelivery(),
-                    ));
-            
-            // регион не найден
-            if (!$dsRegion) {
-                // поиск по названию 
-                $dsRegion = $this->getEntityManager()
-                    ->getRepository('NitraDeliveryBundle:Region')
-                    ->findOneBy(array(
-                        'name' => (string)$region->nameRu,
-                        'delivery' => $this->getDelivery(),
-                        ));
-            }
-            
-            // регион не найден создать новый
-            if (!$dsRegion) {
-                $dsRegion = new DeliveryRegion();
-            }
-            
-            // установить данные 
-            $dsRegion->setDelivery($this->getDelivery());
-            $dsRegion->setRegionCode((string)$region->id);
-            $dsRegion->setName((string)$region->nameRu);
-            
-            // запомнить для сохранения
-            $this->getEntityManager()->persist($dsRegion);
-        }
-        
-        // сохранить регионы отдельно от городов
-        $this->getEntityManager()->flush();
-        
-        // Импортировать города
-        foreach($cities as $city) {
-            
-            // получить регион для города
-            $dsRegion = $this->getEntityManager()
-                ->getRepository('NitraDeliveryBundle:Region')
-                ->findOneBy(array(
-                    'regionCode' => (string)$city->parentCityId,
-                    'delivery' => $this->getDelivery(),
-                    ));
-            
-            // город в DS по ID ТК 
-            $dsCity = $this->getEntityManager()
+        // города не пришли в синхронизации 
+        // ТК не работает с оставшимися городами
+        if ($dsCities) {
+            // получить удаляемые города для ТК
+            // если удаляем через ->delete('NitraDeliveryBundle:City', 'city')
+            // то не срабатывет SoftDeletable, запись удаялется физически из БД
+            $citiesDelete = $this->getEntityManager()
                 ->getRepository('NitraDeliveryBundle:City')
-                ->findOneBy(array(
-                    'cityCode' => (string)$city->id,
-                    'delivery' => $this->getDelivery(),
-                    ));
-            
-            // город не найден
-            if (!$dsCity) {
-                // поиск по названию 
-                $dsCity = $this->getEntityManager()
-                    ->getRepository('NitraDeliveryBundle:City')
-                    ->findOneBy(array(
-                        'name' => (string)$city->nameRu,
-                        'delivery' => $this->getDelivery(),
-                        ));
+                ->createQueryBuilder('city')
+                ->where('city.cityCode IN(:ids)')->setParameter('ids', array_keys($dsCities))
+                ->andWhere('city.delivery = :delivery')->setParameter('delivery', $this->getDelivery())
+                ->getQuery()
+                ->execute();
+            // удалить города которые не пришли в синхронизации 
+            foreach($citiesDelete as $city) {
+                $this->getEntityManager()->remove($city);
             }
-            
-            // город не найден создать новый
-            if (!$dsCity) {
-                $dsCity = new DeliveryCity();
-            }
-            
-            // установить данные 
-            $dsCity->setDelivery($this->getDelivery());
-            $dsCity->setRegion($dsRegion);
-            $dsCity->setCityCode((string)$city->id);
-            $dsCity->setName((string)$city->nameRu);
-            
-            // запомнить для сохранения
-            $this->getEntityManager()->persist($dsCity);
         }
         
-        // сохранить города отдельно от регионов
+        // сохранить города, если таковые имеются
         $this->getEntityManager()->flush();
     }
     

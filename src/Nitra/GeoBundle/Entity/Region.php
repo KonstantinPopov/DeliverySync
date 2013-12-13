@@ -41,19 +41,6 @@ class Region
      * @Assert\NotBlank(message="Не указано название региона")
      */
     private $name;
-
-    /**
-     * @ORM\OneToMany(targetEntity="City", mappedBy="region")
-     */
-    private $cities;
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->cities = new \Doctrine\Common\Collections\ArrayCollection();
-    }
     
     /**
      * Entity to string
@@ -118,39 +105,6 @@ class Region
     public function getCountry()
     {
         return $this->country;
-    }
-    
-    /**
-     * Add cities
-     *
-     * @param \Nitra\GeoBundle\Entity\City $cities
-     * @return Region
-     */
-    public function addCitie(\Nitra\GeoBundle\Entity\City $cities)
-    {
-        $this->cities[] = $cities;
-    
-        return $this;
-    }
-
-    /**
-     * Remove cities
-     *
-     * @param \Nitra\GeoBundle\Entity\City $cities
-     */
-    public function removeCitie(\Nitra\GeoBundle\Entity\City $cities)
-    {
-        $this->cities->removeElement($cities);
-    }
-
-    /**
-     * Get cities
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getCities()
-    {
-        return $this->cities;
     }
     
 }

@@ -37,7 +37,7 @@ builders:
             display:    [ delivery, city, name, address, phone ]
             actions:
                 save: ~
-                save_and_List:  ~
+                save-and-list:  ~
                 list: ~
     edit:
         params:
@@ -45,7 +45,7 @@ builders:
             display:    [ delivery, city, name, address, phone ]
             actions:
                 save: ~
-                save_and_List:  ~
+                save-and-list:  ~
                 list: ~
     show:
         params:

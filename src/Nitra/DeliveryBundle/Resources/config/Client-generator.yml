@@ -35,7 +35,7 @@ builders:
             max_per_page:   100
             actions:
                 save: ~
-                save_and_List: ~
+                save-and-list: ~
                 list: ~
     edit:
         params:
@@ -43,7 +43,7 @@ builders:
             display:    [ name, user, deliveries ]
             actions:
                 save: ~
-                save_and_List: ~
+                save-and-list: ~
                 list: ~
     show:
         params:

@@ -2,8 +2,14 @@ parameters:
     
     # Настройки ТК 
     novaposhta:
-        # ID сущности Nitra\DeliveryBundle\Entity\Delivery
+        
+        # ID страны Nitra\GeoBundle\Entity\Country
+        # используется в таске синхронизации
+        country_id: 1
+        
+        # ID ТК Nitra\DeliveryBundle\Entity\Delivery
         delivery_id: 1
+        
         # токен идентификатор в API ТК Новая Почта
         api_token: eaef11faf4f803367bb194f84180c5b8
         # ссылка Api 
