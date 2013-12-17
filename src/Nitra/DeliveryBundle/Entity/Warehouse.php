@@ -7,9 +7,9 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Knp\DoctrineBehaviors\Model as ORMBehaviors;
 
 /**
- * Nitra\DeliveryBundle\Entity\Department
+ * Nitra\DeliveryBundle\Entity\Warehouse
  * @ORM\Table(name="delivery_warehouses")
- * @ORM\Entity  
+ * @ORM\Entity(repositoryClass="Nitra\DeliveryBundle\Repository\WarehouseRepository")
  */
 //@UniqueEntity(fields={"delivery_id", "warehouse_code"}, message="Склад ТК данной компании с таким идентификатором уже существует")
 class Warehouse
@@ -79,14 +79,14 @@ class Warehouse
     /**
      * Широта
      * @var decimal $latitude
-     * @ORM\Column(name="latitude", type="decimal", precision=13, scale=8, options={"comment"="Широта"})
+     * @ORM\Column(name="latitude", type="decimal", precision=13, scale=8, nullable = true, options={"comment"="Широта"})
      */
     private $latitude;
 
     /**
      * Долгота
      * @var decimal $longitude
-     * @ORM\Column(name="longitude", type="decimal", precision=13, scale=8, options={"comment"="Долгота"})
+     * @ORM\Column(name="longitude", type="decimal", precision=13, scale=8, nullable = true, options={"comment"="Долгота"})
      */
     private $longitude;
     
@@ -99,6 +99,24 @@ class Warehouse
         return (string)$this->getName();
     }
     
+    /**
+     * получить serialize для сравления при синхронизации
+     * @return string
+     */
+    public function getSyncCompare()
+    {
+        return serialize(array(
+            $this->getWarehouseCode(),
+            $this->getNumber(),
+            (($this->getCity()) ? $this->getCity()->getId() : null),
+            $this->getName(),
+            $this->getAddress(),
+            $this->getPhone(),
+            $this->getLatitude(),
+            $this->getLongitude(),
+        ));        
+    }
+
     /**
      * Get id
      *

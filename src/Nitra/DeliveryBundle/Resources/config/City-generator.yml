@@ -21,11 +21,8 @@ builders:
             display:        [ delivery, geoCity, name, updatedAt ]
             sort:           [ name, ASC ]
             max_per_page:   100
-            actions:
-                new: ~
-            object_actions:
-                edit: ~
-                delete: ~
+            actions:        []
+            object_actions: []
                 
     filters:
         params:

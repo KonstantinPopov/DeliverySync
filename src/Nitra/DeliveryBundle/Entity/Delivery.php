@@ -9,7 +9,7 @@ use Knp\DoctrineBehaviors\Model as ORMBehaviors;
 /**
  * Nitra\DeliveryBundle\Entity\Delivery
  * @ORM\Table(name="delivery")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Nitra\DeliveryBundle\Repository\DeliveryRepository")
  */
 // UniqueEntity не используем потому что используем SoftDeletable
 // @UniqueEntity(fields="name", message="Транспортная компания с таким названием уже существует")
@@ -28,7 +28,7 @@ class Delivery
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-
+    
     /**
      * @var string $name
      * @ORM\Column(name="name", type="string", length=255, options={"comment"="Название ТК"})
@@ -54,7 +54,7 @@ class Delivery
     {
         return $this->id;
     }
-
+    
     /**
      * Set name
      *

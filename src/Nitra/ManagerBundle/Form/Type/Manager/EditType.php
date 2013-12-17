@@ -39,14 +39,14 @@ class EditType extends BaseEditType
         $formOptions['data'] = '';
         $builder->add($widget->getName(), $widget->getType()->getName(), $formOptions);
         
-        // виджет группы пользователей checkbox
-        $formOptions = $this->getFormOption('groups', array(
-            'em' => 'default',
-            'class' => 'NitraManagerBundle:Group',
-            'multiple' => true,
-            'expanded' => true,
-            'required' => true,  'label' => 'Группы'));
-        $builder->add('groups', 'entity', $formOptions);
+//        // виджет группы пользователей checkbox
+//        $formOptions = $this->getFormOption('groups', array(
+//            'em' => 'default',
+//            'class' => 'NitraManagerBundle:Group',
+//            'multiple' => true,
+//            'expanded' => true,
+//            'required' => true,  'label' => 'Группы'));
+//        $builder->add('groups', 'entity', $formOptions);
         
     }    
     

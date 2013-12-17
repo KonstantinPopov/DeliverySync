@@ -3,13 +3,3 @@ NitraManagerBundleManager:
     resource: "@NitraManagerBundle/Controller/Manager/"
     type:     admingenerator
     prefix:   /manager
-
-NitraManagerBundleGroup:
-    resource: "@NitraManagerBundle/Controller/Group/"
-    type:     admingenerator
-    prefix:   /manager/group
-
-NitraManagerBundleRole:
-    resource: "@NitraManagerBundle/Controller/Role/"
-    type:     admingenerator
-    prefix:   /manager/role

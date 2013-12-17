@@ -16,7 +16,7 @@ builders:
     list:
         params:
             title:          "Эталон - список регионов"
-            display:        [ country, name ]
+            display:        [ id, country, name ]
             sort:           [ name, ASC ]
             max_per_page:   50
             actions:        []

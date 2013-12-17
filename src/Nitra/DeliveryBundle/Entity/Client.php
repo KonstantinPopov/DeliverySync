@@ -9,7 +9,7 @@ use Knp\DoctrineBehaviors\Model as ORMBehaviors;
 /**
  * Nitra\DeliveryBundle\Entity\Client
  * @ORM\Table(name="client")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Nitra\DeliveryBundle\Repository\ClientRepository")
  */
 // UniqueEntity не используем потому что используем SoftDeletable
 // @UniqueEntity(fields="name", message="Клиент с таким названием уже существует")
@@ -41,13 +41,6 @@ class Client
      * @ORM\Column(name="token", type="string", length=50, nullable = true)
      */
     private $token;
-
-    /**
-     * @ORM\OneToOne(targetEntity="Nitra\ManagerBundle\Entity\Manager", inversedBy="client")
-     * @ORM\JoinColumn(name="user_id", referencedColumnName="id")
-     * @Assert\Type(type="Nitra\ManagerBundle\Entity\Manager")
-     * */
-    private $user;
     
     /**
      * @ORM\ManyToMany(targetEntity="Delivery", inversedBy="clients")

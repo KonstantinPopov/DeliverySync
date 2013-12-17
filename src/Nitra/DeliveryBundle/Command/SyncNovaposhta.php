@@ -73,16 +73,18 @@ abstract class SyncNovaposhta extends ContainerAwareCommand
     
     /**
      * получить елемента массива parameters
+     * @return mixed параметр елемента массива parameters
+     * @throw Exception указанный параметр не найден
      */
     public function getParameter($parameterName)
     {
         // проверить параметр в массиве параметров
-        if (isset($this->parameters[$parameterName])) {
-            return $this->parameters[$parameterName];
+        if (!isset($this->parameters[$parameterName])) {
+            throw new \Exception('Указанный параметр: '.$parameterName.' не найден в массиве параметров.');
         }
         
-        // параметр не найден
-        return null;
+        // вернуть значение параметра
+        return $this->parameters[$parameterName];
     }
     
     /**
@@ -94,33 +96,40 @@ abstract class SyncNovaposhta extends ContainerAwareCommand
         // установить EntityManager
         $this->em = $this->getContainer()->get('doctrine')->getEntityManager('default');
         
-        // получить массив параметров
-        $this->parameters = $this->getContainer()->getParameter('novaposhta');
-        
-        // проверить параметры
-        if (!isset($this->parameters))  {
-            throw new \Exception('Не указан token для авторизации в API ТК Новая Почта');
-        }
-        
-        // проверить параметр delivery_id
-        if (!isset($this->parameters['delivery_id']) || !$this->parameters['delivery_id'])  {
-            throw new \Exception('Не указан ID ТК Новая Почта');
+        // проверить параметр api_token
+        if (!$this->getContainer()->hasParameter('novaposhta_api_token') ||
+            !$this->getContainer()->getParameter('novaposhta_api_token')
+        ) {
+            throw new \Exception('Не указан обязательный параметр novaposhta_api_token в файле config/parameters.yml');
         }
         
         // проверить параметр api_url
-        if (!isset($this->parameters['api_url']) || !$this->parameters['api_url'])  {
-            throw new \Exception('Не указан обязательный параметр api_url');
+        if (!$this->getContainer()->hasParameter('novaposhta_api_url') ||
+            !$this->getContainer()->getParameter('novaposhta_api_url')
+        ) {
+            throw new \Exception('Не указан обязательный параметр novaposhta_api_url в файле config/parameters.yml');
         }
         
-        // проверить параметр api_token
-        if (!isset($this->parameters['api_token']) || !$this->parameters['api_token'])  {
-            throw new \Exception('Не указан обязательный параметр api_token');
-        }
+        // установить массив параметров таска 
+        $this->parameters = array(
+            
+            // ID страны Nitra\GeoBundle\Entity\Country
+            'countryId' => 1,
+            
+            // ID ТК Nitra\DeliveryBundle\Entity\Delivery
+            'deliveryId' => 1,
+            
+            // установить параметр apiToken, авторизация в API ТК Новая Почта
+            'apiToken' => $this->getContainer()->getParameter('novaposhta_api_token'),
+            
+            // установить параметр apiUrl, ссылка синхронизации API ТК Новая Почта
+            'apiUrl' => $this->getContainer()->getParameter('novaposhta_api_url')
+        );
         
         // Получить ТК 
-        $this->delivery = $this->em->getRepository('NitraDeliveryBundle:Delivery')->find($this->parameters['delivery_id']);
+        $this->delivery = $this->em->getRepository('NitraDeliveryBundle:Delivery')->find($this->parameters['deliveryId']);
         if (!$this->delivery) {
-            throw new \Exception('Не найдена ТК по указанному delivery_id: '.$this->parameters['delivery_id']);
+            throw new \Exception('Не найдена ТК по указанному параметру deliveryId: '.$this->parameters['deliveryId']);
         }
     }
     
@@ -153,7 +162,7 @@ abstract class SyncNovaposhta extends ContainerAwareCommand
     {
         // отправить запрос на сервер 
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $this->getParameter('api_url'));
+        curl_setopt($ch, CURLOPT_URL, $this->getParameter('apiUrl'));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_HTTPHEADER, Array("Content-Type: text/xml"));
         curl_setopt($ch, CURLOPT_HEADER, 0);

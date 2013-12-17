@@ -7,8 +7,8 @@ params:
     pk_requirement: ~
     fields: 
         name:       { label: "Название клиента" }
-        user:       { label: "Менеджер" }
         deliveries: { label: "ТК" }
+        token:      { label: "Токен" }
     object_actions:
         delete: ~
     batch_actions:
@@ -17,41 +17,47 @@ builders:
     list:
         params:
             title:          "Список клиентов"
-            display:        [ name, user, deliveries ]
+            display:        [ name, deliveries, token ]
+            sort:           [ name, ASC ]
             max_per_page:   100
             actions:
                 new: ~
             object_actions:
+                NewToken:   { label: "Сгенерировать новый токен" }
                 edit: ~
                 delete: ~
+                
     filters:
         params:
             display:        [ name ]
+            
     new:
         params:
             title:          "Добавить нового клиента"
-            display:        [ name, user, deliveries ]
-            sort:           [ name, ASC ]
+            display:        [ name, deliveries ]
             max_per_page:   100
             actions:
                 save: ~
                 save-and-list: ~
                 list: ~
+                
     edit:
         params:
             title:      "Редактировать клиента \"%object%\"|{ %object%: Client.name }|"
-            display:    [ name, user, deliveries ]
+            display:    [ name, deliveries ]
             actions:
                 save: ~
                 save-and-list: ~
                 list: ~
+                
     show:
         params:
-            title:      "Просмотр города \"%object%\"|{ %object%: Client.name }|"
-            display:    [ name, user, deliveries ]
+            title:      "Просмотр клиента \"%object%\"|{ %object%: Client.name }|"
+            display:    ~
             actions:
                 list: ~
                 new: ~
+                
     actions:
         params:
             object_actions:

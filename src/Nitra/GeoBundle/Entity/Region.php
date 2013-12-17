@@ -9,7 +9,7 @@ use Knp\DoctrineBehaviors\Model as ORMBehaviors;
 /**
  * Nitra\GeoBundle\Entity\Region
  * @ORM\Table(name="geo_region")
- * @ORM\Entity 
+ * @ORM\Entity(repositoryClass="Nitra\GeoBundle\Repository\RegionRepository")
  * @UniqueEntity(fields="name", message="Регион с таким названием уже существует")
  */
 class Region
@@ -60,7 +60,20 @@ class Region
     {
         return $this->id;
     }
-
+    
+    /**
+     * Set id
+     * метод используется 
+     * php app/console doctrine:fixtures:load
+     * @param integer $id 
+     * @return this
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+        return $this;
+    }
+    
     /**
      * Set name
      *

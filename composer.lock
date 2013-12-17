@@ -87,12 +87,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony2admingenerator/AdmingeneratorGeneratorBundle.git",
-                "reference": "f611c0bd4a0390d7d55fdbdb088ffd6872eac604"
+                "reference": "f731b896dcb1377ba2faea153631ed36567eceb2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony2admingenerator/AdmingeneratorGeneratorBundle/zipball/f611c0bd4a0390d7d55fdbdb088ffd6872eac604",
-                "reference": "f611c0bd4a0390d7d55fdbdb088ffd6872eac604",
+                "url": "https://api.github.com/repos/symfony2admingenerator/AdmingeneratorGeneratorBundle/zipball/f731b896dcb1377ba2faea153631ed36567eceb2",
+                "reference": "f731b896dcb1377ba2faea153631ed36567eceb2",
                 "shasum": ""
             },
             "require": {
@@ -152,7 +152,7 @@
                 "generator",
                 "yaml"
             ],
-            "time": "2013-12-08 09:38:15"
+            "time": "2013-12-15 10:47:41"
         },
         {
             "name": "cedriclombardot/twig-generator",
@@ -3054,23 +3054,28 @@
         },
         {
             "name": "white-october/pagerfanta-bundle",
-            "version": "v1.0.0",
+            "version": "v1.0.1",
             "target-dir": "WhiteOctober/PagerfantaBundle",
             "source": {
                 "type": "git",
                 "url": "https://github.com/whiteoctober/WhiteOctoberPagerfantaBundle.git",
-                "reference": "6bea6f3a23ea4b69d821b00c89a3746e437b8880"
+                "reference": "0e56c1efe353be3142c90acc9aa019233b735947"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/whiteoctober/WhiteOctoberPagerfantaBundle/zipball/6bea6f3a23ea4b69d821b00c89a3746e437b8880",
-                "reference": "6bea6f3a23ea4b69d821b00c89a3746e437b8880",
+                "url": "https://api.github.com/repos/whiteoctober/WhiteOctoberPagerfantaBundle/zipball/0e56c1efe353be3142c90acc9aa019233b735947",
+                "reference": "0e56c1efe353be3142c90acc9aa019233b735947",
                 "shasum": ""
             },
             "require": {
                 "pagerfanta/pagerfanta": "1.0.*",
-                "symfony/framework-bundle": "~2.1",
-                "symfony/property-access": "~2.2"
+                "symfony/framework-bundle": "~2.2",
+                "symfony/property-access": "~2.2",
+                "symfony/twig-bundle": "~2.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~3.7",
+                "symfony/symfony": "~2.2"
             },
             "type": "symfony-bundle",
             "extra": {
@@ -3099,7 +3104,7 @@
                 "page",
                 "paging"
             ],
-            "time": "2013-06-06 08:08:38"
+            "time": "2013-12-09 21:54:42"
         },
         {
             "name": "zerkalica/millwright-configuration-bundle",

@@ -23,11 +23,9 @@ builders:
             display:        [ delivery, city, name, address, phone ]
             sort:           [ name, ASC ]
             max_per_page:   100
-            actions:
-                new: ~
-            object_actions:
-                edit: ~
-                delete: ~
+            actions:        []
+            object_actions: []
+            
     filters:
         params:
             display:    [ delivery, city, name, address, phone ]

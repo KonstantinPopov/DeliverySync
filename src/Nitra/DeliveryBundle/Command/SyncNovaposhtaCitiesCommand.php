@@ -5,6 +5,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Nitra\DeliveryBundle\Command\SyncNovaposhta;
 use Nitra\DeliveryBundle\Entity\City;
+//use Nitra\DeliveryBundle\Entity\City as DeliveryCity;
+//use Nitra\GeoBundle\Entity\City as GeoCity;
 
 /**
  * SyncNovaposhtaCitiesCommand
@@ -54,7 +56,7 @@ class SyncNovaposhtaCitiesCommand extends SyncNovaposhta
         return 
         '<?xml version="1.0" encoding="utf-8"?>
             <file>
-                <auth>' . $this->getParameter('api_token') . '</auth>
+                <auth>' . $this->getParameter('apiToken') . '</auth>
                 <city/>
             </file>';
     }
@@ -72,24 +74,17 @@ class SyncNovaposhtaCitiesCommand extends SyncNovaposhta
      */
     protected function processSync(array $responseArray, OutputInterface $output)
     {
-        // получить массив не повторяющизся названий эталогов городов
+        // массив названий не повторяющихся эталонов городов
         // ключ массива ID города эталона
         $geoCities = $this->getEntityManager()
             ->createQueryBuilder()
-            ->select('city')
-            ->from('NitraGeoBundle:City', 'city', 'city.id')
+            ->select('city.id, city.name')
+            ->from('NitraGeoBundle:City', 'city')
             ->innerJoin('city.region', 'region')
-            ->innerJoin('region.country', 'country', 'WITH', 'country.id = :country_id')->setParameter('country_id', $this->getParameter('country_id'))
+            ->innerJoin('region.country', 'country', 'WITH', 'country.id = :countryId')->setParameter('countryId', $this->getParameter('countryId'))
             ->groupBy('city.name')
             ->getQuery()
-            ->execute();
-        
-        // массив названий эталогов городов
-        // array (ID => name)
-        $geoCityNames = array();
-        foreach($geoCities as $geoCity) {
-            $geoCityNames[$geoCity->getId()] = $geoCity->getName();
-        }
+            ->execute(array(), 'KeyPair');
         
         // получить массив городов ТК
         // array( cityCode => name )
@@ -108,19 +103,19 @@ class SyncNovaposhtaCitiesCommand extends SyncNovaposhta
             $tkCityId = (string)$tkCity->id;
             if (in_array($tkCityId, array_keys($dsCities))) {
                 // удаляем из массива городов 
-                // оставшиеся города в массиве ьудут удалены, по ним ТК не работает
+                // оставшиеся города в массиве будут удалены, по ним ТК не работает
                 unset($dsCities[$tkCityId]);
                 
             } else {
                 // в ds нет города 
                 // добавить новый город 
-                $city = new City();
-                $city->setDelivery($this->getDelivery());
-                $city->setCityCode($tkCityId);
+                $dsCity = new City();
+                $dsCity->setDelivery($this->getDelivery());
+                $dsCity->setCityCode($tkCityId);
                 // город регион
                 if ((string)$tkCity->id == (string)$tkCity->parentCityId) {
                     // установить город регион
-                    $city->setName((string)$tkCity->nameRu);
+                    $dsCity->setName((string)$tkCity->nameRu);
                     
                 } else {
                     // установить название города 
@@ -133,18 +128,18 @@ class SyncNovaposhtaCitiesCommand extends SyncNovaposhta
                         $cityName .= ' (НП parent: '.(string)$tkCity->parentCityNameRu.')';
                     }
                     
-                    // кстановить название города
-                    $city->setName($cityName);
+                    // установить название города
+                    $dsCity->setName($cityName);
                 }
                 
                 // автоподвязка к эталонному городу
-                $geoCityId = array_search((string)$tkCity->nameRu, $geoCityNames);
+                $geoCityId = array_search((string)$tkCity->nameRu, $geoCities);
                 if ($geoCityId) {
-                    $city->setGeoCity($geoCities[$geoCityId]);
+                    $dsCity->setGeoCity($this->getEntityManager()->getReference('NitraGeoBundle:City', $geoCityId));
                 }
                 
                 // запомнить для сохранения
-                $this->getEntityManager()->persist($city);                
+                $this->getEntityManager()->persist($dsCity);
             }
             
         }
@@ -152,6 +147,14 @@ class SyncNovaposhtaCitiesCommand extends SyncNovaposhta
         // города не пришли в синхронизации 
         // ТК не работает с оставшимися городами
         if ($dsCities) {
+            
+//            // todo: уточнить getReference vs getPartialReference ... unitOfWork->markReadOnly($entity)
+//            // удалить города которые не пришли в синхронизации 
+//            foreach($dsCities as $cityId => $cityName) {
+//                $this->getEntityManager()->remove($this->getEntityManager()->getReference('NitraDeliveryBundle:City', $cityId));
+//                $this->getEntityManager()->remove($this->getEntityManager()->getPartialReference('NitraDeliveryBundle:City', $cityId));
+//            }
+            
             // получить удаляемые города для ТК
             // если удаляем через ->delete('NitraDeliveryBundle:City', 'city')
             // то не срабатывет SoftDeletable, запись удаялется физически из БД
@@ -159,12 +162,11 @@ class SyncNovaposhtaCitiesCommand extends SyncNovaposhta
                 ->getRepository('NitraDeliveryBundle:City')
                 ->createQueryBuilder('city')
                 ->where('city.cityCode IN(:ids)')->setParameter('ids', array_keys($dsCities))
-                ->andWhere('city.delivery = :delivery')->setParameter('delivery', $this->getDelivery())
                 ->getQuery()
                 ->execute();
             // удалить города которые не пришли в синхронизации 
-            foreach($citiesDelete as $city) {
-                $this->getEntityManager()->remove($city);
+            foreach($citiesDelete as $dsCity) {
+                $this->getEntityManager()->remove($dsCity);
             }
         }
         

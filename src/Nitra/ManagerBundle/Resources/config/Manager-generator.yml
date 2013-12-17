@@ -13,9 +13,6 @@ params:
         lastLogin:  { label: "Последний вход" }
         locked:     { label: "Заблокировано?"}
         expired:    { label: "Срок действия закончился?" }
-        roles_text: { label: "Привилегии" }
-        client:     { label: "Клиент" }
-        groups:     { label: "Группы"}
         
     object_actions:
         delete: ~
@@ -24,30 +21,31 @@ params:
 builders:
     list:
         params:
-            title:      "Список менеджеров"
-            display:    [ username, email, enabled, lastLogin, locked, expired, client, groups ]
-            actions:
-                new:    ~
-            object_actions:
-                edit:   ~
-                delete: ~
+            title:          "Список менеджеров"
+            display:        [ username, email, enabled, lastLogin ]
+            actions:        []
+            object_actions: []
+                
     filters:
         params:
-            display:    [ username, email ]
+            display:    [ username, email, locked ]
+            
     new:
         params:
             title:      "Добавить нового менеджера"
-            display:    [ username, email, enabled, password, client, groups ]
+            display:    [ username, email, enabled, password ]
             actions:
                 save:   ~
                 list:   ~
+                
     edit:
         params:
             title:      "Редактировать менеджера \"%object%\"|{ %object%: Manager.username }|"
-            display:    [ username, email, enabled, password, client, groups ]
+            display:    [ username, email, enabled, password ]
             actions:
                 save:   ~
                 list:   ~
+                
     show:
         params:
             title:      "Просмотр менеджера \"%object%\"|{ %object%: Manager.username }|"
@@ -55,6 +53,7 @@ builders:
             actions:
                 list: ~
                 new: ~
+                
     actions:
         params:
             object_actions:

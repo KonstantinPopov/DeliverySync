@@ -9,7 +9,7 @@ use Knp\DoctrineBehaviors\Model as ORMBehaviors;
 /**
  * Nitra\DeliveryBundle\Entity\City
  * @ORM\Table(name="delivery_cities")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Nitra\DeliveryBundle\Repository\CityRepository")
  */
 // UniqueEntity не используем потому что используем SoftDeletable
 // @UniqueEntity(fields={"delivery_id", "city_code", "name"}, message="Город ТК данной компании с таким идентификатором уже существует")
@@ -30,7 +30,7 @@ class City
     private $id;
     
     /**
-     * @ORM\ManyToOne(targetEntity="Nitra\GeoBundle\Entity\City", inversedBy="delivery_cities")
+     * @ORM\ManyToOne(targetEntity="Nitra\GeoBundle\Entity\City")
      * @ORM\JoinColumn(name="geo_city_id", referencedColumnName="id")
      * @Assert\Type(type="Nitra\GeoBundle\Entity\City")
      */

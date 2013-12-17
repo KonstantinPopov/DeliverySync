@@ -12,10 +12,6 @@ millwright_menu:
         delivery:
             label:  "ТК"
             
-        delivery_delivery:
-            label:  "Транспортные компании"
-            route:  Nitra_DeliveryBundle_Delivery_list
-                        
         delivery_city:
             label:  "Города ТК"
             route:  Nitra_DeliveryBundle_City_list
@@ -30,62 +26,41 @@ millwright_menu:
             
         manager:
             label:  "Пользователи"
-            roles:  [ ROLE_SUPER_ADMIN ]
             
         manager_list:
             label:  "Менеджеры"
             route:  Nitra_ManagerBundle_Manager_list
-            roles:  [ ROLE_SUPER_ADMIN ]
-            
-        manager_group:
-            label:  "Группы"
-            route:  Nitra_ManagerBundle_Group_list
-            roles:  [ ROLE_SUPER_ADMIN ]
-            
-        manager_role:
-            label:  "Привилегии"
-            route:  Nitra_ManagerBundle_Role_list
-            roles:  [ ROLE_SUPER_ADMIN ]
-            
             
         catalog: 
             label:  "Справочники"
-            roles:  [ ROLE_SUPER_ADMIN ]
             
         geo_country:
             label:  "Страны"
             route:  Nitra_GeoBundle_Country_list
-            roles:  [ ROLE_SUPER_ADMIN ]
             
         geo_region:
             label:  "Регионы"
             route:  Nitra_GeoBundle_Region_list
-            roles:  [ ROLE_SUPER_ADMIN ]
             
         geo_city:
             label:  "Города"
             route:  Nitra_GeoBundle_City_list
-            roles:  [ ROLE_SUPER_ADMIN ]
         
         # Фикстуры эталона GeoBundle
         geo_fixtures:
             label:  "GeoBundle:Фикстуры"
-            roles:  [ ROLE_SUPER_ADMIN ]
             
         geo_fixtures_country:
             label:  "Fixtures:Страны"
             route:  NitraGeoBundleFixtures_country
-            roles:  [ ROLE_SUPER_ADMIN ]
             
         geo_fixtures_region:
             label:  "Fixtures:Регионы"
             route:  NitraGeoBundleFixtures_region
-            roles:  [ ROLE_SUPER_ADMIN ]
             
         geo_fixtures_city:
             label:  "Fixtures:Города"
             route:  NitraGeoBundleFixtures_city
-            roles:  [ ROLE_SUPER_ADMIN ]
 
     tree: #menu containers
         main: #main container
@@ -95,7 +70,6 @@ millwright_menu:
                 delivery:
                     name:   "ТК"
                     children:
-                        delivery_delivery:      ~
                         delivery_city:          ~
                         delivery_warehouse:     ~
                     
@@ -104,8 +78,6 @@ millwright_menu:
                     children:
                         delivery_client:    ~
                         manager_list:       ~
-                        manager_group:      ~
-                        manager_role:       ~
                     
                 catalog:
                     name:   "Справочники"
@@ -123,91 +95,3 @@ millwright_menu:
                         geo_fixtures_region:    ~
                         geo_fixtures_city:      ~
 
-
-
-
-
-
-
-
-
-
-#millwright_menu:
-#    renderers:
-#        navigation: #menu type id
-#            renderer: null # custom renderer
-#            rendererOptions:
-#                template: MillwrightMenuBundle:Default:knp_menu.html.twig
-#                ancestorClass: current active
-#                currentClass: current_item
-#
-#    items: #menu items
-#        d_service:
-#            label: 'ТК'
-#        delivery_service:
-#            label: 'Транспортные компании'
-##            route:  Nitra_DeliveryBundle_Delivery_list
-#        department:
-#            label:  'Отделения ТК'
-##            route:  Nitra_DeliveryBundle_Department_list
-#        delivery_city:
-#            label:  'Города в ТК'
-##            route:  Nitra_DeliveryBundle_DeliveryCity_list
-#        delivery_cost_calculation: 
-#            label:  'Модуль расчёта стоимости доставки'
-#        novaposhta:
-#            label:  'Новая Почта'
-##            route:  Nitra_DeliveryCostBundle_NovaposhtaTarify_list
-#        intime:
-#            label:  'Интайм'
-##            route:  Nitra_DeliveryCostBundle_IntimeTarify_list
-#        territory:
-#            label:  'Территории'
-#        region:
-#            label:  'Регионы'
-##            route:  Nitra_GeoBundle_Region_list
-#        city:
-#            label:  'Города'
-##            route:   Nitra_GeoBundle_City_list
-#        client: 
-#          label:  'Клиенты'
-#        client_list:
-#          label:    'Список клиентов'
-##          route:  Nitra_DeliveryBundle_Client_list
-#        managers:
-#          label:   'Менеджеры'
-##          route:  Nitra_ManagerBundle_Manager_list
-#        settings:
-#          label:  'Настройки'
-#        groups:
-#          label:  'Группы'
-##          route:  Nitra_ManagerBundle_Group_list
-#        roles:
-#          label:   'Привилегии'
-##          route:  Nitra_ManagerBundle_Role_list
-#        
-#    tree: #menu containers
-#        main: #main container
-#            type: navigation # menu type id
-#            children:
-#                d_service:
-#                  children:
-#                    delivery_service:    ~
-#                    department:          ~
-#                    delivery_city:       ~
-#                territory:
-#                  children:
-#                    region:              ~
-#                    city:                ~
-#                client:
-#                  children:
-#                    client_list:         ~
-#                    managers:            ~
-#                settings:
-#                  children:
-#                    groups:              ~
-#                    roles:               ~
-#                delivery_cost_calculation:
-#                  children:
-#                    novaposhta:          ~
-#                    intime:              ~                      

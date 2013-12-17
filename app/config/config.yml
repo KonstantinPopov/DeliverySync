@@ -3,8 +3,6 @@ imports:
     - { resource: security.yml }
     - { resource: menu.yml }
     - { resource: ../../vendor/nitra/doctrine-behaviors/config/orm-services.yml }
-    # импортировать файл настроек для всех ТК
-    - { resource: "@NitraDeliveryBundle/Resources/config/delivery.yml" }
 
 framework:
 #    esi:             ~
@@ -98,8 +96,8 @@ fos_user:
     db_driver: orm
     firewall_name: main
     user_class: Nitra\ManagerBundle\Entity\Manager
-    group:
-      group_class:  Nitra\ManagerBundle\Entity\Group
+#    group:
+#      group_class:  Nitra\ManagerBundle\Entity\Group
 
 # Admingenerator Configuration
 admingenerator_generator:
