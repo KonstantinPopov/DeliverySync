@@ -1,4 +1,8 @@
 
+NitraSyncronizeBundle:
+    resource: "@NitraSyncronizeBundle/Resources/config/routing.yml"
+    prefix:   /
+
 NitraDeliveryBundle:
     resource: "@NitraDeliveryBundle/Resources/config/routing.yml"
     prefix:   /

@@ -59,29 +59,21 @@ doctrine:
         # path:     "%database_path%"
 
     orm:
-        auto_generate_proxy_classes: "%kernel.debug%"
-     #   auto_mapping: true
-        default_entity_manager:   default
-#        
-#        filters:
-#            softdeleteable:
-#                class: Nitra\NitraThemeBundle\Filter\SoftDeleteableFilter
-#                enabled: true        
-#        
+        auto_generate_proxy_classes:    "%kernel.debug%"
+        default_entity_manager:         default
         entity_managers:
             default:
+                
                 filters:
                     softdeleteable:
-                        class: Nitra\NitraThemeBundle\Filter\SoftDeleteableFilter
-                        enabled: true
-#                    filial:
-#                        class: Nitra\ManagerBundle\Filter\FilialFilter
-#                        enabled: true
-                connection:       default
-                auto_mapping: true 
-                naming_strategy: doctrine.orm.naming_strategy.underscore
+                        class:      Nitra\NitraThemeBundle\Filter\SoftDeleteableFilter
+                        enabled:    true
+                        
+                connection:         default
+                auto_mapping:       true 
+                naming_strategy:    doctrine.orm.naming_strategy.underscore
                 hydrators:
-                    KeyPair: Nitra\NitraThemeBundle\Hydrators\KeyPairHydrator 
+                    KeyPair:        Nitra\NitraThemeBundle\Hydrators\KeyPairHydrator 
 
 # Swiftmailer Configuration
 swiftmailer:

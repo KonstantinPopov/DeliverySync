@@ -15,6 +15,10 @@ class FixturesController extends Controller
     /** @DI\Inject("doctrine.orm.entity_manager") */
     private $em;
     
+    /**
+     * @var string 
+     * щаблон файла фикстуры
+     */
     private static $fixtureTemplate = <<<EOF
 <?php
 namespace Nitra\GeoBundle\DataFixtures\ORM;
@@ -119,7 +123,7 @@ EOF;
     
     /**
      * формироваие фикстур NitraGeoBundle:Country
-     * @Route("/country", name="NitraGeoBundleFixtures_country")
+     * @Route("/country", name="Nitra_GeoBundle_Fixtures_country")
      */
     public function countryAction()
     {
@@ -156,7 +160,7 @@ EOF;
     
     /**
      * формироваие фикстур NitraGeoBundle:Region
-     * @Route("/region", name="NitraGeoBundleFixtures_region")
+     * @Route("/region", name="Nitra_GeoBundle_Fixtures_region")
      */
     public function regionAction()
     {
@@ -195,7 +199,7 @@ EOF;
     
     /**
      * формироваие фикстур NitraGeoBundle:City
-     * @Route("/city", name="NitraGeoBundleFixtures_city")
+     * @Route("/city", name="Nitra_GeoBundle_Fixtures_city")
      */
     public function cityAction()
     {
