@@ -1,16 +1,16 @@
 <?php
-namespace Nitra\DeliveryBundle\Command;
+namespace Nitra\SyncronizeBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 
 /**
- * Description of SyncNovaposhta
- *
- * @author user
+ * NovaposhtaSync
+ * Общий класс синхронизации 
+ * ТК Новая Почта
  */
-abstract class SyncNovaposhta extends ContainerAwareCommand
+abstract class NovaposhtaSync extends ContainerAwareCommand
 {
     
     /**
@@ -93,6 +93,7 @@ abstract class SyncNovaposhta extends ContainerAwareCommand
      */
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
+        
         // установить EntityManager
         $this->em = $this->getContainer()->get('doctrine')->getEntityManager('default');
         

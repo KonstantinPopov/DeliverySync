@@ -45,9 +45,9 @@ class Warehouse
     /**
      * Уникальный идентификатор склада в API транспортной компании
      * @var type string
-     * @ORM\Column(name="warehouse_code", type = "string", length=100, nullable = true, options={"comment"="ID склада в ТК"})
+     * @ORM\Column(type = "string", length=100, nullable = true, options={"comment"="ID склада в ТК"})
      */
-    private $warehouseCode;
+    private $businessKey;
     
     /**
      * Номер склада (отделения) в городе в API транспортной компании
@@ -106,7 +106,7 @@ class Warehouse
     public function getSyncCompare()
     {
         return serialize(array(
-            $this->getWarehouseCode(),
+            $this->getBusinessKey(),
             $this->getNumber(),
             (($this->getCity()) ? $this->getCity()->getId() : null),
             $this->getName(),
@@ -128,26 +128,26 @@ class Warehouse
     }
 
     /**
-     * Set warehouseCode
+     * Set businessKey
      *
-     * @param string $warehouseCode
+     * @param string $businessKey
      * @return Warehouse
      */
-    public function setWarehouseCode($warehouseCode)
+    public function setBusinessKey($businessKey)
     {
-        $this->warehouseCode = $warehouseCode;
+        $this->businessKey = $businessKey;
     
         return $this;
     }
 
     /**
-     * Get warehouseCode
+     * Get businessKey
      *
      * @return string 
      */
-    public function getWarehouseCode()
+    public function getBusinessKey()
     {
-        return $this->warehouseCode;
+        return $this->businessKey;
     }
     
     /**

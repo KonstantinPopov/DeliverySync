@@ -14,6 +14,9 @@ security:
         dev:
             pattern:  ^/(_(profiler|wdt)|css|images|js)/
             security: false      
+        sync:
+            pattern:  ^/sync/
+            security: false
         main:
             pattern: ^/
             form_login:
@@ -23,9 +26,6 @@ security:
                 always_use_default_target_path: true
             logout:       true
             anonymous:    true
-#        sec_area:
-#            pattern:    ^/sync/
-#            security:   false
 
     access_control:
         

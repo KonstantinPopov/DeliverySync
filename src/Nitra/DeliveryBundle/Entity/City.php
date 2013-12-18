@@ -46,9 +46,9 @@ class City
     /**
      * Уникальный идентификатор города в API транспортной компании
      * @var type string
-     * @ORM\Column(name="city_code", type = "string", length=100, nullable = true, options={"comment"="ID города в ТК"})
+     * @ORM\Column(type = "string", length=100, nullable = true, options={"comment"="ID города в ТК"})
      */
-    private $cityCode;
+    private $businessKey;
     
     /**
      * @var string $name
@@ -77,26 +77,26 @@ class City
     }
 
     /**
-     * Set cityCode
+     * Set businessKey
      *
-     * @param string $cityCode
+     * @param string $businessKey
      * @return City
      */
-    public function setCityCode($cityCode)
+    public function setBusinessKey($businessKey)
     {
-        $this->cityCode = $cityCode;
+        $this->businessKey = $businessKey;
     
         return $this;
     }
 
     /**
-     * Get cityCode
+     * Get businessKey
      *
      * @return string 
      */
-    public function getCityCode()
+    public function getBusinessKey()
     {
-        return $this->cityCode;
+        return $this->businessKey;
     }
 
     /**

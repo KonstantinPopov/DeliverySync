@@ -1,16 +1,16 @@
 <?php
-namespace Nitra\DeliveryBundle\Command;
+namespace Nitra\SyncronizeBundle\Command;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Nitra\DeliveryBundle\Command\SyncNovaposhta;
+use Nitra\SyncronizeBundle\Command\NovaposhtaSync;
 use Nitra\DeliveryBundle\Entity\Warehouse;
 
 /**
- * SyncNovaposhtaWarehousesCommand
+ * NovaposhtaSyncWarehousesCommand
  * Синхронизация складов для ТК Новая Почта
  */
-class SyncNovaposhtaWarehousesCommand extends SyncNovaposhta
+class NovaposhtaSyncWarehousesCommand extends NovaposhtaSync
 {
     
     /**
@@ -21,7 +21,7 @@ class SyncNovaposhtaWarehousesCommand extends SyncNovaposhta
         // настройка команды
         $this
             ->setName('novaposhta:sync-warehouses')
-            ->setDescription('Синхронизировать склады ТК "Новая Почта"')
+            ->setDescription('Синхронизировать склады ТК "Новая Почта".')
         ;
     }
     
@@ -32,18 +32,19 @@ class SyncNovaposhtaWarehousesCommand extends SyncNovaposhta
     {
         
         // отправить xml запрос на сервер
-        $responseArray = $this->apiSendRequest($this->getXmlRequest(), $this->getXmlXpath());
+        $apiResponse = $this->apiSendRequest($this->getXmlRequest(), $this->getXmlXpath());
         
-        // проверить массив ответа 
-        if (!$responseArray) {
-            $output->writeln(date('Y-m-d H:i'). " - Ответ не был получен от сервера.");
-        } else {
-            // выполнить синхронизацию
-            $this->processSync($responseArray, $output);
-            // Синхронизация завершена
-            $output->writeln(date('Y-m-d H:i'). " - Синхронизация завершена успешно.");
+        // проверить ответ
+        if (!$apiResponse) {
+            $errorMessage = date('Y-m-d H:i'). " - Ответ не был получен от сервера.";
+            throw new \Exception($errorMessage);
         }
         
+        // выполнить синхронизацию
+        $this->processSync($apiResponse, $output);
+        
+        // Синхронизация завершена
+        $output->writeln(date('Y-m-d H:i'). " - Синхронизация завершена успешно.");
     }
     
     /**
@@ -77,8 +78,8 @@ class SyncNovaposhtaWarehousesCommand extends SyncNovaposhta
         // ключ массива ID города на стороне ТК
         $dsCities = $this->getEntityManager()
             ->createQueryBuilder()
-            ->select('city.id, city.cityCode, city.name')
-            ->from('NitraDeliveryBundle:City', 'city', 'city.cityCode')
+            ->select('city.id, city.businessKey, city.name')
+            ->from('NitraDeliveryBundle:City', 'city', 'city.businessKey')
             ->where('city.delivery = :delivery')->setParameter('delivery', $this->getDelivery())
             ->getQuery()
             ->getArrayResult();
@@ -86,8 +87,8 @@ class SyncNovaposhtaWarehousesCommand extends SyncNovaposhta
         // получить склады DS
         $dsWarehouses = $this->getEntityManager()
             ->createQueryBuilder()
-            ->select('w.id, w.warehouseCode, w.name')
-            ->from('NitraDeliveryBundle:Warehouse', 'w', 'w.warehouseCode')
+            ->select('w.id, w.businessKey, w.name')
+            ->from('NitraDeliveryBundle:Warehouse', 'w', 'w.businessKey')
             ->where('w.delivery = :delivery')->setParameter('delivery', $this->getDelivery())
             ->getQuery()
             ->getArrayResult();
@@ -104,7 +105,7 @@ class SyncNovaposhtaWarehousesCommand extends SyncNovaposhta
                 // создать новый склад
                 $dsWarehouse = new Warehouse();
                 $dsWarehouse->setDelivery($this->getDelivery());
-                $dsWarehouse->setWarehouseCode($tkWarehouseId);
+                $dsWarehouse->setBusinessKey($tkWarehouseId);
                 
                 // запомнить для сохранения
                 $this->getEntityManager()->persist($dsWarehouse);
@@ -156,12 +157,12 @@ class SyncNovaposhtaWarehousesCommand extends SyncNovaposhta
         // ТК не работает с оставшимися складами
         if ($dsWarehouses) {
             // получить удаляемые города для ТК
-            // если удаляем через ->delete('NitraDeliveryBundle:Warehouse', 'w')
+            // если удаляем через createQueryBuilder()->delete()
             // то не срабатывет SoftDeletable, запись удаялется физически из БД
             $warehousesDelete = $this->getEntityManager()
                 ->getRepository('NitraDeliveryBundle:Warehouse')
                 ->createQueryBuilder('w')
-                ->where('w.warehouseCode IN(:ids)')->setParameter('ids', array_keys($dsWarehouses))
+                ->where('w.businessKey IN(:ids)')->setParameter('ids', array_keys($dsWarehouses))
                 ->andWhere('w.delivery = :delivery')->setParameter('delivery', $this->getDelivery())
                 ->getQuery()
                 ->execute();

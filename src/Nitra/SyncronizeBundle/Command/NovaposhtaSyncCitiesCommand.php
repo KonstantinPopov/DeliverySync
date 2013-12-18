@@ -1,18 +1,16 @@
 <?php
-namespace Nitra\DeliveryBundle\Command;
+namespace Nitra\SyncronizeBundle\Command;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Nitra\DeliveryBundle\Command\SyncNovaposhta;
+use Nitra\SyncronizeBundle\Command\NovaposhtaSync;
 use Nitra\DeliveryBundle\Entity\City;
-//use Nitra\DeliveryBundle\Entity\City as DeliveryCity;
-//use Nitra\GeoBundle\Entity\City as GeoCity;
 
 /**
- * SyncNovaposhtaCitiesCommand
+ * NovaposhtaSyncCitiesCommand
  * Синхронизация городов для ТК Новая Почта
  */
-class SyncNovaposhtaCitiesCommand extends SyncNovaposhta
+class NovaposhtaSyncCitiesCommand extends NovaposhtaSync
 {
     
     /**
@@ -23,7 +21,7 @@ class SyncNovaposhtaCitiesCommand extends SyncNovaposhta
         // настройка команды
         $this
             ->setName('novaposhta:sync-cities')
-            ->setDescription('Синхронизировать города ТК "Новая Почта"')
+            ->setDescription('Синхронизировать города ТК "Новая Почта".')
         ;
     }
     
@@ -34,18 +32,19 @@ class SyncNovaposhtaCitiesCommand extends SyncNovaposhta
     {
         
         // отправить xml запрос на сервер
-        $responseArray = $this->apiSendRequest($this->getXmlRequest(), $this->getXmlXpath());
+        $apiResponse = $this->apiSendRequest($this->getXmlRequest(), $this->getXmlXpath());
         
-        // проверить массив ответа 
-        if (!$responseArray) {
-            $output->writeln(date('Y-m-d H:i'). " - Ответ не был получен от сервера.");
-        } else {
-            // выполнить синхронизацию
-            $this->processSync($responseArray, $output);
-            // Синхронизация завершена
-            $output->writeln(date('Y-m-d H:i'). " - Синхронизация завершена успешно.");
+        // проверить ответ
+        if (!$apiResponse) {
+            $errorMessage = date('Y-m-d H:i'). " - Ответ не был получен от сервера.";
+            throw new \Exception($errorMessage);
         }
         
+        // выполнить синхронизацию
+        $this->processSync($apiResponse, $output);
+        
+        // Синхронизация завершена
+        $output->writeln(date('Y-m-d H:i'). " - Синхронизация завершена успешно.");
     }
     
     /**
@@ -87,11 +86,11 @@ class SyncNovaposhtaCitiesCommand extends SyncNovaposhta
             ->execute(array(), 'KeyPair');
         
         // получить массив городов ТК
-        // array( cityCode => name )
+        // array( businessKey => name )
         $dsCities = $this->getEntityManager()
             ->getRepository('NitraDeliveryBundle:City')
             ->createQueryBuilder('city')
-            ->select('city.cityCode, city.name')
+            ->select('city.businessKey, city.name')
             ->where('city.delivery = :delivery')->setParameter('delivery', $this->getDelivery())
             ->getQuery()
             ->execute(array(), 'KeyPair');
@@ -100,18 +99,18 @@ class SyncNovaposhtaCitiesCommand extends SyncNovaposhta
         foreach($responseArray as $tkCity) {
             
             // проверить существует ли город в городах ТК 
-            $tkCityId = (string)$tkCity->id;
-            if (in_array($tkCityId, array_keys($dsCities))) {
+            $businessKey = (string)$tkCity->id;
+            if (in_array($businessKey, array_keys($dsCities))) {
                 // удаляем из массива городов 
                 // оставшиеся города в массиве будут удалены, по ним ТК не работает
-                unset($dsCities[$tkCityId]);
+                unset($dsCities[$businessKey]);
                 
             } else {
                 // в ds нет города 
                 // добавить новый город 
                 $dsCity = new City();
                 $dsCity->setDelivery($this->getDelivery());
-                $dsCity->setCityCode($tkCityId);
+                $dsCity->setBusinessKey($businessKey);
                 // город регион
                 if ((string)$tkCity->id == (string)$tkCity->parentCityId) {
                     // установить город регион
@@ -147,21 +146,13 @@ class SyncNovaposhtaCitiesCommand extends SyncNovaposhta
         // города не пришли в синхронизации 
         // ТК не работает с оставшимися городами
         if ($dsCities) {
-            
-//            // todo: уточнить getReference vs getPartialReference ... unitOfWork->markReadOnly($entity)
-//            // удалить города которые не пришли в синхронизации 
-//            foreach($dsCities as $cityId => $cityName) {
-//                $this->getEntityManager()->remove($this->getEntityManager()->getReference('NitraDeliveryBundle:City', $cityId));
-//                $this->getEntityManager()->remove($this->getEntityManager()->getPartialReference('NitraDeliveryBundle:City', $cityId));
-//            }
-            
             // получить удаляемые города для ТК
-            // если удаляем через ->delete('NitraDeliveryBundle:City', 'city')
+            // если удаляем через createQueryBuilder()->delete()
             // то не срабатывет SoftDeletable, запись удаялется физически из БД
             $citiesDelete = $this->getEntityManager()
                 ->getRepository('NitraDeliveryBundle:City')
                 ->createQueryBuilder('city')
-                ->where('city.cityCode IN(:ids)')->setParameter('ids', array_keys($dsCities))
+                ->where('city.businessKey IN(:ids)')->setParameter('ids', array_keys($dsCities))
                 ->getQuery()
                 ->execute();
             // удалить города которые не пришли в синхронизации 
