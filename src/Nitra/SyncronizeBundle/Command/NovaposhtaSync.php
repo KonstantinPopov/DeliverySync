@@ -72,6 +72,20 @@ abstract class NovaposhtaSync extends ContainerAwareCommand
     }
     
     /**
+     * установить массив parameters
+     * @param array $parameters - массив устанавливаемых параметров
+     * @return $this->parameters
+     */
+    public function setParameters(array $parameters=array())
+    {
+        // установить массив параметров 
+        $this->parameters = $parameters;
+        
+        // вернуть установленный массив параметров
+        return $this->parameters;
+    }
+    
+    /**
      * получить елемента массива parameters
      * @return mixed параметр елемента массива parameters
      * @throw Exception указанный параметр не найден
@@ -88,6 +102,26 @@ abstract class NovaposhtaSync extends ContainerAwareCommand
     }
     
     /**
+     * установить елемент массива parameters
+     * @param string $parameterName - имя добавляемого параметра
+     * @param mixed  $parameterValue - знаяение добавляемого параметра
+     * @return $this->parameters[$parameterName] - массив всех параметров
+     */
+    public function setParameter($parameterName, $parameterValue=null)
+    {
+        // инищиализировать массив параметров
+        if (!$this->parameters) {
+            $this->parameters = array();
+        }
+        
+        // установить новое знаение параметра
+        $this->parameters[$parameterName] = $parameterValue;
+        
+        // вернуть значение добавленного параметра
+        return $this->parameters[$parameterName];
+    }
+    
+    /**
      * выполнить подготовку перед выполенением
      * @thow /Exception если команда не полчает все необходимые данные для выполенения
      */
@@ -97,40 +131,42 @@ abstract class NovaposhtaSync extends ContainerAwareCommand
         // установить EntityManager
         $this->em = $this->getContainer()->get('doctrine')->getEntityManager('default');
         
-        // проверить параметр api_token
-        if (!$this->getContainer()->hasParameter('novaposhta_api_token') ||
-            !$this->getContainer()->getParameter('novaposhta_api_token')
+        // проверить группу параметров
+        if (!$this->getContainer()->hasParameter('novaposhta') ||
+            !$this->getContainer()->getParameter('novaposhta')
         ) {
-            throw new \Exception('Не указан обязательный параметр novaposhta_api_token в файле config/parameters.yml');
+            throw new \Exception('Не указана обязательная группа параметров "novaposhta:" в файле config/parameters.yml');
+        }
+        
+        // получить параметры  из файла настроек
+        $parameters = $this->getContainer()->getParameter('novaposhta');
+        
+        // проверить параметр api_token
+        if (!isset($parameters['api_token']) || !$parameters['api_token']) {
+            throw new \Exception('Не указан обязательный параметр novaposhta: api_token в файле config/parameters.yml');
         }
         
         // проверить параметр api_url
-        if (!$this->getContainer()->hasParameter('novaposhta_api_url') ||
-            !$this->getContainer()->getParameter('novaposhta_api_url')
-        ) {
-            throw new \Exception('Не указан обязательный параметр novaposhta_api_url в файле config/parameters.yml');
+        if (!isset($parameters['api_url']) || !$parameters['api_url']) {
+            throw new \Exception('Не указан обязательный параметр novaposhta: api_url в файле config/parameters.yml');
         }
         
-        // установить массив параметров таска 
-        $this->parameters = array(
-            
-            // ID страны Nitra\GeoBundle\Entity\Country
-            'countryId' => 1,
-            
-            // ID ТК Nitra\DeliveryBundle\Entity\Delivery
-            'deliveryId' => 1,
-            
-            // установить параметр apiToken, авторизация в API ТК Новая Почта
-            'apiToken' => $this->getContainer()->getParameter('novaposhta_api_token'),
-            
-            // установить параметр apiUrl, ссылка синхронизации API ТК Новая Почта
-            'apiUrl' => $this->getContainer()->getParameter('novaposhta_api_url')
-        );
+        // установить параметр apiToken, авторизация в API ТК Новая Почта
+        $this->setParameter('apiToken', $parameters['api_token']);
+        
+        // установить параметр apiUrl, ссылка синхронизации API ТК Новая Почта
+        $this->setParameter('apiUrl', $parameters['api_url']);
+        
+        // ID страны Nitra\GeoBundle\Entity\Country
+        $this->setParameter('countryId', 1);
+        
+        // ID ТК Nitra\DeliveryBundle\Entity\Delivery
+        $this->setParameter('deliveryId', 1);
         
         // Получить ТК 
-        $this->delivery = $this->em->getRepository('NitraDeliveryBundle:Delivery')->find($this->parameters['deliveryId']);
+        $this->delivery = $this->em->getRepository('NitraDeliveryBundle:Delivery')->find($this->getParameter('deliveryId'));
         if (!$this->delivery) {
-            throw new \Exception('Не найдена ТК по указанному параметру deliveryId: '.$this->parameters['deliveryId']);
+            throw new \Exception('Не найдена ТК по указанному параметру deliveryId: '.$this->getParameter('deliveryId'));
         }
     }
     

@@ -44,7 +44,7 @@ class NovaposhtaSyncWarehousesCommand extends NovaposhtaSync
         $this->processSync($apiResponse, $output);
         
         // Синхронизация завершена
-        $output->writeln(date('Y-m-d H:i'). " - Синхронизация завершена успешно.");
+        $output->writeln(date('Y-m-d H:i'). ' - Синхронизация складов ТК "Новая Почта" завершена успешно.');
     }
     
     /**
@@ -96,16 +96,14 @@ class NovaposhtaSyncWarehousesCommand extends NovaposhtaSync
         // обойти массив ответа
         foreach($responseArray as $tkWh) {
             
-            // идентификатор склада на стороне ТК 
-            $tkWarehouseId = (string)$tkWh->wareId;
-            
             // проверить существует ли склад в DS
-            if (!isset($dsWarehouses[$tkWarehouseId])) {
+            $businessKey = (string)$tkWh->wareId;
+            if (!isset($dsWarehouses[$businessKey])) {
                 // склад в DS не существует
                 // создать новый склад
                 $dsWarehouse = new Warehouse();
                 $dsWarehouse->setDelivery($this->getDelivery());
-                $dsWarehouse->setBusinessKey($tkWarehouseId);
+                $dsWarehouse->setBusinessKey($businessKey);
                 
                 // запомнить для сохранения
                 $this->getEntityManager()->persist($dsWarehouse);
@@ -113,11 +111,11 @@ class NovaposhtaSyncWarehousesCommand extends NovaposhtaSync
             } else {
                 // склад в DS сушествует 
                 // получить склад
-                $dsWarehouse = $this->getEntityManager()->getReference('NitraDeliveryBundle:Warehouse', $dsWarehouses[$tkWarehouseId]['id']);
+                $dsWarehouse = $this->getEntityManager()->getReference('NitraDeliveryBundle:Warehouse', $dsWarehouses[$businessKey]['id']);
                 
-                // удаляем из массива городов 
-                // оставшиеся города в массиве будут удалены, по ним ТК не работает
-                unset($dsWarehouses[$tkWarehouseId]);
+                // удаляем из массива складов 
+                // оставшиеся склады в массиве будут удалены, по ним ТК не работает
+                unset($dsWarehouses[$businessKey]);
             }
             
             // массив сравнения склада ТК 
@@ -132,15 +130,27 @@ class NovaposhtaSyncWarehousesCommand extends NovaposhtaSync
                (string)$tkWh->x,
             ));
             
+            // массив сравнения склада DS
+            $dsWhCompare = serialize(array(
+                (string)$dsWarehouse->getBusinessKey(),
+                (string)$dsWarehouse->getNumber(),
+                (string)(($dsWarehouse->getCity()) ? $dsWarehouse->getCity()->getId() : null),
+                (string)$dsWarehouse->getName(),
+                (string)$dsWarehouse->getAddress(),
+                (string)$dsWarehouse->getPhone(),
+                (string)$dsWarehouse->getLatitude(),
+                (string)$dsWarehouse->getLongitude(),
+            ));
+            
             // сравнить склад ТК и склад DS
-            if ($tkWhCompare != $dsWarehouse->getSyncCompare()) {
+            if ($tkWhCompare != $dsWhCompare) {
                 
                 // идентификатор города на стороне ТК 
-                $tkCityId = (string)$tkWh->city_id;
+                $businessKey = (string)$tkWh->city_id;
                 
                 // установить город склада
-                if (isset($dsCities[$tkCityId])) {
-                    $dsWarehouse->setCity($this->getEntityManager()->getReference('NitraDeliveryBundle:City', $dsCities[$tkCityId]['id']));
+                if (isset($dsCities[$businessKey])) {
+                    $dsWarehouse->setCity($this->getEntityManager()->getReference('NitraDeliveryBundle:City', $dsCities[$businessKey]['id']));
                 }
                 
                 // наполнить склад DS данными
@@ -156,7 +166,7 @@ class NovaposhtaSyncWarehousesCommand extends NovaposhtaSync
         // склады не пришли в синхронизации
         // ТК не работает с оставшимися складами
         if ($dsWarehouses) {
-            // получить удаляемые города для ТК
+            // получить удаляемые склады для ТК
             // если удаляем через createQueryBuilder()->delete()
             // то не срабатывет SoftDeletable, запись удаялется физически из БД
             $warehousesDelete = $this->getEntityManager()
@@ -166,7 +176,7 @@ class NovaposhtaSyncWarehousesCommand extends NovaposhtaSync
                 ->andWhere('w.delivery = :delivery')->setParameter('delivery', $this->getDelivery())
                 ->getQuery()
                 ->execute();
-            // удалить города которые не пришли в синхронизации 
+            // удалить склады которые не пришли в синхронизации 
             foreach($warehousesDelete as $wh) {
                 $this->getEntityManager()->remove($wh);
             }

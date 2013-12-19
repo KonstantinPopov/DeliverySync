@@ -44,7 +44,7 @@ class NovaposhtaSyncCitiesCommand extends NovaposhtaSync
         $this->processSync($apiResponse, $output);
         
         // Синхронизация завершена
-        $output->writeln(date('Y-m-d H:i'). " - Синхронизация завершена успешно.");
+        $output->writeln(date('Y-m-d H:i'). ' - Синхронизация городов ТК "Новая Почта" завершена успешно.');
     }
     
     /**

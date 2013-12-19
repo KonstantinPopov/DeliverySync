@@ -12,5 +12,6 @@ parameters:
     mailer_password: null
     locale: ru
     secret: 921b17afa7fc6b15f6f3ef27d37af855
-    novaposhta_api_token: eaef11faf4f803367bb194f84180c5b8
-    novaposhta_api_url: 'http://orders.novaposhta.ua/xml.php'
+    novaposhta:
+        api_token: eaef11faf4f803367bb194f84180c5b8
+        api_url: 'http://orders.novaposhta.ua/xml.php'

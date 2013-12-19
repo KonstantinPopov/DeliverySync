@@ -11,7 +11,8 @@ use Knp\DoctrineBehaviors\Model as ORMBehaviors;
  * @ORM\Table(name="delivery_warehouses")
  * @ORM\Entity(repositoryClass="Nitra\DeliveryBundle\Repository\WarehouseRepository")
  */
-//@UniqueEntity(fields={"delivery_id", "warehouse_code"}, message="Склад ТК данной компании с таким идентификатором уже существует")
+// UniqueEntity не используем потому что используем SoftDeletable
+// @UniqueEntity(fields={"delivery_id", "warehouse_code"}, message="Склад ТК данной компании с таким идентификатором уже существует")
 class Warehouse
 {
 
@@ -99,24 +100,6 @@ class Warehouse
         return (string)$this->getName();
     }
     
-    /**
-     * получить serialize для сравления при синхронизации
-     * @return string
-     */
-    public function getSyncCompare()
-    {
-        return serialize(array(
-            $this->getBusinessKey(),
-            $this->getNumber(),
-            (($this->getCity()) ? $this->getCity()->getId() : null),
-            $this->getName(),
-            $this->getAddress(),
-            $this->getPhone(),
-            $this->getLatitude(),
-            $this->getLongitude(),
-        ));        
-    }
-
     /**
      * Get id
      *

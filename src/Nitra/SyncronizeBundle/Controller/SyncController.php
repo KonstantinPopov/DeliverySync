@@ -5,15 +5,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use JMS\DiExtraBundle\Annotation as DI;
 use Doctrine\Common\Inflector\Inflector;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-//use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-
-
 use Symfony\Component\HttpFoundation\Request;
-//use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
-
-
-
 use Nitra\DeliveryBundle\Entity\Client;
 
 /**
@@ -65,8 +58,6 @@ class SyncController extends Controller
         // параметры выполненения синхронизации
         $options = $request->get('options', null);
         
-        
-        
         // попытка выполнить команду
         try {
             // выполнить команду
@@ -86,13 +77,14 @@ class SyncController extends Controller
      * выполнить синхронизацию географии
      * @param Client $client - клиент по которому проходит синхронизация 
      * @param array $options массив параметров синхронизации
+     * @throw Exception - ошибка синхронизации
      * @return mixed $syncResult - результат синхронизации
      */
     protected function processApiSyncronizeGeo(Client $client, array $options=null)
     {
         
-        // отключаем фильтр удаленных сушностей
-        $this->em->getFilters()->disable('softdeleteable');
+//        // отключаем фильтр удаленных сушностей
+//        $this->em->getFilters()->disable('softdeleteable');
         
         // результируюший массив ответа
         $syncResult = array();
@@ -113,7 +105,7 @@ class SyncController extends Controller
             $syncResult['regions'][$region['id']] = array(
                 'id' => $region['id'],
                 'name' => $region['name'],
-                'isActive' => ($region['deletedAt']) ? false : true,
+//                'isActive' => ($region['deletedAt']) ? false : true,
             );
         }
         
@@ -134,7 +126,7 @@ class SyncController extends Controller
                 'id' => $city['id'],
                 'regionId' => $city['region']['id'],
                 'name' => $city['name'],
-                'isActive' => ($city['deletedAt']) ? false : true,
+//                'isActive' => ($city['deletedAt']) ? false : true,
             );
         }
         
@@ -147,19 +139,59 @@ class SyncController extends Controller
      * выполнить синхронизацию складов
      * @param Client $client - клиент по которому проходит синхронизация 
      * @param array $options массив параметров синхронизации
+     * @throw Exception - ошибка синхронизации
      * @return mixed $syncResult - результат синхронизации
      */
     protected function processApiSyncronizeWarehouses(Client $client, array $options=null)
     {
-        // отключаем фильтр удаленных сушностей
-        $this->em->getFilters()->disable('softdeleteable');
         
-        // результируюший массив ответа
-        $syncResult = array();
+        // массив ID ТК клиента
+        $deliveryIds = array();
+        foreach($client->getDeliveries() as $delivery) {
+            $deliveryIds[] = $delivery->getId();
+        }
         
-        // вернуть результат Geo синхронизации
-        $syncResult['message'] = 'Данные синхронизации складов получены успешно.';
-        return $syncResult;
+        // проверить выбранные ТК для клиента
+        if (!$deliveryIds) {
+            throw new \Exception("Для клиента \"".(string)$client."\" не установлена ни одна транспортная компания.");
+        }
+        
+//        // отключаем фильтр удаленных сушностей
+//        $this->em->getFilters()->disable('softdeleteable');
+        
+        // запрос получения складов
+        $queryWarehouses = $this->em
+            ->createQueryBuilder()
+            ->select('w.id, w.number, w.name, w.address, w.phone, w.latitude, w.longitude')
+            ->addSelect('d.id AS deliveryId, d.name AS deliveryName')
+            ->addSelect('geoCountry.id AS countryId, geoCountry.name AS countryName')
+            ->addSelect('geoRegion.id AS regionId, geoRegion.name AS regionName')
+            ->addSelect('geoCity.id AS cityId, geoCity.name AS cityName')
+            ->from('NitraDeliveryBundle:Warehouse', 'w', 'w.id')
+            ->innerJoin('w.delivery', 'd')
+            ->innerJoin('w.city', 'city')
+            ->innerJoin('city.geoCity', 'geoCity')
+            ->innerJoin('geoCity.region', 'geoRegion')
+            ->innerJoin('geoRegion.country', 'geoCountry')
+            ->where('d.id IN(:deliveryIds)')->setParameter('deliveryIds', $deliveryIds)
+            ;
+        
+        // докдеить в запрос ID ТК 
+        if ($options && isset($options['deliveryId']) && $options['deliveryId']) {
+            $queryWarehouses
+                ->andWhere('d.id = :deliveryId')->setParameter('deliveryId', $options['deliveryId']);
+        }
+        
+        // получить массив сущностей складов
+        $warehouses = $queryWarehouses
+            ->getQuery()
+            ->getArrayResult();
+        
+        // вернуть результат синхронизации складов
+        return array(
+            'warehouses' => $warehouses,
+            'message' => 'Данные синхронизации складов получены успешно.',
+        );
     }
     
 }

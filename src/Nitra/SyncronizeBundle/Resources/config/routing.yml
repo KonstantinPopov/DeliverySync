@@ -4,15 +4,3 @@ NitraSyncronizeBundle:
     resource: "@NitraSyncronizeBundle/Controller/SyncController.php"
     type:     annotation
     prefix:   /    
-
-# Синхронизация географии
-NitraSyncronizeBundleGeo:
-    resource: "@NitraSyncronizeBundle/Controller/SyncronizeGeoController.php"
-    type:     annotation
-    prefix:   /    
-
-# Синхронизация складов
-NitraSyncronizeBundleWarehouse:
-    resource: "@NitraSyncronizeBundle/Controller/SyncronizeWarehouseController.php"
-    type:     annotation
-    prefix:   /
