@@ -44,7 +44,6 @@ class SyncController extends Controller
             return new JsonResponse(array('type'=> 'error', 'message'=> "Клиент не найден."));
         }
         
-        
         // проверить команду синхронизации
         if (!$request->get('command', false)) {
             return new JsonResponse(array('type'=> 'error', 'message'=> "Не указана команда."));

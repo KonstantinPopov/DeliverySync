@@ -76,10 +76,14 @@ abstract class NovaposhtaSync extends ContainerAwareCommand
      * @param array $parameters - массив устанавливаемых параметров
      * @return $this->parameters
      */
-    public function setParameters(array $parameters=array())
+    public function setParameters(array $parameters=null)
     {
         // установить массив параметров 
-        $this->parameters = $parameters;
+        if ($parameters) {
+            $this->parameters = $parameters;
+        } else {
+            $this->parameters = array();
+        }
         
         // вернуть установленный массив параметров
         return $this->parameters;
