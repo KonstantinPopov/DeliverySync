@@ -59,11 +59,18 @@ class Warehouse
     
     /**
      * @var string $name
-     * @ORM\Column(name="name", type="string", length=255, options={"comment"="Название отделения"})
+     * @ORM\Column(type="string", length=255, options={"comment"="Название отделения"})
      * @Assert\NotBlank(message="Не указано название отделения компании")
      */
     private $name;
-
+    
+    /**
+     * @var string $name
+     * @ORM\Column(type="string", length=255, options={"comment"="Название отделения в ТК"})
+     * @Assert\NotBlank(message="Не указано название отделения ТК")
+     */
+    private $nameTk;
+    
     /**
      * @var string $address
      * @ORM\Column(name="address", type="string", length=255, options={"comment"="Адрес отделения"})
@@ -178,7 +185,30 @@ class Warehouse
     {
         return $this->name;
     }
+    
+    /**
+     * Set nameTk
+     *
+     * @param string $nameTk
+     * @return City
+     */
+    public function setNameTk($nameTk)
+    {
+        $this->nameTk = $nameTk;
+    
+        return $this;
+    }
 
+    /**
+     * Get nameTk
+     *
+     * @return string 
+     */
+    public function getNameTk()
+    {
+        return $this->nameTk;
+    }    
+    
     /**
      * Set address
      *

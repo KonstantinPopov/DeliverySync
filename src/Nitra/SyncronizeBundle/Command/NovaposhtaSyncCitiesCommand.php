@@ -111,6 +111,7 @@ class NovaposhtaSyncCitiesCommand extends NovaposhtaSync
                 $dsCity = new City();
                 $dsCity->setDelivery($this->getDelivery());
                 $dsCity->setBusinessKey($businessKey);
+                $dsCity->setNameTk((string)$tkCity->nameRu);
                 // город регион
                 if ((string)$tkCity->id == (string)$tkCity->parentCityId) {
                     // установить город регион

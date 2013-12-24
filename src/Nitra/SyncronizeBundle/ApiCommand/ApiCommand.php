@@ -1,8 +1,8 @@
 <?php
 namespace Nitra\SyncronizeBundle\ApiCommand;
 
-//use Symfony\Component\DependencyInjection\ContainerInterface;
-//use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Doctrine\ORM\EntityManager;
 use Nitra\DeliveryBundle\Entity\Client;
 
@@ -11,11 +11,23 @@ use Nitra\DeliveryBundle\Entity\Client;
  * ApiCommand
  * Общий класс API DeliverySync
  */
-abstract class ApiCommand // implements ContainerAwareInterface
+abstract class ApiCommand implements ContainerAwareInterface
 {
-    
-    // ID страны Украина
+ 
+    /**
+     * @var ID страны Украина
+     */
     protected static $countryIdUA = 1;
+    
+    /**
+     * @var ID страны Украина
+     */
+    protected static $deliveryIdNovaposhta = 1;
+    
+    /**
+     * @var ContainerInterface|null
+     */
+    protected $container;
     
     /**
      * @var Doctrine\ORM\EntityManager $em
@@ -50,14 +62,29 @@ abstract class ApiCommand // implements ContainerAwareInterface
     
     /**
      * constructor
-     * @param Doctrine\ORM\EntityManager $em
-     * @param array $options Description
+     * @param Client $client
+     * @param array $options массив параметров команды
      */
-    public function __construct(EntityManager $em, Client $client, array $parameters=null)
-    {
-        $this->em = $em;
+    public function __construct(Client $client, array $parameters=null)
+    {        
         $this->client = $client;
         $this->setParameters($parameters);
+    }
+    
+    /**
+     * @return ContainerInterface
+     */
+    protected function getContainer()
+    {
+        return $this->container;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setContainer(ContainerInterface $container = null)
+    {
+        $this->container = $container;
     }
     
     /**
@@ -67,7 +94,15 @@ abstract class ApiCommand // implements ContainerAwareInterface
     {
         return $this->em;
     }
-
+    
+    /**
+     * установить EntityManager
+     */
+    public function setEntityManager(EntityManager $entityManager)
+    {
+        $this->em = $entityManager;
+    }
+    
     /**
      * получить Client
      */
@@ -112,6 +147,24 @@ abstract class ApiCommand // implements ContainerAwareInterface
         
         // вернуть значение параметра
         return $this->parameters[$parameterName];
+    }
+    
+    /**
+     * проверить существование параметра
+     * @return boolean - флаг существования параметра в массиве параметров
+     * @return true    - параметр найден 
+     * @return false   - параметр не найден 
+     */
+    public function hasParameter($parameterName)
+    {
+        // проверить параметр в массиве параметров
+        if (isset($this->parameters[$parameterName])) {
+            // параметр найден
+            return true;
+        }
+        
+        // параметр не найден
+        return false;
     }
     
     /**

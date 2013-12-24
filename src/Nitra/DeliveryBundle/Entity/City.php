@@ -52,10 +52,17 @@ class City
     
     /**
      * @var string $name
-     * @ORM\Column(name="name", type="string", length=255, options={"comment"="Название города"})
-     * @Assert\NotBlank(message="Не указано название города ТК")
+     * @ORM\Column(type="string", length=255, options={"comment"="Название города"})
+     * @Assert\NotBlank(message="Не указано название города")
      */
     private $name;
+    
+    /**
+     * @var string $name
+     * @ORM\Column(type="string", length=255, options={"comment"="Название города в ТК"})
+     * @Assert\NotBlank(message="Не указано название города ТК")
+     */
+    private $nameTk;
     
     /**
      * Entity to string
@@ -121,7 +128,30 @@ class City
     {
         return $this->name;
     }
+    
+    /**
+     * Set nameTk
+     *
+     * @param string $nameTk
+     * @return City
+     */
+    public function setNameTk($nameTk)
+    {
+        $this->nameTk = $nameTk;
+    
+        return $this;
+    }
 
+    /**
+     * Get nameTk
+     *
+     * @return string 
+     */
+    public function getNameTk()
+    {
+        return $this->nameTk;
+    }    
+    
     /**
      * Set geoCity
      *

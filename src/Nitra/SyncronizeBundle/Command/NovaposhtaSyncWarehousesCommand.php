@@ -104,6 +104,7 @@ class NovaposhtaSyncWarehousesCommand extends NovaposhtaSync
                 $dsWarehouse = new Warehouse();
                 $dsWarehouse->setDelivery($this->getDelivery());
                 $dsWarehouse->setBusinessKey($businessKey);
+                $dsWarehouse->setNameTk($tkWh->addressRu);
                 
                 // запомнить для сохранения
                 $this->getEntityManager()->persist($dsWarehouse);
@@ -124,7 +125,6 @@ class NovaposhtaSyncWarehousesCommand extends NovaposhtaSync
                (string)$tkWh->number,
                (string)$tkWh->city_id,
                (string)$tkWh->addressRu,
-               (string)$tkWh->addressRu,
                (string)$tkWh->phone,
                (string)$tkWh->y,
                (string)$tkWh->x,
@@ -135,8 +135,7 @@ class NovaposhtaSyncWarehousesCommand extends NovaposhtaSync
                 (string)$dsWarehouse->getBusinessKey(),
                 (string)$dsWarehouse->getNumber(),
                 (string)(($dsWarehouse->getCity()) ? $dsWarehouse->getCity()->getId() : null),
-                (string)$dsWarehouse->getName(),
-                (string)$dsWarehouse->getAddress(),
+                (string)$dsWarehouse->getNameTk(),
                 (string)$dsWarehouse->getPhone(),
                 (string)$dsWarehouse->getLatitude(),
                 (string)$dsWarehouse->getLongitude(),
@@ -156,6 +155,7 @@ class NovaposhtaSyncWarehousesCommand extends NovaposhtaSync
                 // наполнить склад DS данными
                 $dsWarehouse->setNumber((string)$tkWh->number);
                 $dsWarehouse->setName((string)$tkWh->addressRu);
+                $dsWarehouse->setNameTk((string)$tkWh->addressRu);
                 $dsWarehouse->setAddress((string)$tkWh->addressRu);
                 $dsWarehouse->setPhone((string)$tkWh->phone);
                 $dsWarehouse->setLatitude((string)$tkWh->y);

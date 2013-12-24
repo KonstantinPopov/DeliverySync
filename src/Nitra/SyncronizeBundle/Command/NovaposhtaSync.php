@@ -131,25 +131,8 @@ abstract class NovaposhtaSync extends ContainerAwareCommand
         // установить EntityManager
         $this->em = $this->getContainer()->get('doctrine')->getEntityManager('default');
         
-        // проверить группу параметров
-        if (!$this->getContainer()->hasParameter('novaposhta') ||
-            !$this->getContainer()->getParameter('novaposhta')
-        ) {
-            throw new \Exception('Не указана обязательная группа параметров "novaposhta:" в файле config/parameters.yml');
-        }
-        
         // получить параметры  из файла настроек
         $parameters = $this->getContainer()->getParameter('novaposhta');
-        
-        // проверить параметр api_token
-        if (!isset($parameters['api_token']) || !$parameters['api_token']) {
-            throw new \Exception('Не указан обязательный параметр novaposhta: api_token в файле config/parameters.yml');
-        }
-        
-        // проверить параметр api_url
-        if (!isset($parameters['api_url']) || !$parameters['api_url']) {
-            throw new \Exception('Не указан обязательный параметр novaposhta: api_url в файле config/parameters.yml');
-        }
         
         // установить параметр apiToken, авторизация в API ТК Новая Почта
         $this->setParameter('apiToken', $parameters['api_token']);
@@ -192,10 +175,9 @@ abstract class NovaposhtaSync extends ContainerAwareCommand
     /**
      * Отправить запрос на сервер
      * @param string $xmlRequest - отправлемый xml запрос
-     * @param string $xpath - xml xpath в xml ответе
      * @return array $responseArray - массив элемоенов SimpleXMLElement - ответ сервера
      */
-    protected function apiSendRequest($xmlRequest, $xpath)
+    protected function apiSendRequest($xmlRequest)
     {
         // отправить запрос на сервер 
         $ch = curl_init();
