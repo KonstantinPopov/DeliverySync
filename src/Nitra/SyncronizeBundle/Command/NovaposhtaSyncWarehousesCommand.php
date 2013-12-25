@@ -21,7 +21,7 @@ class NovaposhtaSyncWarehousesCommand extends NovaposhtaSync
         // настройка команды
         $this
             ->setName('novaposhta:sync-warehouses')
-            ->setDescription('Синхронизировать склады ТК "Новая Почта".')
+            ->setDescription('Синхронизация складов ТК "Новая Почта".')
         ;
     }
     
@@ -74,7 +74,7 @@ class NovaposhtaSyncWarehousesCommand extends NovaposhtaSync
     protected function processSync(array $responseArray, OutputInterface $output)
     {
         
-        // получить города ТК
+        // получить города DS
         // ключ массива ID города на стороне ТК
         $dsCities = $this->getEntityManager()
             ->createQueryBuilder()
@@ -104,7 +104,7 @@ class NovaposhtaSyncWarehousesCommand extends NovaposhtaSync
                 $dsWarehouse = new Warehouse();
                 $dsWarehouse->setDelivery($this->getDelivery());
                 $dsWarehouse->setBusinessKey($businessKey);
-                $dsWarehouse->setNameTk($tkWh->addressRu);
+                $dsWarehouse->setNameTk(trim((string)$tkWh->addressRu));
                 
                 // запомнить для сохранения
                 $this->getEntityManager()->persist($dsWarehouse);
@@ -121,13 +121,13 @@ class NovaposhtaSyncWarehousesCommand extends NovaposhtaSync
             
             // массив сравнения склада ТК 
             $tkWhCompare = serialize(array(
-               (string)$tkWh->wareId,
-               (string)$tkWh->number,
-               (string)$tkWh->city_id,
-               (string)$tkWh->addressRu,
-               (string)$tkWh->phone,
-               (string)$tkWh->y,
-               (string)$tkWh->x,
+               trim((string)$tkWh->wareId),
+               trim((string)$tkWh->number),
+               trim((string)$tkWh->city_id),
+               trim((string)$tkWh->addressRu),
+               trim((string)$tkWh->phone),
+               trim((string)$tkWh->y),
+               trim((string)$tkWh->x),
             ));
             
             // массив сравнения склада DS
@@ -145,7 +145,7 @@ class NovaposhtaSyncWarehousesCommand extends NovaposhtaSync
             if ($tkWhCompare != $dsWhCompare) {
                 
                 // идентификатор города на стороне ТК 
-                $businessKey = (string)$tkWh->city_id;
+                $businessKey = trim((string)$tkWh->city_id);
                 
                 // установить город склада
                 if (isset($dsCities[$businessKey])) {
@@ -153,13 +153,13 @@ class NovaposhtaSyncWarehousesCommand extends NovaposhtaSync
                 }
                 
                 // наполнить склад DS данными
-                $dsWarehouse->setNumber((string)$tkWh->number);
-                $dsWarehouse->setName((string)$tkWh->addressRu);
-                $dsWarehouse->setNameTk((string)$tkWh->addressRu);
-                $dsWarehouse->setAddress((string)$tkWh->addressRu);
-                $dsWarehouse->setPhone((string)$tkWh->phone);
-                $dsWarehouse->setLatitude((string)$tkWh->y);
-                $dsWarehouse->setLongitude((string)$tkWh->x);
+                $dsWarehouse->setNumber(trim((string)$tkWh->number));
+                $dsWarehouse->setName(trim((string)$tkWh->addressRu));
+                $dsWarehouse->setNameTk(trim((string)$tkWh->addressRu));
+                $dsWarehouse->setAddress(trim((string)$tkWh->addressRu));
+                $dsWarehouse->setPhone(trim((string)$tkWh->phone));
+                $dsWarehouse->setLatitude(trim((string)$tkWh->y));
+                $dsWarehouse->setLongitude(trim((string)$tkWh->x));
             }
         }
         

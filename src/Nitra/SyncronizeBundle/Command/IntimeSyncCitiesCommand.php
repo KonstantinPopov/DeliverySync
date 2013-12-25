@@ -3,14 +3,14 @@ namespace Nitra\SyncronizeBundle\Command;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Nitra\SyncronizeBundle\Command\NovaposhtaSync;
+use Nitra\SyncronizeBundle\Command\IntimeSync;
 use Nitra\DeliveryBundle\Entity\City;
 
 /**
- * NovaposhtaSyncCitiesCommand
- * Синхронизация городов для ТК Новая Почта
+ * IntimeSyncCitiesCommand
+ * Синхронизация городов для ТК ИнТайм
  */
-class NovaposhtaSyncCitiesCommand extends NovaposhtaSync
+class IntimeSyncCitiesCommand extends IntimeSync
 {
     
     /**
@@ -20,8 +20,8 @@ class NovaposhtaSyncCitiesCommand extends NovaposhtaSync
     {
         // настройка команды
         $this
-            ->setName('novaposhta:sync-cities')
-            ->setDescription('Синхронизация городов ТК "Новая Почта".')
+            ->setName('intime:sync-сities')
+            ->setDescription('Синхронизация городов ТК "ИнТайм".')
         ;
     }
     
@@ -30,42 +30,14 @@ class NovaposhtaSyncCitiesCommand extends NovaposhtaSync
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        
         // отправить xml запрос на сервер
-        $apiResponse = $this->apiSendRequest($this->getXmlRequest(), $this->getXmlXpath());
-        
-        // проверить ответ
-        if (!$apiResponse) {
-            $errorMessage = date('Y-m-d H:i'). " - Ответ не был получен от сервера.";
-            throw new \Exception($errorMessage);
-        }
+        $apiResponse = $this->apiSendRequest('GetListCities', '/ListWarehouses/Warehouse', null);
         
         // выполнить синхронизацию
         $this->processSync($apiResponse, $output);
         
         // Синхронизация завершена
-        $output->writeln(date('Y-m-d H:i'). ' - Синхронизация городов ТК "Новая Почта" завершена успешно.');
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    protected function getXmlRequest()
-    {
-        return 
-        '<?xml version="1.0" encoding="utf-8"?>
-            <file>
-                <auth>' . $this->getParameter('apiToken') . '</auth>
-                <city/>
-            </file>';
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    protected function getXmlXpath()
-    {
-        return '/response/result/cities/city';
+        $output->writeln(date('Y-m-d H:i'). ' - Синхронизация городов ТК "ИнТайм" завершена успешно.');
     }
     
     /**
@@ -95,11 +67,11 @@ class NovaposhtaSyncCitiesCommand extends NovaposhtaSync
             ->getQuery()
             ->execute(array(), 'KeyPair');
         
-        // обойти массив ответа
+        // обойти массив городов ТК
         foreach($responseArray as $tkCity) {
             
             // проверить существует ли город в городах ТК 
-            $businessKey = trim((string)$tkCity->id);
+            $businessKey = trim((string)$tkCity->Code);
             if (in_array($businessKey, array_keys($dsCities))) {
                 // удаляем из массива городов 
                 // оставшиеся города в массиве будут удалены, по ним ТК не работает
@@ -108,39 +80,19 @@ class NovaposhtaSyncCitiesCommand extends NovaposhtaSync
             } else {
                 // в ds нет города 
                 // добавить новый город 
-                $cityTkName = trim((string)$tkCity->nameRu);
+                $cityTkName = trim((string)$tkCity->Name);
                 
                 $dsCity = new City();
                 $dsCity->setDelivery($this->getDelivery());
                 $dsCity->setBusinessKey($businessKey);
                 $dsCity->setNameTk($cityTkName);
-                // город регион
-                if ((string)$tkCity->id == (string)$tkCity->parentCityId) {
-                    // установить город регион
-                    $dsCity->setName($cityTkName);
-                    
-                } else {
-                    // установить название города 
-                    // с указанием к какому региону он относится
-                    
-                    // название города
-                    $cityName = $cityTkName;
-                    $parentCityNameRu = trim((string)$tkCity->parentCityNameRu);
-                    // приклеить к названию города название региона (родительского города)
-                    if ($parentCityNameRu) {
-                        $cityName .= ' (НП parent: '.$parentCityNameRu.')';
-                    }
-                    
-                    // установить название города
-                    $dsCity->setName($cityName);
-                }
+                $dsCity->setName($cityTkName);
                 
                 // автоподвязка к эталонному городу
                 $geoCityId = array_search($cityTkName, $geoCities);
                 if ($geoCityId) {
                     $dsCity->setGeoCity($this->getEntityManager()->getReference('NitraGeoBundle:City', $geoCityId));
-                }
-                
+                }                
                 // запомнить для сохранения
                 $this->getEntityManager()->persist($dsCity);
             }
