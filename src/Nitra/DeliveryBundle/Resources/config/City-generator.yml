@@ -22,7 +22,10 @@ builders:
             sort:           [ name, ASC ]
             max_per_page:   100
             actions:        []
-            object_actions: []
+            object_actions:
+                edit: ~
+#                delete: ~
+            
                 
     filters:
         params:

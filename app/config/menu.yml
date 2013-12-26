@@ -46,21 +46,21 @@ millwright_menu:
             label:  "Города"
             route:  Nitra_GeoBundle_City_list
         
-        # Фикстуры эталона GeoBundle
-        geo_fixtures:
-            label:  "GeoBundle:Фикстуры"
-            
-        geo_fixtures_country:
-            label:  "Fixtures:Страны"
-            route:  Nitra_GeoBundle_Fixtures_country
-            
-        geo_fixtures_region:
-            label:  "Fixtures:Регионы"
-            route:  Nitra_GeoBundle_Fixtures_region
-            
-        geo_fixtures_city:
-            label:  "Fixtures:Города"
-            route:  Nitra_GeoBundle_Fixtures_city
+#        # Фикстуры эталона GeoBundle
+#        geo_fixtures:
+#            label:  "GeoBundle:Фикстуры"
+#            
+#        geo_fixtures_country:
+#            label:  "Fixtures:Страны"
+#            route:  Nitra_GeoBundle_Fixtures_country
+#            
+#        geo_fixtures_region:
+#            label:  "Fixtures:Регионы"
+#            route:  Nitra_GeoBundle_Fixtures_region
+#            
+#        geo_fixtures_city:
+#            label:  "Fixtures:Города"
+#            route:  Nitra_GeoBundle_Fixtures_city
 
     tree: #menu containers
         main: #main container
@@ -87,11 +87,11 @@ millwright_menu:
                         geo_region:     ~
                         geo_city:       ~
                         
-                geo_fixtures:
-                    name:   "GeoBundle:Фикстуры"
-                    type:   navigation
-                    children:
-                        geo_fixtures_country:   ~
-                        geo_fixtures_region:    ~
-                        geo_fixtures_city:      ~
+#                geo_fixtures:
+#                    name:   "GeoBundle:Фикстуры"
+#                    type:   navigation
+#                    children:
+#                        geo_fixtures_country:   ~
+#                        geo_fixtures_region:    ~
+#                        geo_fixtures_city:      ~
 
