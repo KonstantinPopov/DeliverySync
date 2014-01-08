@@ -20,7 +20,7 @@ class IntimeSyncCitiesCommand extends IntimeSync
     {
         // настройка команды
         $this
-            ->setName('intime:sync-сities')
+            ->setName('intime:sync-cities')
             ->setDescription('Синхронизация городов ТК "ИнТайм".')
         ;
     }

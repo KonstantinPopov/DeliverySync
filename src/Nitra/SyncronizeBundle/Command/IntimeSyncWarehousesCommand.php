@@ -91,7 +91,7 @@ class IntimeSyncWarehousesCommand extends IntimeSync
                     $dsWarehouse = new Warehouse();
                     $dsWarehouse->setDelivery($this->getDelivery());
                     $dsWarehouse->setBusinessKey($businessKey);
-                    $dsWarehouse->setNameTk(trim((string)$tkWh->Name));
+                    $dsWarehouse->setNameTk((string)$tkWh->Name);
                     
                     // запомнить для сохранения
                     $this->getEntityManager()->persist($dsWarehouse);
@@ -136,24 +136,14 @@ class IntimeSyncWarehousesCommand extends IntimeSync
                     }
 
                     // наполнить склад DS данными
-                    $dsWarehouse->setNumber(trim((string)$tkWh->Number));
-                    $dsWarehouse->setName(trim((string)$tkWh->Name));
-                    $dsWarehouse->setNameTk(trim((string)$tkWh->Name));
-                    $dsWarehouse->setAddress(trim((string)$tkWh->Adress));
-                    $dsWarehouse->setPhone(trim((string)$tkWh->Phone));
+                    $dsWarehouse->setNumber((string)$tkWh->Number);
+                    $dsWarehouse->setName('ИнТайм - '.(string)$tkWh->Adress);
+                    $dsWarehouse->setNameTk((string)$tkWh->Name);
+                    $dsWarehouse->setAddress((string)$tkWh->Adress);
+                    $dsWarehouse->setPhone((string)$tkWh->Phone);
                 }
                 
-                
             }
-            
-//            print "\n"; print_r($tkWarehouses); print "\n";
-//            die;
-//            
-//            
-//            print "\n"; print_r((string)$tkWh->QuantityWarehouses); print "\n";
-//            print "\n"; print_r($tkWh); print "\n";
-//            die;
-
         }
         
         // склады не пришли в синхронизации

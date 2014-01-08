@@ -37,29 +37,29 @@ class LoadDeliveryData extends AbstractFixture implements OrderedFixtureInterfac
         $manager->persist($delivery2); 
         $this->addReference('deliveryIntime', $delivery2);
         
-        $delivery3 = new Delivery(); 
-        $delivery3->setName('Delivery Auto'); 
-        $manager->persist($delivery3); 
-        
-        $delivery4 = new Delivery(); 
-        $delivery4->setName('Ваш Час'); 
-        $manager->persist($delivery4); 
-        
-        $delivery5 = new Delivery(); 
-        $delivery5->setName('ЕвроЭкспресс'); 
-        $manager->persist($delivery5); 
-        
-        $delivery6 = new Delivery(); 
-        $delivery6->setName('МистЭкспресс'); 
-        $manager->persist($delivery6); 
-        
-        $delivery7 = new Delivery(); 
-        $delivery7->setName('САТ'); 
-        $manager->persist($delivery7); 
-        
-        $delivery8 = new Delivery(); 
-        $delivery8->setName('ПЭК'); 
-        $manager->persist($delivery8); 
+//        $delivery3 = new Delivery(); 
+//        $delivery3->setName('Delivery Auto'); 
+//        $manager->persist($delivery3); 
+//        
+//        $delivery4 = new Delivery(); 
+//        $delivery4->setName('Ваш Час'); 
+//        $manager->persist($delivery4); 
+//        
+//        $delivery5 = new Delivery(); 
+//        $delivery5->setName('ЕвроЭкспресс'); 
+//        $manager->persist($delivery5); 
+//        
+//        $delivery6 = new Delivery(); 
+//        $delivery6->setName('МистЭкспресс'); 
+//        $manager->persist($delivery6); 
+//        
+//        $delivery7 = new Delivery(); 
+//        $delivery7->setName('САТ'); 
+//        $manager->persist($delivery7); 
+//        
+//        $delivery8 = new Delivery(); 
+//        $delivery8->setName('ПЭК'); 
+//        $manager->persist($delivery8); 
 
 		// сохранить 
 		$manager->flush();

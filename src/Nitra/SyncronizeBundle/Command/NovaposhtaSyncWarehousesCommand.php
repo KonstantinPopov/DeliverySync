@@ -126,19 +126,15 @@ class NovaposhtaSyncWarehousesCommand extends NovaposhtaSync
                trim((string)$tkWh->city_id),
                trim((string)$tkWh->addressRu),
                trim((string)$tkWh->phone),
-               trim((string)$tkWh->y),
-               trim((string)$tkWh->x),
             ));
             
             // массив сравнения склада DS
             $dsWhCompare = serialize(array(
                 (string)$dsWarehouse->getBusinessKey(),
                 (string)$dsWarehouse->getNumber(),
-                (string)(($dsWarehouse->getCity()) ? $dsWarehouse->getCity()->getId() : null),
+                (string)(($dsWarehouse->getCity()) ? $dsWarehouse->getCity()->getBusinessKey() : null),
                 (string)$dsWarehouse->getNameTk(),
                 (string)$dsWarehouse->getPhone(),
-                (string)$dsWarehouse->getLatitude(),
-                (string)$dsWarehouse->getLongitude(),
             ));
             
             // сравнить склад ТК и склад DS
@@ -153,13 +149,13 @@ class NovaposhtaSyncWarehousesCommand extends NovaposhtaSync
                 }
                 
                 // наполнить склад DS данными
-                $dsWarehouse->setNumber(trim((string)$tkWh->number));
-                $dsWarehouse->setName(trim((string)$tkWh->addressRu));
-                $dsWarehouse->setNameTk(trim((string)$tkWh->addressRu));
-                $dsWarehouse->setAddress(trim((string)$tkWh->addressRu));
-                $dsWarehouse->setPhone(trim((string)$tkWh->phone));
-                $dsWarehouse->setLatitude(trim((string)$tkWh->y));
-                $dsWarehouse->setLongitude(trim((string)$tkWh->x));
+                $dsWarehouse->setNumber((string)$tkWh->number);
+                $dsWarehouse->setName('Новая почта - '.(string)$tkWh->addressRu);
+                $dsWarehouse->setNameTk((string)$tkWh->addressRu);
+                $dsWarehouse->setAddress((string)$tkWh->addressRu);
+                $dsWarehouse->setPhone((string)$tkWh->phone);
+                $dsWarehouse->setLatitude((string)$tkWh->y);
+                $dsWarehouse->setLongitude((string)$tkWh->x);
             }
         }
         

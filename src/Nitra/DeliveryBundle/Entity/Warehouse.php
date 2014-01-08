@@ -125,8 +125,16 @@ class Warehouse
      */
     public function setBusinessKey($businessKey)
     {
+        // если значение не null обрезать пробелы
+        // если обрезаем пробелы без проверки то в случае null получим string нулевой длины
+        if (!is_null($businessKey)) {
+            $businessKey = trim($businessKey);
+        }
+        
+        // установить 
         $this->businessKey = $businessKey;
-    
+        
+        // вернуть сущность
         return $this;
     }
 
@@ -148,8 +156,16 @@ class Warehouse
      */
     public function setNumber($number)
     {
+        // если значение не null обрезать пробелы
+        // если обрезаем пробелы без проверки то в случае null получим string нулевой длины
+        if (!is_null($number)) {
+            $number = trim($number);
+        }
+        
+        // установить 
         $this->number = $number;
-    
+        
+        // вернуть сущность
         return $this;
     }
 
@@ -171,8 +187,16 @@ class Warehouse
      */
     public function setName($name)
     {
+        // если значение не null обрезать пробелы
+        // если обрезаем пробелы без проверки то в случае null получим string нулевой длины
+        if (!is_null($name)) {
+            $name = trim($name);
+        }
+        
+        // установить 
         $this->name = $name;
-    
+        
+        // вернуть сущность
         return $this;
     }
 
@@ -194,8 +218,16 @@ class Warehouse
      */
     public function setNameTk($nameTk)
     {
+        // если значение не null обрезать пробелы
+        // если обрезаем пробелы без проверки то в случае null получим string нулевой длины
+        if (!is_null($nameTk)) {
+            $nameTk = trim($nameTk);
+        }
+        
+        // установить 
         $this->nameTk = $nameTk;
-    
+        
+        // вернуть сущность
         return $this;
     }
 
@@ -217,8 +249,16 @@ class Warehouse
      */
     public function setAddress($address)
     {
+        // если значение не null обрезать пробелы
+        // если обрезаем пробелы без проверки то в случае null получим string нулевой длины
+        if (!is_null($address)) {
+            $address = trim($address);
+        }
+        
+        // установить 
         $this->address = $address;
-    
+        
+        // вернуть сущность
         return $this;
     }
 
@@ -240,8 +280,16 @@ class Warehouse
      */
     public function setPhone($phone)
     {
+        // если значение не null обрезать пробелы
+        // если обрезаем пробелы без проверки то в случае null получим string нулевой длины
+        if (!is_null($phone)) {
+            $phone = trim($phone);
+        }
+        
+        // установить 
         $this->phone = $phone;
-    
+        
+        // вернуть сущность
         return $this;
     }
 
@@ -263,8 +311,16 @@ class Warehouse
      */
     public function setLatitude($latitude)
     {
+        // если значение не null обрезать пробелы
+        // если обрезаем пробелы без проверки то в случае null получим string нулевой длины
+        if (!is_null($latitude)) {
+            $latitude = trim($latitude);
+        }
+        
+        // установить 
         $this->latitude = $latitude;
-    
+        
+        // вернуть сущность
         return $this;
     }
 
@@ -286,8 +342,16 @@ class Warehouse
      */
     public function setLongitude($longitude)
     {
+        // если значение не null обрезать пробелы
+        // если обрезаем пробелы без проверки то в случае null получим string нулевой длины
+        if (!is_null($longitude)) {
+            $longitude = trim($longitude);
+        }
+        
+        // установить 
         $this->longitude = $longitude;
-    
+        
+        // вернуть сущность
         return $this;
     }
 
