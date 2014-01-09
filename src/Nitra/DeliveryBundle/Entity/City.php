@@ -174,6 +174,26 @@ class City
     {
         return $this->geoCity;
     }
+    
+    /**
+     * Get ID geoCity
+     * @return integer ID \Nitra\GeoBundle\Entity\City 
+     * @return null нет связи 
+     */
+    public function getGeoCityId()
+    {
+        // получить эталон города
+        $geoCity = $this->getGeoCity();
+        
+        // проверить эталон города
+        if ($geoCity) {
+            // вернуть ID эталона города
+            return $geoCity->getId();
+        }
+        
+        // эталон города не указан 
+        return null;
+    }
 
     /**
      * Set delivery

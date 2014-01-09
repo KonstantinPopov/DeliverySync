@@ -8,6 +8,7 @@ params:
     fields:
         delivery:   { label: "Транспортная компания" }
         geoCity:    { label: "Эталон город" }
+        geoCityId:  { label: "ID эталон город" }
         name:       { label: "Название города" }
         updatedAt:  { label: "Обновлено" }
     object_actions:
@@ -18,7 +19,7 @@ builders:
     list:
         params:
             title:          "Список городов ТК"
-            display:        [ delivery, geoCity, name, updatedAt ]
+            display:        [ delivery, geoCityId, geoCity, name, updatedAt ]
             sort:           [ name, ASC ]
             max_per_page:   100
             actions:        []
