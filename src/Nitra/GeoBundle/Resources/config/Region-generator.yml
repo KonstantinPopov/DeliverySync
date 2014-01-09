@@ -6,8 +6,8 @@ params:
     bundle_name: GeoBundle
     pk_requirement: ~
     fields:
-        country:    { label: "Страна" }
-        name:       { label: "Регион" }
+        country:    { label: "Страна", addFormOptions: { required: true } }
+        name:       { label: "Регион", addFormOptions: { required: true } }
     object_actions:
         delete: ~
     batch_actions:
@@ -19,27 +19,34 @@ builders:
             display:        [ id, country, name ]
             sort:           [ name, ASC ]
             max_per_page:   50
-            actions:        []
-            object_actions: []
+            actions:
+                new: ~
+            object_actions:
+                edit: ~
             
     filters:
         params:
-            display:    [ country, name ]
+            display:        [ country, name ]
+            fields:
+                country:    { addFormOptions: { required: false } }
+                name:       { addFormOptions: { required: false } }
             
     new:
         params:
             title:      "Эталон - добавить новый регион"
-            display:    [ name ]
+            display:    [ country, name ]
             actions:
                 save:   ~
+                save-and-list: ~
                 list:   ~
                 
     edit:
         params:
             title:      "Эталон - редактировать регион \"%object%\"|{ %object%: Region.name }|"
-            display:    ~
+            display:    [ country, name ]
             actions:
                 save:   ~
+                save-and-list: ~
                 list:   ~
                 
     show:
