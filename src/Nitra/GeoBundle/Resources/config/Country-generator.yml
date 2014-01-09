@@ -15,7 +15,7 @@ builders:
     list:
         params:
             title:      "Эталон - список стран"
-            display:    [ name ]
+            display:    [ id, name ]
             sort:       [ name, ASC ]
             actions:        []
             object_actions: []
