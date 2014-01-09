@@ -1,0 +1,19 @@
+
+# Список городов
+NitraDeliveryBundleCity:
+    resource: "@NitraDeliveryBundle/Controller/City/"
+    type:     admingenerator
+    prefix:   /delivery-city
+
+# Список складов
+NitraDeliveryBundleWarehouse:
+    resource: "@NitraDeliveryBundle/Controller/Warehouse/"
+    type:     admingenerator
+    prefix:   /delivery-warehouse
+
+# Список клиентов
+NitraDeliveryBundleClient:
+    resource: "@NitraDeliveryBundle/Controller/Client/"
+    type:     admingenerator
+    prefix:   /client
+    

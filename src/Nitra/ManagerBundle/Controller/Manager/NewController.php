@@ -1,48 +1,47 @@
 <?php
-
 namespace Nitra\ManagerBundle\Controller\Manager;
 
 use Admingenerated\NitraManagerBundle\BaseManagerController\NewController as BaseNewController;
-use JMS\DiExtraBundle\Annotation as DI;
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\Form\Form;
+use Nitra\ManagerBundle\Entity\Manager;
+
+/**
+ * NewController
+ */
 class NewController extends BaseNewController
 {
-
-    /** @DI\Inject("doctrine.orm.entity_manager") */
-    private $em;
-
-    public function createAction()
+    
+    /**
+     * @var string 
+     * новый пароль пользователья
+     */
+    private $newPassword;
+    
+    /**
+     * preSave
+     * @param \Symfony\Component\Form\Form $form the valid form
+     * @param \Nitra\ManagerBundle\Entity\Manager $Manager your \Nitra\ManagerBundle\Entity\Manager object
+     */
+    public function preSave(Form $form, Manager $Manager)
     {
-        $Manager = $this->getNewObject();
-        $form = $this->createForm($this->getNewType(), $Manager);
-        $form->bindRequest($this->get('request'));
-        if ($form->isValid()) {
-            try {
-                $this->preSave($form, $Manager);
-                $pass = $Manager->getPassword();
-                $this->saveObject($Manager);
-                $Manager->setPassword(null);
-                $Manager->setPlainPassword($pass);
-                
-                $this->em->persist($Manager);
-                $this->em->flush();
-                
-                $this->postSave($form, $Manager);
-                $this->get('session')->setFlash('success', $this->get('translator')->trans("object.saved.success", array(), 'Admingenerator'));
-
-                return new RedirectResponse($this->generateUrl("Nitra_ManagerBundle_Manager_edit", array('pk' => $Manager->getId())));
-            } catch (\Exception $e) {
-                $this->get('session')->setFlash('error', $this->get('translator')->trans("object.saved.error", array(), 'Admingenerator'));
-                $this->onException($e, $form, $Manager);
-            }
-        } else {
-            $this->get('session')->setFlash('error', $this->get('translator')->trans("object.saved.error", array(), 'Admingenerator'));
-        }
-
-        return $this->render('NitraManagerBundle:ManagerNew:index.html.twig', array(
-                    "Manager" => $Manager,
-                    "form" => $form->createView(),
-                ));
+        $this->newPassword = $Manager->getPassword();
     }
-
+    
+    /**
+     * postSave
+     * @param \Symfony\Component\Form\Form $form the valid form
+     * @param \Nitra\ManagerBundle\Entity\Manager $Manager your \Nitra\ManagerBundle\Entity\Manager object
+     */
+    public function postSave(Form $form, Manager $Manager)
+    {
+        // вернуть пароль менеджера
+        $Manager->setPassword(null);
+        $Manager->setPlainPassword($this->newPassword);
+        
+        // сохранить менеждера
+        $em = $this->getDoctrine()->getManager();
+        $em->persist($Manager);
+        $em->flush();
+    }    
+    
 }

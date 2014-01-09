@@ -1,14 +1,1 @@
 {% extends_admingenerated "NitraManagerBundle:GroupEdit:index.html.twig" %}
-{% block form_roles %}
-
-<div class="error">
-                            {{ form_errors(form['roles']) }}
-    </div>
-
-                        {{ form_label(form['roles'], 'Roles'|trans({}, 'Admin')) }}
-
-
-    <div class="type_collection" id="type_collection_roles">{{ form_widget(form['roles']) }}        
-    </div>
-
-{% endblock %}

@@ -1,4 +1,4 @@
-{% extends 'NitraThemeBundle::base_admin.html.twig' %}
+{#% extends 'NitraThemeBundle::base_admin.html.twig' %} 
 
 {% block stylesheets %}
     {{ parent() }}
@@ -14,4 +14,27 @@
 <div class="logo">
     Nitra Logo
 </div>
-                {% endblock %}
+                {% endblock %#}
+{% extends 'NitraThemeBundle::base_admin.html.twig' %} 
+
+{% block javascript_head %}
+    {{ parent() }}
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+    <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+    <script src="{{ path('fos_js_routing_js', {"callback": "fos.Router.setData"}) }}"></script>
+    
+    {% javascripts  'components/jquery-ui/ui/jquery.ui.menu.js'
+                    'components/jquery-ui/ui/jquery.ui.autocomplete.js' %}
+        <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('.colorbox').colorbox();
+        });
+    </script>
+{% endblock %}
+    
+{#% block profile %}
+    {{ parent() }}
+{% endblock %#}

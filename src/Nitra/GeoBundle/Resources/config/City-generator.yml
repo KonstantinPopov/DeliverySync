@@ -1,39 +1,58 @@
-generator:                 admingenerator.generator.doctrine
+generator: admingenerator.generator.doctrine
 params:
-  model:                   Nitra\GeoBundle\Entity\City
-  namespace_prefix:        Nitra
-  bundle_name:             GeoBundle
-  fields:
-    name:
-      label:               Название города
-    region:
-      label:               Регион
-
+    model: Nitra\GeoBundle\Entity\City
+    namespace_prefix: Nitra
+    concurrency_lock: ~
+    bundle_name: GeoBundle
+    pk_requirement: ~
+    fields:
+        region:     { label: "Регион" }
+        name:       { label: "Город" }
+    object_actions:
+        delete: ~
+    batch_actions:
+        delete: ~
 builders:
-  list:
-    params:
-      title:               Список городов
-      display:             [ name, region  ]
-      sort:                [ name, ASC ]
-      max_per_page:        50
-      actions:
-        new:               ~
-      object_actions:
-        edit:              ~
-        delete:            ~
-  filters:
-    params:
-      display:             [ name, region ]
-  new:
-    params:
-      title:               Добавление нового города
-      display:             [ name, region ]
-      actions:
-        list:              ~
-  edit:
-    params:
-      title:               Редактирование города "{{ City.name }}"
-      display:             [ name, region ]
-      actions:
-        list:              ~
-  delete:                  ~
+    list:
+        params:
+            title:          "Эталон - список городов"
+            display:        [ region, name ]
+            sort:           [ name, ASC ]
+            max_per_page:   50
+            actions:        []
+            object_actions: []
+            
+    filters:
+        params:
+            display:    [ region, name ]
+            
+    new:
+        params:
+            title:      "Эталон - добавить новый город"
+            display:    [ region, name ]
+            actions:
+                save:   ~
+                list:   ~
+                
+    edit:
+        params:
+            title:      "Эталон - редактировать город \"%object%\"|{ %object%: City.name }|"
+            display:    [ region, name ]
+            actions:
+                save:   ~
+                list:   ~
+                
+    show:
+        params:
+            title:      "Эталон - просмотр города \"%object%\"|{ %object%: City.name }|"
+            display:    ~
+            actions:
+                list:   ~
+                new:    ~
+                
+    actions:
+        params:
+            object_actions:
+                delete: ~
+            batch_actions:
+                delete: ~

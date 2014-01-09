@@ -1,15 +1,25 @@
+# This file is auto-generated during the composer install
 parameters:
-    database_driver:   pdo_mysql
-    database_host:     localhost
-    database_port:     ~
-    database_name:     ds
-    database_user:     ds
-    database_password: dsDSsync
-
-    mailer_transport:  smtp
-    mailer_host:       localhost
-    mailer_user:       ~
-    mailer_password:   ~
-
-    locale:            en
-    secret:            ThisTokenIsNotSoSecretghfjhfjhffgf
+    database_driver: pdo_mysql
+    database_host: 127.0.0.1
+    database_port: null
+    database_name: delivery_sync
+    database_user: root
+    database_password: null
+    mailer_transport: smtp
+    mailer_host: 127.0.0.1
+    mailer_user: null
+    mailer_password: null
+    locale: ru
+    secret: 921b17afa7fc6b15f6f3ef27d37af855
+    novaposhta:
+        country_id: 1
+        delivery_id: 1
+        api_token: eaef11faf4f803367bb194f84180c5b8
+        api_url: 'http://orders.novaposhta.ua/xml.php'
+    intime:
+        country_id: 1
+        delivery_id: 2
+        soap_id: RezinaCC
+        soap_key: 52657a696e614343
+        soap_url: 'https://ws.intime.ua/test98/ws/integration.1cws?wsdl'
