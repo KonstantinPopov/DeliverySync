@@ -7,6 +7,7 @@ params:
     pk_requirement: ~
     fields:
         country:    { label: "Страна", addFormOptions: { required: true } }
+        regionId:   { label: "ID региона", dbType: integer, filter_on: id }
         name:       { label: "Регион", addFormOptions: { required: true } }
     object_actions:
         delete: ~
@@ -26,7 +27,7 @@ builders:
             
     filters:
         params:
-            display:        [ country, name ]
+            display:        [ country, regionId, name ]
             fields:
                 country:    { addFormOptions: { required: false } }
                 name:       { addFormOptions: { required: false } }

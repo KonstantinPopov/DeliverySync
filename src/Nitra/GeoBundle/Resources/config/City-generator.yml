@@ -6,8 +6,10 @@ params:
     bundle_name: GeoBundle
     pk_requirement: ~
     fields:
-        region:     { label: "Регион", addFormOptions: { required: true } }
-        name:       { label: "Город",  addFormOptions: { required: true } }
+        regionId:       { label: "ID региона", dbType: integer, filter_on: region.id, getter: "region.id" }
+        region:         { label: "Регион", addFormOptions: { required: true } }
+        cityId:         { label: "ID города", dbType: integer, filter_on: id }
+        name:           { label: "Город",  addFormOptions: { required: true } }
     object_actions:
         delete: ~
     batch_actions:
@@ -16,7 +18,7 @@ builders:
     list:
         params:
             title:          "Эталон - список городов"
-            display:        [ region, name ]
+            display:        [ id, regionId, region, name ]
             sort:           [ name, ASC ]
             max_per_page:   50
             actions:
@@ -26,7 +28,7 @@ builders:
             
     filters:
         params:
-            display:    [ region, name ]
+            display:    [ region, cityId, name ]
             fields:
                 region: { addFormOptions: { required: false } }
                 name:   { addFormOptions: { required: false } }
