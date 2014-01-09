@@ -23,7 +23,7 @@ builders:
             actions:
                 new: ~
             object_actions:
-                NewToken:   { label: "Сгенерировать новый токен" }
+                # NewToken:   { label: "Сгенерировать новый токен" }
                 edit: ~
                 delete: ~
                 
@@ -34,7 +34,7 @@ builders:
     new:
         params:
             title:          "Добавить нового клиента"
-            display:        [ name, deliveries ]
+            display:        [ name, token, deliveries ]
             max_per_page:   100
             actions:
                 save: ~
@@ -44,7 +44,7 @@ builders:
     edit:
         params:
             title:      "Редактировать клиента \"%object%\"|{ %object%: Client.name }|"
-            display:    [ name, deliveries ]
+            display:    [ name, token, deliveries ]
             actions:
                 save: ~
                 save-and-list: ~
