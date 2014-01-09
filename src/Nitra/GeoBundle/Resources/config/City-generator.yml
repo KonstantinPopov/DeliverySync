@@ -6,8 +6,8 @@ params:
     bundle_name: GeoBundle
     pk_requirement: ~
     fields:
-        region:     { label: "Регион" }
-        name:       { label: "Город" }
+        region:     { label: "Регион", addFormOptions: { required: true } }
+        name:       { label: "Город",  addFormOptions: { required: true } }
     object_actions:
         delete: ~
     batch_actions:
@@ -19,12 +19,17 @@ builders:
             display:        [ region, name ]
             sort:           [ name, ASC ]
             max_per_page:   50
-            actions:        []
-            object_actions: []
+            actions:
+                new: ~
+            object_actions:
+                edit: ~
             
     filters:
         params:
             display:    [ region, name ]
+            fields:
+                region: { addFormOptions: { required: false } }
+                name:   { addFormOptions: { required: false } }
             
     new:
         params:
@@ -32,6 +37,7 @@ builders:
             display:    [ region, name ]
             actions:
                 save:   ~
+                save-and-list: ~
                 list:   ~
                 
     edit:
@@ -40,6 +46,7 @@ builders:
             display:    [ region, name ]
             actions:
                 save:   ~
+                save-and-list: ~
                 list:   ~
                 
     show:
