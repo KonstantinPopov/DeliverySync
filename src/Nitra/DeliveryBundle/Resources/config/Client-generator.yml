@@ -17,7 +17,7 @@ builders:
     list:
         params:
             title:          "Список клиентов"
-            display:        [ name, deliveries, token ]
+            display:        [ name, token, deliveries ]
             sort:           [ name, ASC ]
             max_per_page:   100
             actions:
