@@ -3,77 +3,95 @@ millwright_menu:
         navigation: #menu type id
             renderer: null # custom renderer
             rendererOptions:
-                template: NitraThemeBundle::knp_menu.html.twig
+                template: MillwrightMenuBundle:Default:knp_menu.html.twig
                 ancestorClass: current active
                 currentClass: current_item
 
-    items: #menu items
-        d_service:
-            label: 'ТК'
-        delivery_service:
-            label: 'Транспортные компании'
-            route:  Nitra_DeliveryBundle_Delivery_list
-        department:
-            label:  'Отделения ТК'
-            route:  Nitra_DeliveryBundle_Department_list
-        delivery_city:
-            label:  'Города в ТК'
-            route:  Nitra_DeliveryBundle_DeliveryCity_list
-        delivery_cost_calculation: 
-            label:  'Модуль расчёта стоимости доставки'
-        novaposhta:
-            label:  'Новая Почта'
-            route:  Nitra_DeliveryCostBundle_NovaposhtaTarify_list
-        intime:
-            label:  'Интайм'
-            route:  Nitra_DeliveryCostBundle_IntimeTarify_list
-        territory:
-            label:  'Территории'
-        region:
-            label:  'Регионы'
-            route:  Nitra_GeoBundle_Region_list
-        city:
-            label:  'Города'
-            route:   Nitra_GeoBundle_City_list
-        client: 
-          label:  'Клиенты'
-        client_list:
-          label:    'Список клиентов'
-          route:  Nitra_DeliveryBundle_Client_list
-        managers:
-          label:   'Менеджеры'
-          route:  Nitra_ManagerBundle_Manager_list
-        settings:
-          label:  'Настройки'
-        groups:
-          label:  'Группы'
-          route:  Nitra_ManagerBundle_Group_list
-        roles:
-          label:   'Привилегии'
-          route:  Nitra_ManagerBundle_Role_list
+    items: #menu items        
         
+        delivery:
+            label:  "ТК"
+            
+        delivery_city:
+            label:  "Города ТК"
+            route:  Nitra_DeliveryBundle_City_list
+            
+        delivery_warehouse:
+            label:  "Склады ТК"
+            route:  Nitra_DeliveryBundle_Warehouse_list
+            
+        delivery_client:
+            label:  "Клиенты"
+            route:  Nitra_DeliveryBundle_Client_list
+            
+        manager:
+            label:  "Пользователи"
+            
+        manager_list:
+            label:  "Менеджеры"
+            route:  Nitra_ManagerBundle_Manager_list
+            
+        catalog: 
+            label:  "Справочники"
+            
+        geo_country:
+            label:  "Страны"
+            route:  Nitra_GeoBundle_Country_list
+            
+        geo_region:
+            label:  "Регионы"
+            route:  Nitra_GeoBundle_Region_list
+            
+        geo_city:
+            label:  "Города"
+            route:  Nitra_GeoBundle_City_list
+        
+#        # Фикстуры эталона GeoBundle
+#        geo_fixtures:
+#            label:  "GeoBundle:Фикстуры"
+#            
+#        geo_fixtures_country:
+#            label:  "Fixtures:Страны"
+#            route:  Nitra_GeoBundle_Fixtures_country
+#            
+#        geo_fixtures_region:
+#            label:  "Fixtures:Регионы"
+#            route:  Nitra_GeoBundle_Fixtures_region
+#            
+#        geo_fixtures_city:
+#            label:  "Fixtures:Города"
+#            route:  Nitra_GeoBundle_Fixtures_city
+
     tree: #menu containers
         main: #main container
             type: navigation # menu type id
             children:
-                d_service:
-                  children:
-                    delivery_service:    ~
-                    department:          ~
-                    delivery_city:       ~
-                territory:
-                  children:
-                    region:              ~
-                    city:                ~
-                client:
-                  children:
-                    client_list:         ~
-                    managers:            ~
-                settings:
-                  children:
-                    groups:              ~
-                    roles:               ~
-                delivery_cost_calculation:
-                  children:
-                    novaposhta:          ~
-                    intime:              ~                      
+                    
+                delivery:
+                    name:   "ТК"
+                    children:
+                        delivery_city:          ~
+                        delivery_warehouse:     ~
+                    
+                manager:
+                    name:   "Пользователи"
+                    children:
+                        delivery_client:    ~
+                        manager_list:       ~
+                    
+                catalog:
+                    name:   "Справочники"
+                    type:   navigation
+                    children:
+                        geo_country:    ~
+                        geo_region:     ~
+                        geo_city:       ~
+                        
+#                geo_fixtures:
+#                    name:   "GeoBundle:Фикстуры"
+#                    type:   navigation
+#                    children:
+#                        geo_fixtures_country:   ~
+#                        geo_fixtures_region:    ~
+#                        geo_fixtures_city:      ~
+

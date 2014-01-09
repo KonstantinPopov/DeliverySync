@@ -1,0 +1,6 @@
+
+# Синхронизация
+NitraSyncronizeBundle:
+    resource: "@NitraSyncronizeBundle/Controller/SyncController.php"
+    type:     annotation
+    prefix:   /    

@@ -1,9 +1,21 @@
 <?php
-
 namespace Nitra\DeliveryBundle\Form\Type\Client;
 
-use Admingenerated\NitraDeliveryBundle\Form\BaseClientType\NewType as BaseNewType;
+use Nitra\DeliveryBundle\Form\Type\Client\EditType;
 
-class NewType extends BaseNewType
+/**
+ * NewType
+ */
+class NewType extends EditType
 {
+        
+    /**
+     * Получить имя типа-формы 
+     * @return string
+     */
+    public function getName()
+    {
+        return 'new_client';
+    }
+    
 }

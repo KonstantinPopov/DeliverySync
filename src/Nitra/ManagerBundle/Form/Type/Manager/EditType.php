@@ -1,35 +1,55 @@
 <?php
-
 namespace Nitra\ManagerBundle\Form\Type\Manager;
 
 use Admingenerated\NitraManagerBundle\Form\BaseManagerType\EditType as BaseEditType;
-use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use JMS\SecurityExtraBundle\Security\Authorization\Expression\Expression;
+use Symfony\Component\Validator\Constraints\NotBlank;
+
+/**
+ * EditType
+ */
 class EditType extends BaseEditType
 {
-
-    protected $securityContext;
-
+    
+    /**
+     * buildForm
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('username', 'text', array('required' => true,));
-        $builder->add('email', 'text', array('required' => true,));
-        $builder->add('enabled', 'checkbox', array('required' => false,));
-        $builder->add('locked', 'checkbox', array('required' => false,));
-        $builder->add('password', 'password', array('required' => false,));
-        $builder->add('client', 'entity', array(  'em' => 'default',  'class' => 'Nitra\\DeliveryBundle\\Entity\\Client',  'multiple' => false,  'required' => false,));
-        $builder->add('groups', 'doctrine_double_list', array(  'em' => 'default',  'class' => 'Nitra\\ManagerBundle\\Entity\\Group',));
-    }
-
-    public function getName()
-    {
-        return 'edit_manager';
-    }
-
-    public function setSecurityContext($securityContext)
-    {
-        $this->securityContext = $securityContext;
-    }
-
+        
+        // родитель формы
+        parent::buildForm($builder, $options);
+        
+        // добавить валидатор NotBlank для виджета
+        $widget = $builder->get('username');
+        $formOptions = $widget->getOptions();
+        $formOptions['constraints'] = array(new NotBlank());
+        $builder->add($widget->getName(), $widget->getType()->getName(), $formOptions);
+        
+        // добавить валидатор NotBlank для виджета
+        $widget = $builder->get('email');
+        $formOptions = $widget->getOptions();
+        $formOptions['constraints'] = array(new NotBlank());
+        $builder->add($widget->getName(), $widget->getType()->getName(), $formOptions);
+        
+        // пароль при редактировании не обязательный
+        $widget = $builder->get('password');
+        $formOptions = $widget->getOptions();
+        $formOptions['required'] = false;
+        $formOptions['data'] = '';
+        $builder->add($widget->getName(), $widget->getType()->getName(), $formOptions);
+        
+//        // виджет группы пользователей checkbox
+//        $formOptions = $this->getFormOption('groups', array(
+//            'em' => 'default',
+//            'class' => 'NitraManagerBundle:Group',
+//            'multiple' => true,
+//            'expanded' => true,
+//            'required' => true,  'label' => 'Группы'));
+//        $builder->add('groups', 'entity', $formOptions);
+        
+    }    
+    
+    
+    
 }

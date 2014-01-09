@@ -1,0 +1,15 @@
+/app/cache/*
+/app/logs/*
+/app/bootstrap.php.cache
+/app/config/parameters.yml
+*~
+/build/
+/vendor/
+/bin/
+/components/
+/web/assetic/*
+/web/bundles/*
+/web/css/*
+/web/js/*
+/web/components/*
+

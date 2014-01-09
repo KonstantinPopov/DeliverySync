@@ -9,6 +9,7 @@ class AppKernel extends Kernel
     public function registerBundles()
     {
         $bundles = array(
+            // Symfony
             new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new Symfony\Bundle\SecurityBundle\SecurityBundle(),
             new Symfony\Bundle\TwigBundle\TwigBundle(),
@@ -17,23 +18,32 @@ class AppKernel extends Kernel
             new Symfony\Bundle\AsseticBundle\AsseticBundle(),
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
-            new JMS\AopBundle\JMSAopBundle(),
-            new JMS\DiExtraBundle\JMSDiExtraBundle($this),
-            new JMS\SecurityExtraBundle\JMSSecurityExtraBundle(),
+            
+            // Doctrine
+            new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
+            new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
+            
+            // Nitra Bundle
+            new Nitra\GeoBundle\NitraGeoBundle(),
+            new Nitra\DeliveryBundle\NitraDeliveryBundle(),
+            new Nitra\ManagerBundle\NitraManagerBundle(),
+            new Nitra\SyncronizeBundle\NitraSyncronizeBundle(),
+            
+            // NitraThemeBundle
             new Knp\Bundle\MenuBundle\KnpMenuBundle(),
             new WhiteOctober\PagerfantaBundle\WhiteOctoberPagerfantaBundle(),
             new Admingenerator\GeneratorBundle\AdmingeneratorGeneratorBundle(),
             new Millwright\MenuBundle\MillwrightMenuBundle(),
             new Millwright\ConfigurationBundle\MillwrightConfigurationBundle(),
-            new FOS\UserBundle\FOSUserBundle(),
             new Nitra\NitraThemeBundle\NitraThemeBundle(),
-            new Nitra\GeoBundle\NitraGeoBundle(),
-            new Nitra\DeliveryBundle\NitraDeliveryBundle(),
-            new Nitra\ManagerBundle\NitraManagerBundle(),
-            new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
-            new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
-            new Nitra\DeliveryCostBundle\NitraDeliveryCostBundle(),
-            new Liuggio\ExcelBundle\LiuggioExcelBundle(),
+            new FOS\UserBundle\FOSUserBundle(),
+            new FOS\JsRoutingBundle\FOSJsRoutingBundle(),
+            
+            // JMS
+            new JMS\AopBundle\JMSAopBundle(),
+            new JMS\DiExtraBundle\JMSDiExtraBundle($this),
+            new JMS\SecurityExtraBundle\JMSSecurityExtraBundle(),
+            
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

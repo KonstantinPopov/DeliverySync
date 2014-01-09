@@ -1,0 +1,60 @@
+generator: admingenerator.generator.doctrine
+params:
+    model: Nitra\DeliveryBundle\Entity\Warehouse
+    namespace_prefix: Nitra
+    concurrency_lock: ~
+    bundle_name: DeliveryBundle
+    pk_requirement: ~
+    fields:
+        delivery:   { label: "Транспортная компания" }
+        city:       { label: "Город" }
+        name:       { label: "Название склада" }
+        address:    { label: "Адресс склада" }
+        phone:      { label: "Телефон" }
+        updatedAt:  { label: "Обновлено" }
+    object_actions:
+        delete: ~
+    batch_actions:
+        delete: ~
+builders:
+    list:
+        params:
+            title:          "Список складов ТК"
+            display:        [ delivery, city, name, address, phone ]
+            sort:           [ name, ASC ]
+            max_per_page:   100
+            actions:        []
+            object_actions: []
+            
+    filters:
+        params:
+            display:    [ delivery, city, name, address, phone ]
+    new:
+        params:
+            title:      "Добавить новый склад ТК"
+            display:    [ delivery, city, name, address, phone ]
+            actions:
+                save: ~
+                save-and-list:  ~
+                list: ~
+    edit:
+        params:
+            title:      "Редактировать склад ТК \"%object%\"|{ %object%: Warehouse.name }|"
+            display:    [ delivery, city, name, address, phone ]
+            actions:
+                save: ~
+                save-and-list:  ~
+                list: ~
+    show:
+        params:
+            title:      "Просмотр склад ТК \"%object%\"|{ %object%: Warehouse.name }|"
+            display:    ~
+            actions:
+                list: ~
+                new: ~
+    actions:
+        params:
+            object_actions:
+                delete: ~
+            batch_actions:
+                delete: ~
