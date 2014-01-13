@@ -28,18 +28,6 @@ abstract class IntimeSync extends ContainerAwareCommand
      */
     private $parameters;
     
-//    /**
-//     * запрос получения списка городов 
-//     * @return string
-//     */
-//    abstract protected function getXmlRequest();
-//
-//    /**
-//     * xpath xml ответа
-//     * @return string
-//     */
-//    abstract protected function getXmlXpath();
-    
     /**
      * Выполнить синхронизацию
      * @param array $responseArray массив ответа 
@@ -188,7 +176,7 @@ abstract class IntimeSync extends ContainerAwareCommand
      */
     protected function apiSendRequest($soapMethod, $xpath, array $options=null)
     {
-//        $soapMethod = 'GetListCitiesExt';
+        
         // создать soap
         $soapClient = new \SoapClient($this->getParameter('soapUrl'));
         
@@ -197,13 +185,13 @@ abstract class IntimeSync extends ContainerAwareCommand
         
         // проверить ответ
         if ($soapResponse instanceof \stdClass && isset($soapResponse->result)) {
-            // записать в файл результат ответа
-            $filePath = dirname(dirname(dirname(dirname(dirname(__FILE__))))).'/app/logs/soapResponse-'.$soapMethod.'.txt';
-            $fp = fopen($filePath, 'w');
-            fwrite($fp, print_r($this->responseToArray($soapResponse->result, $xpath), true));
-            fwrite($fp, "\n=====================\n");
-            fwrite($fp, print_r($soapResponse, true));
-            fclose($fp);
+//            // записать в файл результат ответа
+//            $filePath = dirname(dirname(dirname(dirname(dirname(__FILE__))))).'/app/logs/soapResponse-'.$soapMethod.'.txt';
+//            $fp = fopen($filePath, 'w');
+//            fwrite($fp, print_r($this->responseToArray($soapResponse->result, $xpath), true));
+//            fwrite($fp, "\n=====================\n");
+//            fwrite($fp, print_r($soapResponse, true));
+//            fclose($fp);
             // преобразовать получить массив из xml ответа 
             return $this->responseToArray($soapResponse->result, $xpath);
         }

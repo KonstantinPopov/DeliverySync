@@ -19,11 +19,6 @@ abstract class ApiCommand implements ContainerAwareInterface
      */
     protected static $countryIdUA = 1;
     
-//    /**
-//     * @var ID ТК Новая Почта
-//     */
-//    protected static $deliveryIdNovaposhta = 1;
-    
     /**
      * @var ContainerInterface|null
      */

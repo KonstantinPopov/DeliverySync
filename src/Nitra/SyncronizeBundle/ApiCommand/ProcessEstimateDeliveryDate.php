@@ -9,19 +9,44 @@ class ProcessEstimateDeliveryDate extends ApiCommand
 {
     
     /**
+     * @var ID ТК Новая Почта
+     */
+    protected static $deliveryIdNovaposhta = 1;
+    
+    /**
+     * @var ID ТК ИнТайм
+     */
+    protected static $deliveryIdIntime = 2;
+    
+    /**
+     * транспортная компания
      * @var Nitra\DeliveryBundle\Entity\Delivery $delivery - ТК
      */
     private $delivery;
     
     /**
+     * город получатель
+     * @var Nitra\DeliveryBundle\Entity\City $city - Город
+     */
+    private $city;
+    
+    /**
+     * склад получатель
+     * @var Nitra\DeliveryBundle\Entity\Warehouse $warehouse - склад
+     */
+    private $warehouse;
+    
+    /**
+     * массив городов отправителей
      * @var array $tkFromCities - массив городов NitraDeliveryBundle:City ТК отправителей
      */
     private $tkFromCities;
-        
+    
     /**
-     * @var NitraDeliveryBundle:City $tkToCity - город ТК получатель заказа
+     * дата отправки
+     * @var DateTime
      */
-    private $tkToCity;
+    private $sendDate;
     
     /**
      * {@inheritDoc}
@@ -32,31 +57,43 @@ class ProcessEstimateDeliveryDate extends ApiCommand
         // получить массив параметров
         $parameters = $this->getParameters();
         
-        // проверить ТК
-        if (!isset($parameters['deliveryId']) || !$parameters['deliveryId']) {
-            return 'Не указан обязательный параметр: deliveryId - ТК.';
+        // проверить склад получатель
+        if (!isset($parameters['toWarehouseId']) || !$parameters['toWarehouseId']) {
+            return 'Не указан обязательный параметр: toWarehouseId - ID склада получателя.';
+        }
+        
+        // получить склад получатель
+        $this->warehouse = $this->getEntityManager()
+            ->getRepository('NitraDeliveryBundle:Warehouse')
+            ->find($parameters['toWarehouseId']);
+        if (!$this->warehouse) {
+            return "Не найден склад получатель toWarehouseId: ".$parameters['toWarehouseId'].".";
         }
         
         // получить ТК
-        $this->delivery = $this->getEntityManager()->getRepository('NitraDeliveryBundle:Delivery')->find($parameters['deliveryId']);
+        $this->delivery = $this->warehouse->getDelivery();
         if (!$this->delivery) {
-            return "Не найдена ТК deliveryID: ".$parameters['deliveryId'].".";
+            return "Не для склада ".(string)$this->warehouse." не указана ТК.";
         }
         
-        // проверить город получатель
-        if (!isset($parameters['toCityId']) || !$parameters['toCityId']) {
-            return 'Не указан обязательный параметр: toCityId - ID города получателя.';
+        // получить Город
+        $this->city = $this->warehouse->getCity();
+        if (!$this->city) {
+            return "Не для склада ID: ".$this->warehouse->getId().' => '.(string)$this->warehouse." не подвязан город ТК.";
         }
         
-        // получить город ТК получаель
-        $this->tkToCity = $this->getEntityManager()
-            ->getRepository('NitraDeliveryBundle:City')
-            ->findOneBy(array(
-                'geoCity' => $this->getEntityManager()->getReference('NitraGeoBundle:City', $parameters['toCityId']),
-                'delivery' => $this->delivery,
-            ));
-        if (!$this->tkToCity) {
-            return "Не найден город получатель toCityId: ".$parameters['toCityId'].".";
+        // дата отправки
+        // преобразовать к DateTime, 
+        // для каждой ТК формат даты отправки может быть свой
+        if (isset($parameters['sendDate'])) {
+            // получаем дату отправки в качестве параметра
+            // формат должен быть YYYY.MM.DD пример 2014.01.13
+            $this->sendDate = \DateTime::createFromFormat('Y.m.d', $parameters['sendDate']);
+            
+        } else {
+            // дата отправки не определена
+            // по умолчанию = сегодня
+            $this->sendDate = new \DateTime();
         }
         
         // проверить город отправитель
@@ -69,29 +106,24 @@ class ProcessEstimateDeliveryDate extends ApiCommand
             $parameters['fromCityIds'] = array($parameters['fromCityIds']);
         }
         
-        // получить города отправители 
-        $this->tkFromCities = $this->getEntityManager()
+        // запрос получения списка городов отправителей
+        $queryFromCities = $this->getEntityManager()
             ->createQueryBuilder()
             ->select('geoCity.id, city.nameTk')
             ->from('NitraDeliveryBundle:City', 'city')
             ->innerJoin('city.geoCity', 'geoCity', 'WITH', 'geoCity.id IN(:geoCityIds)')->setParameter('geoCityIds', $parameters['fromCityIds'])
             ->where('city.delivery = :delivery')->setParameter('delivery', $this->delivery)
+            ;
+        
+        // получить города отправители 
+        $this->tkFromCities = $queryFromCities
             ->getQuery()
             ->execute(array(), 'KeyPair');
-        
+            
         // проверить города отправители 
         if (!$this->tkFromCities) {
             return "Не найдены города отпраители fromCityIds: ".implode(',', $parameters['fromCityIds']).".";
         }
-        
-        // получить параметры  из файла настроек
-        $parameters = $this->getContainer()->getParameter('novaposhta');
-        
-        // установить параметр apiToken, авторизация в API ТК Новая Почта
-        $this->setParameter('apiToken', $parameters['api_token']);
-        
-        // установить параметр apiUrl, ссылка синхронизации API ТК Новая Почта
-        $this->setParameter('apiUrl', $parameters['api_url']);
         
         // валидация пройдена
         return false;
@@ -114,8 +146,13 @@ class ProcessEstimateDeliveryDate extends ApiCommand
         switch($this->delivery->getId()) {
             
             // ТК Новая Почта
-            case 1:
+            case self::$deliveryIdNovaposhta:
                 $estimateDate = $this->novaposhtaEstimate();
+                break;
+            
+            // ТК ИнТайм
+            case self::$deliveryIdIntime:
+                $estimateDate = $this->intimeEstimate();
                 break;
             
             // по умолчанию не определен механизм расчета
@@ -174,25 +211,37 @@ class ProcessEstimateDeliveryDate extends ApiCommand
     /**
      * расчет времени доставки ТК Новая Почта
      * @return timestamp - дата ориентировчной доставки
+     * @return null - нет данных по расчету времени доставки
      */
     protected function novaposhtaEstimate()
     {
         
+        // получить параметры  из файла настроек
+        $parameters = $this->getContainer()->getParameter('novaposhta');
+        
+        // установить параметр apiToken, авторизация в API ТК Новая Почта
+        $this->setParameter('apiToken', $parameters['api_token']);
+        
+        // установить параметр apiUrl, ссылка синхронизации API ТК Новая Почта
+        $this->setParameter('apiUrl', $parameters['api_url']);
+        
         // определить тип доставки 
-        // тип доставки: 1 - Двері-Двері; 2 - Двері-Склад; 3 - Склад-Двері; 4 - Склад-Склад
-        if ($this->hasParameter('deliveryTypeId')) {
-            // установить параметр корорый пришел в запросе на расчет
-            $deliveryTypeId = $this->hasParameter('deliveryTypeId');
-            
-        } elseif ($this->hasParameter('isDirect') && $this->getParameter('isDirect')) {
+        // тип доставки: 
+        // http://orders.novaposhta.ua/api.php?todo=api_form 
+        // Визначення орієнтовної дати доставки вантажу<
+        // 1 - Двері-Двері; 
+        // 2 - Двері-Склад; 
+        // 3 - Склад-Двері; 
+        // 4 - Склад-Склад
+        if ($this->hasParameter('isDirect') && $this->getParameter('isDirect')) {
             // параметр не определен 
             // проверить параметр адресной доставки
             // если адресная доставка
-            // доставка товара со склада ТК к покупателю на адрес
+            // Склад-Двері доставка товара со склада ТК к покупателю на адрес
             $deliveryTypeId = 3;
             
         } else {
-            // доставка товара на склад ТК
+            // Склад-Склад доставка товара на склад ТК
             $deliveryTypeId = 4;
         }
         
@@ -206,8 +255,8 @@ class ProcessEstimateDeliveryDate extends ApiCommand
                     <auth>'.$this->getParameter('apiToken').'</auth>
                     <getEstimatedDeliveryDate>
                         <senderCity>'.(string)$nameTk.'</senderCity>
-                        <recipientCity>'.(string)$this->tkToCity->getNameTk().'</recipientCity>
-                        <date>'.(($this->hasParameter('deliveryDate')) ? $this->getParameter('deliveryDate') : date('d.m.Y')).'</date>
+                        <recipientCity>'.(string)$this->city->getNameTk().'</recipientCity>
+                        <date>'.$this->sendDate->format('d.m.Y').'</date>
                         <deliveryTypeId>'.$deliveryTypeId.'</deliveryTypeId>
                         <satDelivery>'.(($this->hasParameter('deliveryAtSaturday') && $this->getParameter('deliveryAtSaturday')) ? "1" : "0").'</satDelivery>
                     </getEstimatedDeliveryDate>
@@ -238,5 +287,97 @@ class ProcessEstimateDeliveryDate extends ApiCommand
         // нет данных по расчету времени доставки
         return null;
     }
+    
+    
+    /**
+     * расчет времени доставки ТК ИнТайм
+     * @return timestamp - дата ориентировчной доставки
+     * @return null - нет данных по расчету времени доставки
+     */
+    protected function intimeEstimate()
+    {
+        
+        // определить тип доставки
+        // http://www.intime.ua/userfiles/API_intime.pdf
+        // справочник - видперевозки 
+        // тип доставки: 
+        // 1 Дверь - Дверь
+        // 4 Дверь - Склад
+        // 3 Склад - Дверь
+        // 2 Склад - Склад
+        if ($this->hasParameter('isDirect') && $this->getParameter('isDirect')) {
+            // параметр не определен 
+            // проверить параметр адресной доставки
+            // если адресная доставка
+            // Склад-Двері доставка товара со склада ТК к покупателю на адрес
+            $deliveryTypeId = 3;
+            
+        } else {
+            // Склад-Склад доставка товара на склад ТК
+            $deliveryTypeId = 2;
+        }
+        
+        // получить города отправители 
+        $tkFromCities = $this->getEntityManager()
+            ->createQueryBuilder()
+            ->select('geoCity.id, city.businessKey')
+            ->from('NitraDeliveryBundle:City', 'city')
+            ->innerJoin('city.geoCity', 'geoCity', 'WITH', 'geoCity.id IN(:geoCityIds)')->setParameter('geoCityIds', array_keys($this->tkFromCities))
+            ->where('city.delivery = :delivery')->setParameter('delivery', $this->delivery)
+            ->getQuery()
+            ->execute(array(), 'KeyPair');
+            ;
+        
+        // получить параметры из файла настроек
+        $parameters = $this->getContainer()->getParameter('intime');
+        
+        // установить данные SOAP клиента
+        $this->setParameter('soapUrl', $parameters['soap_url']);
+        
+        // создать soap
+        $soapClient = new \SoapClient($this->getParameter('soapUrl'));
+        
+        // рачет для каждого города отправителя
+        // формируем массив дата доставки в каждый город
+        $estimatedDates = array();
+        foreach($tkFromCities as $geoCityId => $businessKey ) {
+            
+            // массив параметров расчета
+            $options = array(
+                'GorodOtpravitel' => $businessKey,
+                'GorodPoluchatel' => $this->city->getBusinessKey(),
+                'Data' => $this->sendDate->format('Ymd'),
+                'VidPerevozki' => $deliveryTypeId,
+            );
+            
+            // отправить запрос на сервер 
+            $soapResponse = $soapClient->DenDostavki($options);
+            
+            // проверить ответ сервера
+            if ($soapResponse instanceof \stdClass && isset($soapResponse->result)) {
+                $result = explode(':', $soapResponse->result);
+                if (isset($result[1]) && trim($result[1])) {
+                    $date = \DateTime::createFromFormat('d.m.Y', trim($result[1]));
+                    $estimatedDates[$geoCityId] = $date->getTimestamp();
+                }
+            }
+        }
+        
+        // отсортировать массив 
+        // самая поздняя доставка будет первой
+        if ($estimatedDates) {
+            arsort($estimatedDates);
+        }
+        
+        // вернуть timestamp доставки 
+        if ($estimatedDates) {
+            $array_values = array_values($estimatedDates);
+            return $array_values[0];
+        }
+        
+        // нет данных по расчету времени доставки
+        return null;
+    }
+    
     
 }
