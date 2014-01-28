@@ -40,7 +40,7 @@ class ActionsController extends BaseActionsController
     
     /**
      * ajax сгенерировать новый токен
-     * @Route("/generate-new-token", name="Nitra_DeliveryBundle_Client_generateNewToken", options={"expose"=true})
+     * @Route("/generate-token", name="Nitra_DeliveryBundle_Client_generateToken", options={"expose"=true})
      * @return Response
      */
     public function generateNewTokenAction(Request $request)
@@ -57,22 +57,22 @@ class ActionsController extends BaseActionsController
     }
     
     
-//    * @Route("/test-route", name="Nitra_DeliveryBundle_Client_test", options={"expose"=true})
-    /**
-     * ajax сгенерировать новый токен
-     * @return Response
-     */
-    public function testAction(Request $request)
-    {
-        // сгенерировать новый токен
-        $token = sha1('clientToken'
-            . (($request->get('name', false)) ? '::'.$request->get('name') : '')
-            . '::'.  uniqid()
-            . '::' . microtime(true)
-            );
-        
-        // вернуть токен
-        return new Response($token);
-    }    
+////    * @Route("/test-route", name="Nitra_DeliveryBundle_Client_test", options={"expose"=true})
+//    /**
+//     * ajax сгенерировать новый токен
+//     * @return Response
+//     */
+//    public function testAction(Request $request)
+//    {
+//        // сгенерировать новый токен
+//        $token = sha1('clientToken'
+//            . (($request->get('name', false)) ? '::'.$request->get('name') : '')
+//            . '::'.  uniqid()
+//            . '::' . microtime(true)
+//            );
+//        
+//        // вернуть токен
+//        return new Response($token);
+//    }    
     
 }
