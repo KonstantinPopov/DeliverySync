@@ -1,0 +1,71 @@
+
+<div class="form_row field_token_update ">
+    <label for="edit_client_token_update"></label>
+    <div class="field_content">
+        
+        {# префикс название формы [new, edit] #}
+        <input type="hidden" id="client_form_prefix" value="edit">
+        
+        {# ссылка клик генерировтаь новый токен #}
+        <a id="client_generate_new_token" href="javascript:void(0)">Установить новый токен</a>.
+        
+        {# отображение сообщения токена #}
+        <span id="client_notice_new_token" class="red" style="display: none">Не забудьте сохранить форму!</span>
+        
+    </div>
+</div>
+
+
+<script>
+    
+    /**
+     * Сгенерировать новый токен для клиента
+     **/
+    function clientGenerateNewToken()
+    {
+        // url контроллер получение нового токена
+        var actionUrl = Routing.generate('Nitra_DeliveryBundle_GenerateNewToken', false, true);
+        
+        // спрятать сгенерированный токен
+        $('#client_notice_new_token').hide();
+        
+        // отправить ajax запрос
+        $.ajax({
+            url: actionUrl,
+            type: 'POST',
+            dataType: 'html',
+            async: true,
+            data: {
+                name: $('#{{ formMode }}_client_name').val()
+            },
+            success: function(token){
+                // ответ от сервера получен успешно
+                if (token) {
+                    // установить значение нового токена
+                    $('#{{ formMode }}_client_token').val(token);
+                    
+                    // отобразить сообшение нового токена
+                    setTimeout(function(){
+                        $('#client_notice_new_token').fadeIn('fast');
+                    }, 50);
+                }
+            }
+        });
+    }
+    
+    /**
+     * страница загружена
+     **/
+    $(document).ready(function() {
+        
+        // событие клик по генерировтаь новый токен
+        $('#client_generate_new_token').click(function(event){
+            // отменить событие по умолчанию
+            event.preventDefault();
+            // получить новый токен
+            clientGenerateNewToken();
+        });
+        
+    });
+    
+</script>

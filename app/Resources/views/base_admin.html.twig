@@ -1,27 +1,9 @@
-{#% extends 'NitraThemeBundle::base_admin.html.twig' %} 
-
-{% block stylesheets %}
-    {{ parent() }}
-
-{% endblock %}
-           
-{% block javascript_head %}
-    {{ parent() }}
-        
-{% endblock %}
-{% block title %}Синхронизация ТК{% endblock %}
-                {% block logo %}
-<div class="logo">
-    Nitra Logo
-</div>
-                {% endblock %#}
+{% extends 'NitraThemeBundle::base_admin.html.twig' %}
 
 {% block title %}
     Синхронизация ТК
 {% endblock %}
-
-{% extends 'NitraThemeBundle::base_admin.html.twig' %} 
-
+   
 {% block javascript_head %}
     {{ parent() }}
     <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
@@ -30,7 +12,7 @@
     
     {% javascripts  'components/jquery-ui/ui/jquery.ui.menu.js'
                     'components/jquery-ui/ui/jquery.ui.autocomplete.js' %}
-        <script src="{{ asset_url }}"></script>
+    <script src="{{ asset_url }}"></script>
     {% endjavascripts %}
 
     <script type="text/javascript">
@@ -38,7 +20,7 @@
             $('.colorbox').colorbox();
         });
     </script>
-{% endblock %}
+{% endblock %}    
     
 {#% block profile %}
     {{ parent() }}
