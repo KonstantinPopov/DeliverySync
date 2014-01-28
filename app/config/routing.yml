@@ -44,12 +44,7 @@ root:
         path: /delivery-warehouse
         permanent: true    
 
-ClientGenerateNewToken:
-    resource: "@NitraDeliveryBundle/Controller/Client/ActionsController.php"
-    type:     annotation
-    prefix:   /client-token
-#    path:      /clnt-generate-new-token
-#    defaults:  
-#        _controller: NitraDeliveryBundle:Client:ActionsController:test
-#        options:
-#            expose: true
+#ClientGenerateNewToken:
+#    resource: "@NitraDeliveryBundle/Controller/Client/ActionsController.php"
+#    type:     annotation
+#    prefix:   /client-token
