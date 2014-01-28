@@ -17,3 +17,7 @@ NitraDeliveryBundleClient:
     type:     admingenerator
     prefix:   /client
     
+NitraDeliveryBundleClient_ActionsController:
+    resource: "@NitraDeliveryBundle/Controller/Client"
+    type:     annotation
+    prefix:   /
