@@ -1,1 +1,6 @@
 {% extends_admingenerated "NitraDeliveryBundle:ClientNew:form.html.twig" %}
+
+{% block form_token %}
+    {{ parent() }}
+    {% include "NitraDeliveryBundle:ClientActions:generateNewToken.html.twig" with {'formMode' : 'new' } %}
+{% endblock form_token %}
