@@ -17,8 +17,9 @@ NitraDeliveryBundleClient:
     type:     admingenerator
     prefix:   /client
 
-# Список клиентов 
-NitraDeliveryBundleClient_ActionsController:
-    resource: "@NitraDeliveryBundle/Controller/Client/ActionsController.php"
-    type:     annotation
-    prefix:   /client
+## Список клиентов 
+## todo: не помогло - удалить 
+#NitraDeliveryBundleClient_ActionsController:
+#    resource: "@NitraDeliveryBundle/Controller/Client/ActionsController.php"
+#    type:     annotation
+#    prefix:   /client
