@@ -17,10 +17,10 @@ NitraDeliveryBundleClient:
     type:     admingenerator
     prefix:   /client
 
-#NitraDeliveryBundleClient_NewToken:
-#    resource: "@NitraDeliveryBundle/Controller/Client/ActionsController.php"
-#    type:     annotation
-#    prefix:   /client-token
+NitraDeliveryBundleClient_NewToken:
+    resource: "@NitraDeliveryBundle/Controller/Client/ActionsController.php"
+    type:     annotation
+    prefix:   /client-token
 
 
 ## Список клиентов 
