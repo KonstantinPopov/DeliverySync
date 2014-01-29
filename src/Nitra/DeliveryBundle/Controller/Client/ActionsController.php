@@ -46,7 +46,9 @@ class ActionsController extends BaseActionsController
     public function generateNewTokenAction(Request $request)
     {
         // сгенерировать новый токен
-        $token = sha1('clientToken'
+        $token = sha1(
+            'clientToken'
+            . '::' . $this->container->getParameter('secret')
             . (($request->get('name', false)) ? '::'.$request->get('name') : '')
             . '::'.  uniqid()
             . '::' . microtime(true)
@@ -55,24 +57,5 @@ class ActionsController extends BaseActionsController
         // вернуть токен
         return new Response($token);
     }
-    
-    
-////    * @Route("/test-route", name="Nitra_DeliveryBundle_Client_test", options={"expose"=true})
-//    /**
-//     * ajax сгенерировать новый токен
-//     * @return Response
-//     */
-//    public function testAction(Request $request)
-//    {
-//        // сгенерировать новый токен
-//        $token = sha1('clientToken'
-//            . (($request->get('name', false)) ? '::'.$request->get('name') : '')
-//            . '::'.  uniqid()
-//            . '::' . microtime(true)
-//            );
-//        
-//        // вернуть токен
-//        return new Response($token);
-//    }    
     
 }

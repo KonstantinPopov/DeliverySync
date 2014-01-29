@@ -43,8 +43,3 @@ root:
         _controller: FrameworkBundle:Redirect:urlRedirect
         path: /delivery-warehouse
         permanent: true    
-
-#ClientGenerateNewToken:
-#    resource: "@NitraDeliveryBundle/Controller/Client/ActionsController.php"
-#    type:     annotation
-#    prefix:   /client-token
