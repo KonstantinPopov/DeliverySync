@@ -112,10 +112,33 @@ parameters:
     knp.doctrine_behaviors.blameable_listener.user_entity: Nitra\ManagerBundle\Entity\Manager
 
 
-
-
-
-
-
-
+# подробнее о сервисах
+# http://symfony.com/doc/current/book/service_container.html
+services:
+#    login_listener:
+#        class: Nitra\ManagerBundle\Listener\LoginListener
+#        arguments: ["@security.context"]
+#        tags:
+#            - { name: kernel.event_listener, event: security.interactive_login }
+#            
+#    nitra.form.type.select_warehouse:
+#        class: Nitra\MainBundle\Form\Type\SelectWarehouseType
+#        arguments: ["@doctrine.orm.entity_manager"]
+#        tags:
+#            - { name: form.type, alias: select_warehouse }  
+#
+#    nitra.form.type.select_contract:
+#        class: Nitra\MainBundle\Form\Type\SelectContractType
+#        arguments: ["@doctrine.orm.entity_manager"]
+#        tags:
+#            - { name: form.type, alias: select_contract } 
+#
+#    nitra.syncronize.api:
+#        class: Nitra\SyncronizeBundle\Api\SyncronizeService
+#        arguments: ["@doctrine.orm.entity_manager"]
+##        arguments: ["@doctrine.orm.entity_manager", "@service_container" ]
+##        arguments: [ "@service_container" ]
+##        arguments: [ "@service_container" ]
+##        tags:
+##            - { name: syncronize.api, alias: syncronize_api } 
 
