@@ -114,7 +114,7 @@ parameters:
 
 # подробнее о сервисах
 # http://symfony.com/doc/current/book/service_container.html
-services:
+#services:
 #    login_listener:
 #        class: Nitra\ManagerBundle\Listener\LoginListener
 #        arguments: ["@security.context"]
@@ -134,7 +134,7 @@ services:
 #            - { name: form.type, alias: select_contract } 
 #
 #    nitra.syncronize.api:
-#        class: Nitra\SyncronizeBundle\Api\SyncronizeService
+#        class: Nitra\SyncronizeBundle\Api\SyncronizeApi
 #        arguments: ["@doctrine.orm.entity_manager"]
 ##        arguments: ["@doctrine.orm.entity_manager", "@service_container" ]
 ##        arguments: [ "@service_container" ]
