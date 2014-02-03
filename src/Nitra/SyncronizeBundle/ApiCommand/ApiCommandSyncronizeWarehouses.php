@@ -12,7 +12,12 @@ class ApiCommandSyncronizeWarehouses extends ApiCommand
      * @var array массив ID ТК клиента
      */
     private $deliveryIds;
-
+    
+    /**
+     * @var array ТК синхронизации
+     */
+    private $delivery;
+    
     /**
      * {@inheritDoc}
      */
@@ -27,7 +32,26 @@ class ApiCommandSyncronizeWarehouses extends ApiCommand
         
         // проверить выбранные ТК для клиента
         if (!$this->deliveryIds) {
-            return "Для клиента \"".(string)$this->getClient()."\" не установлена ни одна транспортная компания.";
+            return "Для клиента \"".(string)$this->getClient()."\" не установлена ни одна ТК.";
+        }
+        
+        // проверить синхронизация склдаов по отдельной ТК
+        if ($this->hasParameter('deliveryId') && $this->getParameter('deliveryId')) {
+            
+            // получить ТК по которой синхронизируются склады
+            $this->delivery = $this->getEntityManager()
+                ->getRepository('NitraDeliveryBundle:Delivery')
+                ->find($this->getParameter('deliveryId'));
+            
+            // проверить ТК 
+            if (!$this->delivery) {
+                return "ТК по указанному ID: ".$this->getParameter('deliveryId')." не найдена.";
+            }
+            
+            // проверить установлена ли ТК для клиента
+            if (!in_array($this->getParameter('deliveryId'), $this->deliveryIds)) {
+                return 'Для клиента "'.(string)$this->getClient().'" не установлена ТК "'.(string)$this->delivery.'".';
+            }
         }
         
         // валидация пройдена
@@ -68,9 +92,9 @@ class ApiCommandSyncronizeWarehouses extends ApiCommand
         $parameters = $this->getParameters();
         
         // доклеить в запрос ID ТК 
-        if (isset($parameters['deliveryId']) && $parameters['deliveryId']) {
+        if ($this->delivery) {
             $queryWarehouses
-                ->andWhere('d.id = :deliveryId')->setParameter('deliveryId', $parameters['deliveryId']);
+                ->andWhere('d.id = :deliveryId')->setParameter('deliveryId', $this->delivery->getId());
         }
         
         // получить массив сущностей складов

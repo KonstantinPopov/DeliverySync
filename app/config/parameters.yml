@@ -23,3 +23,7 @@ parameters:
         soap_id: RezinaCC
         soap_key: 52657a696e614343
         soap_url: 'https://ws.intime.ua/test98/ws/integration.1cws?wsdl'
+    autolux:
+        country_id: 1
+        delivery_id: 3
+        api_url: 'http://cabinet.autolux.ua/cabinet/api_calculator.php'
