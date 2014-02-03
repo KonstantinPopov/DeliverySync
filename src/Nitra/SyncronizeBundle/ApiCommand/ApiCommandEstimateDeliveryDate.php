@@ -2,12 +2,12 @@
 namespace Nitra\SyncronizeBundle\ApiCommand;
 
 /**
- * processEstimateDeliveryDate
  * расчет времени доставки 
+ * ApiCommandEstimateDeliveryDate
  */
-class ProcessEstimateDeliveryDate extends ApiCommand
+class ApiCommandEstimateDeliveryDate extends ApiCommand
 {
-    
+
     /**
      * @var ID ТК Новая Почта
      */
@@ -51,7 +51,7 @@ class ProcessEstimateDeliveryDate extends ApiCommand
     /**
      * {@inheritDoc}
      */
-    public function validateApi()
+    public function validateCommand()
     {
         
         // получить массив параметров
@@ -63,7 +63,7 @@ class ProcessEstimateDeliveryDate extends ApiCommand
         }
         
         // получить склад получатель
-        $this->warehouse = $this->getEntityManager()
+        $this->warehouse = $this->em
             ->getRepository('NitraDeliveryBundle:Warehouse')
             ->find($parameters['toWarehouseId']);
         if (!$this->warehouse) {
@@ -73,7 +73,7 @@ class ProcessEstimateDeliveryDate extends ApiCommand
         // получить ТК
         $this->delivery = $this->warehouse->getDelivery();
         if (!$this->delivery) {
-            return "Не для склада ".(string)$this->warehouse." не указана ТК.";
+            return "Для склада ".(string)$this->warehouse." не указана ТК.";
         }
         
         // получить Город
@@ -106,8 +106,24 @@ class ProcessEstimateDeliveryDate extends ApiCommand
             $parameters['fromCityIds'] = array($parameters['fromCityIds']);
         }
         
+        // преобразовать массив ID городов отправителей
+        $fromCityIds = array();
+        foreach($parameters['fromCityIds'] as $cityId) {
+            if ($cityId) {
+                $fromCityIds[] = $cityId;
+            }
+        }
+        // запомнить массив городов
+        $parameters['fromCityIds'] = $fromCityIds;
+        $this->setParameter('fromCityIds', $fromCityIds);
+        
+        // проверить город отправитель
+        if (!$parameters['fromCityIds']) {
+            return 'Не указан обязательный параметр: fromCityIds - массив ID городов отправителей.';
+        }
+        
         // запрос получения списка городов отправителей
-        $queryFromCities = $this->getEntityManager()
+        $queryFromCities = $this->em
             ->createQueryBuilder()
             ->select('geoCity.id, city.nameTk')
             ->from('NitraDeliveryBundle:City', 'city')
@@ -119,7 +135,7 @@ class ProcessEstimateDeliveryDate extends ApiCommand
         $this->tkFromCities = $queryFromCities
             ->getQuery()
             ->execute(array(), 'KeyPair');
-            
+        
         // проверить города отправители 
         if (!$this->tkFromCities) {
             return "Не найдены города отпраители fromCityIds: ".implode(',', $parameters['fromCityIds']).".";
@@ -132,11 +148,11 @@ class ProcessEstimateDeliveryDate extends ApiCommand
     /**
      * {@inheritDoc}
      */
-    public function processApi()
+    public function processCommand()
     {
         
         // валидировать команду
-        $errorMessage = $this->validateApi();
+        $errorMessage = $this->validateCommand();
         if ($errorMessage) {
             // валидация не пройдена
             throw new \Exception($errorMessage);
@@ -318,7 +334,7 @@ class ProcessEstimateDeliveryDate extends ApiCommand
         }
         
         // получить города отправители 
-        $tkFromCities = $this->getEntityManager()
+        $tkFromCities = $this->em
             ->createQueryBuilder()
             ->select('geoCity.id, city.businessKey')
             ->from('NitraDeliveryBundle:City', 'city')
