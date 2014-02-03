@@ -1,0 +1,60 @@
+generator: admingenerator.generator.doctrine
+params:
+    model: Nitra\DeliveryBundle\Entity\Delivery
+    namespace_prefix: Nitra
+    concurrency_lock: ~
+    bundle_name: DeliveryBundle
+    pk_requirement: ~
+    fields: ~
+    object_actions:
+        delete: ~
+    batch_actions:
+        delete: ~
+builders:
+    list:
+        params:
+            title:          "Список транспортных компаний"
+            display:        [ id, name ]
+            sort:           [ id, ASC ]
+            max_per_page:   100
+            actions:
+                new: ~
+            object_actions:
+                edit: ~
+#                delete: ~
+
+    filters:
+        params:
+            display:    [ id, name ]
+    new:
+        params:
+            title:      "Добавить новую ТК"
+            display:    [ name ]
+            actions:
+                save: ~
+                save-and-list: ~
+                list: ~
+                
+    edit:
+        params:
+            title:      "Редактировать ТК \"%object%\"|{ %object%: Delivery.name }|"
+            display:    [ name ]
+            actions:
+                save: ~
+                save-and-list: ~
+                list: ~
+                
+    show:
+        params:
+            title:      "Просмотр ТК \"%object%\"|{ %object%: Delivery.name }|"
+            display: ~
+            actions:
+                list: ~
+                new: ~
+                
+    actions:
+        params:
+            object_actions:
+                delete: ~
+            batch_actions:
+                delete: ~

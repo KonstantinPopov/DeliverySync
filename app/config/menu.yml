@@ -12,6 +12,10 @@ millwright_menu:
         delivery:
             label:  "ТК"
             
+        delivery_tk:
+            label:  "Все ТК"
+            route:  Nitra_DeliveryBundle_Delivery_list
+            
         delivery_city:
             label:  "Города ТК"
             route:  Nitra_DeliveryBundle_City_list
@@ -70,6 +74,7 @@ millwright_menu:
                 delivery:
                     name:   "ТК"
                     children:
+                        delivery_tk:            ~
                         delivery_city:          ~
                         delivery_warehouse:     ~
                     

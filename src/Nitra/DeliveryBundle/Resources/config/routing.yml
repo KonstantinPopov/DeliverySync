@@ -1,4 +1,10 @@
 
+## Список ТК 
+NitraDeliveryBundleDelivery:
+    resource: "@NitraDeliveryBundle/Controller/Delivery/"
+    type:     admingenerator
+    prefix:   /delivery-tk
+
 # Список городов
 NitraDeliveryBundleCity:
     resource: "@NitraDeliveryBundle/Controller/City/"
