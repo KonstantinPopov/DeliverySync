@@ -111,11 +111,3 @@ admingenerator_generator:
 parameters:
     knp.doctrine_behaviors.blameable_listener.user_entity: Nitra\ManagerBundle\Entity\Manager
 
-
-
-
-
-
-
-
-
