@@ -37,6 +37,11 @@ class LoadDeliveryData extends AbstractFixture implements OrderedFixtureInterfac
         $manager->persist($delivery2); 
         $this->addReference('deliveryIntime', $delivery2);
         
+        $delivery3 = new Delivery(); 
+        $delivery3->setName('АвтоЛюкс'); 
+        $manager->persist($delivery3); 
+        $this->addReference('deliveryAutolux', $delivery3);
+        
 //        $delivery3 = new Delivery(); 
 //        $delivery3->setName('Delivery Auto'); 
 //        $manager->persist($delivery3); 

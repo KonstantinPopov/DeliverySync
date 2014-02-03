@@ -35,3 +35,14 @@ parameters:
         soap_id:  RezinaCC
         soap_key: 52657a696e614343
         soap_url: https://ws.intime.ua/test98/ws/integration.1cws?wsdl
+
+    # Настройки ТК АвтоЛюкс
+    autolux:
+        # ID эталона страны в которой находится ТК
+        country_id: 1
+        # ID ТК в справочнике ТК
+        delivery_id: 3
+        # API ТК данные клиента
+        # ссылка Api
+        api_url: http://cabinet.autolux.ua/cabinet/api_calculator.php
+
