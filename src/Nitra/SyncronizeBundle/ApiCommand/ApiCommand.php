@@ -2,14 +2,13 @@
 namespace Nitra\SyncronizeBundle\ApiCommand;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-//use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Nitra\DeliveryBundle\Entity\Client;
 
 /**
  * ApiCommand
  * Общий класс API DeliverySync
  */
-abstract class ApiCommand // implements ContainerAwareInterface
+class ApiCommand
 {
     
     /**
