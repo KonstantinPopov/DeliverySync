@@ -80,7 +80,7 @@ class Warehouse
 
     /**
      * @var string $phone
-     * @ORM\Column(name="phone", type="string", length=255, options={"comment"="Телефон отделения"})
+     * @ORM\Column(name="phone", type="string", nullable=true, length=255, options={"comment"="Телефон отделения"})
      */
     private $phone;
 
@@ -302,7 +302,7 @@ class Warehouse
     {
         return $this->phone;
     }
-
+    
     /**
      * Set latitude
      *

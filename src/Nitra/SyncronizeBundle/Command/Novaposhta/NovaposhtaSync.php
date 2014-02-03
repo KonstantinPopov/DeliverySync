@@ -1,16 +1,16 @@
 <?php
-namespace Nitra\SyncronizeBundle\Command;
+namespace Nitra\SyncronizeBundle\Command\Novaposhta;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 
 /**
- * IntimeSync
+ * NovaposhtaSync
  * Общий класс синхронизации 
- * ТК ИнТайм
+ * ТК Новая Почта
  */
-abstract class IntimeSync extends ContainerAwareCommand
+abstract class NovaposhtaSync extends ContainerAwareCommand
 {
     
     /**
@@ -27,6 +27,18 @@ abstract class IntimeSync extends ContainerAwareCommand
      * @var array массив параметров
      */
     private $parameters;
+    
+    /**
+     * запрос получения списка городов 
+     * @return string
+     */
+    abstract protected function getXmlRequest();
+
+    /**
+     * xpath xml ответа
+     * @return string
+     */
+    abstract protected function getXmlXpath();
     
     /**
      * Выполнить синхронизацию
@@ -123,13 +135,14 @@ abstract class IntimeSync extends ContainerAwareCommand
         // установить EntityManager
         $this->em = $this->getContainer()->get('doctrine')->getEntityManager('default');
         
-        // получить параметры из файла настроек
-        $parameters = $this->getContainer()->getParameter('intime');
+        // получить параметры  из файла настроек
+        $parameters = $this->getContainer()->getParameter('novaposhta');
         
-        // установить данные SOAP клиента
-        $this->setParameter('soapId', $parameters['soap_id']);
-        $this->setParameter('soapKey', $parameters['soap_key']);
-        $this->setParameter('soapUrl', $parameters['soap_url']);
+        // установить параметр apiToken, авторизация в API ТК Новая Почта
+        $this->setParameter('apiToken', $parameters['api_token']);
+        
+        // установить параметр apiUrl, ссылка синхронизации API ТК Новая Почта
+        $this->setParameter('apiUrl', $parameters['api_url']);
         
         // ID страны Nitra\GeoBundle\Entity\Country
         $this->setParameter('countryId', $parameters['country_id']);
@@ -165,39 +178,29 @@ abstract class IntimeSync extends ContainerAwareCommand
         
         // $xmlResponse не xml формат преобразование в массив не возможно
         return null;
-    }
+    }    
     
     /**
      * Отправить запрос на сервер
-     * @param string $soapMethod - название вызываемого soap метода 
-     * @param string $xpath      - xml путь xml ответе 
-     * @param array  $options    - массив параметров передаваемых в soap метод $soapMethod
+     * @param string $xmlRequest - отправлемый xml запрос
      * @return array $responseArray - массив элемоенов SimpleXMLElement - ответ сервера
      */
-    protected function apiSendRequest($soapMethod, $xpath, array $options=null)
+    protected function apiSendRequest($xmlRequest)
     {
-        
-        // создать soap
-        $soapClient = new \SoapClient($this->getParameter('soapUrl'));
-        
         // отправить запрос на сервер 
-        $soapResponse = $soapClient->$soapMethod($options);
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $this->getParameter('apiUrl'));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, Array("Content-Type: text/xml"));
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $xmlRequest);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        $xmlResponse = curl_exec($ch);
+        curl_close($ch);
         
-        // проверить ответ
-        if ($soapResponse instanceof \stdClass && isset($soapResponse->result)) {
-//            // записать в файл результат ответа
-//            $filePath = dirname(dirname(dirname(dirname(dirname(__FILE__))))).'/app/logs/soapResponse-'.$soapMethod.'.txt';
-//            $fp = fopen($filePath, 'w');
-//            fwrite($fp, print_r($this->responseToArray($soapResponse->result, $xpath), true));
-//            fwrite($fp, "\n=====================\n");
-//            fwrite($fp, print_r($soapResponse, true));
-//            fclose($fp);
-            // преобразовать получить массив из xml ответа 
-            return $this->responseToArray($soapResponse->result, $xpath);
-        }
-        
-        // от сервера не был получен ответ
-        return null;
+        // преобразовать получить массив из xml ответа 
+        return $this->responseToArray($xmlResponse, $this->getXmlXpath());
     }
     
 }

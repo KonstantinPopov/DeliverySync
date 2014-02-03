@@ -1,9 +1,9 @@
 <?php
-namespace Nitra\SyncronizeBundle\Command;
+namespace Nitra\SyncronizeBundle\Command\Novaposhta;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Nitra\SyncronizeBundle\Command\NovaposhtaSync;
+use Nitra\SyncronizeBundle\Command\Novaposhta\NovaposhtaSync;
 use Nitra\DeliveryBundle\Entity\Warehouse;
 
 /**

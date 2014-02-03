@@ -41,6 +41,8 @@ parameters:
         # ID эталона страны в которой находится ТК
         country_id: 1
         # ID ТК в справочнике ТК
-        delivery_id: 2
+        delivery_id: 3
         # API ТК данные клиента
+        # ссылка Api
+        api_url: http://cabinet.autolux.ua/cabinet/api_calculator.php
 

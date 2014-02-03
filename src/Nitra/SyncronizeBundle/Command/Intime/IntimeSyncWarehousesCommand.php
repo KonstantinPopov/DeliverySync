@@ -1,9 +1,9 @@
 <?php
-namespace Nitra\SyncronizeBundle\Command;
+namespace Nitra\SyncronizeBundle\Command\Intime;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Nitra\SyncronizeBundle\Command\IntimeSync;
+use Nitra\SyncronizeBundle\Command\Intime\IntimeSync;
 use Nitra\DeliveryBundle\Entity\Warehouse;
 
 /**
