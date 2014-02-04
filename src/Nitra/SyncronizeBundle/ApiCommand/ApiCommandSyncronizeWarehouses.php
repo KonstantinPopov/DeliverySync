@@ -39,7 +39,7 @@ class ApiCommandSyncronizeWarehouses extends ApiCommand
         if ($this->hasParameter('deliveryId') && $this->getParameter('deliveryId')) {
             
             // получить ТК по которой синхронизируются склады
-            $this->delivery = $this->getEntityManager()
+            $this->delivery = $this->em
                 ->getRepository('NitraDeliveryBundle:Delivery')
                 ->find($this->getParameter('deliveryId'));
             
