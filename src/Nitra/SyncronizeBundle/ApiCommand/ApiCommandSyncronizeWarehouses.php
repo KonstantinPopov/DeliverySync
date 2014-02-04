@@ -2,10 +2,10 @@
 namespace Nitra\SyncronizeBundle\ApiCommand;
 
 /**
- * ProcessSyncronizeWarehouses
  * Синхронизация складов
+ * ApiCommandSyncronizeWarehouses
  */
-class ProcessSyncronizeWarehouses extends ApiCommand
+class ApiCommandSyncronizeWarehouses extends ApiCommand
 {
     
     /**
@@ -21,7 +21,7 @@ class ProcessSyncronizeWarehouses extends ApiCommand
     /**
      * {@inheritDoc}
      */
-    public function validateApi()
+    public function validateCommand()
     {
         
         // массив ID ТК клиента
@@ -61,18 +61,18 @@ class ProcessSyncronizeWarehouses extends ApiCommand
     /**
      * {@inheritDoc}
      */
-    public function processApi()
+    public function processCommand()
     {
         
         // валидировать команду
-        $errorMessage = $this->validateApi();
+        $errorMessage = $this->validateCommand();
         if ($errorMessage) {
             // валидация не пройдена
             throw new \Exception($errorMessage);
         }
         
         // запрос получения складов
-        $queryWarehouses = $this->getEntityManager()
+        $queryWarehouses = $this->em
             ->createQueryBuilder()
             ->select('w.id, w.number, w.name, w.address, w.phone, w.latitude, w.longitude')
             ->addSelect('d.id AS deliveryId, d.name AS deliveryName')

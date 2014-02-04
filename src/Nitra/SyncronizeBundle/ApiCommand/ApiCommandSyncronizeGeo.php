@@ -2,39 +2,29 @@
 namespace Nitra\SyncronizeBundle\ApiCommand;
 
 /**
- * ProcessSyncronizeGeo
  * Синхронизация географии
+ * ApiCommandSyncronizeGeo
  */
-class ProcessSyncronizeGeo extends ApiCommand
+class ApiCommandSyncronizeGeo extends ApiCommand
 {
     
     /**
-     * {@inheritDoc}
+     * @var ID страны Украина
      */
-    public function validateApi()
-    {
-        // валидация пройдена
-        return false;
-    }
+    protected static $countryIdUA = 1;
     
     /**
      * {@inheritDoc}
      */
-    public function processApi()
+    public function processCommand()
     {
-//        // валидировать команду
-//        $errorMessage = $this->validateApi();
-//        if ($errorMessage) {
-//            // валидация не пройдена
-//            throw new \Exception($errorMessage);
-//        }
         
         // результируюший массив ответа
         $apiResult = array();
         
         // получить регионы 
         // по стране  Украина
-        $geoRegions = $this->getEntityManager()
+        $geoRegions = $this->em
             ->createQueryBuilder()
             ->select('region, country')
             ->from('NitraGeoBundle:Region', 'region')
@@ -52,7 +42,7 @@ class ProcessSyncronizeGeo extends ApiCommand
         }
         
         // получить города
-        $geoCities = $this->getEntityManager()
+        $geoCities = $this->em
             ->createQueryBuilder()
             ->select('city, region, country')
             ->from('NitraGeoBundle:City', 'city')
