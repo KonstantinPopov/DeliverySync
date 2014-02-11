@@ -45,8 +45,8 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         'percentProductCost' => 0.5,    // Процент от оценочной стоимости, %
         'percentInsurance' => 0.5,      // Размер страховки, %
         'сostService' => 10.00,         // Стоимость оформления груза
-        'сostSecurityPack' => 4.80,     // Стоимость сикерпака
-        'сostLessKg' => 0.00,           // Стоимость перевозки груза до 1 кг
+//        'сostSecurityPack' => 4.80,     // Стоимость сикерпака
+//        'сostLessKg' => 0.00,           // Стоимость перевозки груза до 1 кг
     );
     
     /**
@@ -54,9 +54,10 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
      */
     protected static $deliveryIdAutolux = 3;
     protected static $autoluxOptions = array(
-        'percentPOD' => 0,              // инимальный процент для наложенного платежа pay on delivery
-        'сostService' => 0,             // Стоимость оформления груза
-        'costInsurance' => 0,           // стоимоть страховки
+        'percentProductCost' => 0.5,      // инимальный процент для наложенного платежа pay on delivery
+        'percentInsurance' => 0.5,        // Размер страховки, %
+        'сostService' => 10,              // Стоимость оформления груза
+        
     );
 
     /**
@@ -182,9 +183,6 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         // расчет стоимости по каждой ТК
         foreach($this->deliveries as $delivery) {
             
-            // ID ТК для быстрого обращения
-            $deliveryId = $delivery->getId();
-            
             // расчитать стоимость доставки
             // каждого продукта по каждой ТК 
             foreach($products as $key => $product) {
@@ -196,7 +194,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                         'geoCity' => $product['fromCityId'],
                         'delivery' => $delivery->getId(),
                     ));
-
+                
                 // город отправитель не найден
                 if(!$fromCity) {
                     // перейти к след. продукту
@@ -213,7 +211,6 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                 
                 // склад отправитель не найден
                 if(!$fromWarehouse) {
-                    
                     // перейти к след. продукту
                     continue;
                 }
@@ -262,19 +259,19 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                     // ТК Новая Почта
                     case self::$deliveryIdNovaposhta:
                         $estimateCost = $this->novaposhtaEstimate($fromWarehouse, $toWarehouse, $product);
-                        $products[$key]['estimateCost'][$deliveryId] = $estimateCost;
+                        $products[$key]['estimateCost'][$delivery->getId()] = $estimateCost;
                         break;
                     
                     // ТК ИнТайм
                     case self::$deliveryIdIntime:
                         $estimateCost = $this->intimeEstimate($fromWarehouse, $toWarehouse, $product);
-                        $products[$key]['estimateCost'][$deliveryId] = $estimateCost;
+                        $products[$key]['estimateCost'][$delivery->getId()] = $estimateCost;
                         break;
 
                     // ТК Автолюкс
                     case self::$deliveryIdAutolux:
                         $estimateCost = $this->autoluxEstimate($fromWarehouse, $toWarehouse, $product);
-                        $products[$key]['estimateCost'][$deliveryId] = $estimateCost;
+                        $products[$key]['estimateCost'][$delivery->getId()] = $estimateCost;
                         break;
 
                     // по умолчанию не определен механизм расчета
@@ -315,21 +312,42 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                     // стоимость доставки Склад-Двери
                     'toDoor' => 0,
                 ),
+                
+                // массив дат доставки продуктов
+                'deliveryDatesToWarehouse' => array(),
+                'deliveryDatesToDoor' => array(),
+                
+                // Массив расчетов максимальных дат доставки
+                'estimateDate' => array(
+                    // максимальная дата доставки Склад-Склад
+                    'toWarehouse' => 0,
+                    // максимальная дата доставки Склад-Двери
+                    'toDoor' => 0,
+                ),
+                
             );
         }
         
-        // обойти массив продуктов, расчитать флаги и счетчики в результируюем массиве ТК
-        foreach($products as $product) {
+        // обойти массив продуктов, 
+        // расчитать флаги и счетчики в результируюем массиве ТК
+        // наполнить сортировочные массивы дат доставки
+        foreach($products as $prKey => $product) {
             
             // обойти расчетный массив доставки продукта
             foreach($product['estimateCost'] as $deliveryId => $estimateCost) {
                 
-                // проверить ТК $deliveryId может доставить продукт Склад-Склад
+                // проверить стоимость ТК $deliveryId может доставить продукт Склад-Склад
                 if (isset($estimateCost['toWarehouse']['cost']) && $estimateCost['toWarehouse']['cost']) {
                     // увеличиваем соответсвующий счетчик
                     $deliveries[$deliveryId]['productsCounterToWarehouse'] += 1;
                     // обновляем итоговую стоимость доставки для ТК 
                     $deliveries[$deliveryId]['estimateCost']['toWarehouse'] += $estimateCost['toWarehouse']['cost'];
+                }
+                
+                // проверить дату ТК $deliveryId может доставить продукт Склад-Склад
+                if (isset($estimateCost['toWarehouse']['date'])) {
+                    // запомнить дату доставки
+                    $deliveries[$deliveryId]['deliveryDatesToWarehouse'][] = ($estimateCost['toWarehouse']['date']) ? $estimateCost['toWarehouse']['date'] : 0;
                 }
                 
                 // проверить ТК $deliveryId может доставить продукт Склад-Двери
@@ -340,6 +358,25 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                     $deliveries[$deliveryId]['estimateCost']['toDoor'] += $estimateCost['toDoor']['cost'];
                 }
                 
+                // проверить дату ТК $deliveryId может доставить продукт Склад-Двери
+                if (isset($estimateCost['toDoor']['date'])) {
+                    // запомнить дату доставки
+                    $deliveries[$deliveryId]['deliveryDatesToDoor'][] = ($estimateCost['toDoor']['date']) ? $estimateCost['toDoor']['date'] : 0;
+                }
+                
+            }
+            
+            // массив ТК доступных для доставки продукта
+            $products[$prKey]['deliveries'] = array();
+            foreach($deliveries as $deliveryId => $delivery) {
+                $products[$prKey]['deliveries'][$deliveryId] = array(
+                    // название ТК 
+                    'name' => $delivery['name'],
+                    // флаг ТК пожет доставить продукт
+                    'isAvailable' => (($deliveries[$deliveryId]['estimateCost']['toWarehouse'])
+                        ? true 
+                        : false),
+                );
             }
         }
         
@@ -361,8 +398,35 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                 $deliveries[$deliveryId]['isAvailableToDoor'] = true;
             }
             
-        }
+            
+            // сортировочный массив дат доставки Склад-Склад
+            $sortByDateToWarehouse = array();
+            foreach($delivery['deliveryDatesToWarehouse'] as $date) {
+                $sortByDateToWarehouse[] = $date;
+            }
+            // отсортировать массив 
+            // самая поздняя дата будет первой
+            if ($sortByDateToWarehouse) {
+                arsort($sortByDateToWarehouse);
+                $array_values = array_values($sortByDateToWarehouse);
+                $deliveries[$deliveryId]['estimateDate']['toWarehouse'] = $array_values[0];
+            }
         
+            
+            // сортировочный массив дат доставки Склад-Двери
+            $sortByDateToDoor = array();
+            foreach($delivery['deliveryDatesToDoor'] as $date) {
+                $sortByDateToDoor[] = $date;
+            }
+            // отсортировать массив 
+            // самая поздняя дата будет первой
+            if ($sortByDateToDoor) {
+                arsort($sortByDateToDoor);
+                $array_values = array_values($sortByDateToDoor);
+                $deliveries[$deliveryId]['estimateDate']['toDoor'] = $array_values[0];
+            }
+            
+        }
         
         // результирующий массив
         $result = array(
@@ -419,11 +483,11 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         }
         
         // расчет стоимости доставки на склад получатель
-        $costToWh = $bigestValue + self::$autoluxOptions['сostService'] + self::$autoluxOptions['costInsurance'] * $product['priceOut'] / 100;
+        $costToWh = $bigestValue + self::$autoluxOptions['сostService'] + self::$autoluxOptions['percentInsurance'] * $product['priceOut'] / 100;
         
         // расчет обратной доставки 
         $beckSum = $product['priceOut'];
-        $costBack = ceil((self::$autoluxOptions['percentPOD'] * $beckSum / 100) + 14);
+        $costBack = ceil((self::$autoluxOptions['percentProductCost'] * $beckSum / 100) + 14);
         
         // результирующий массив 
         $result = array(
@@ -627,8 +691,8 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             <file>
                 <auth>'.$containerParameters['api_token'].'</auth>
                     <countPrice>
-                        <senderCity>'.(string)$fromWarehouse->getCity().'</senderCity>
-                        <recipientCity>'.(string)$toWarehouse->getCity().'</recipientCity>
+                        <senderCity>'.(string)$fromWarehouse->getCity()->getNameTk().'</senderCity>
+                        <recipientCity>'.(string)$toWarehouse->getCity()->getNameTk().'</recipientCity>
                         <mass>'         . ($product['weight'] * 0.001)    . '</mass>
                         <height>'       . $product['height']    . '</height>
                         <width>'        . $product['width']     . '</width>
@@ -647,8 +711,8 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             <file>
                 <auth>'.$containerParameters['api_token'].'</auth>
                     <countPrice>
-                        <senderCity>'.(string)$fromWarehouse->getCity().'</senderCity>
-                        <recipientCity>'.(string)$toWarehouse->getCity().'</recipientCity>
+                        <senderCity>'.(string)$fromWarehouse->getCity()->getNameTk().'</senderCity>
+                        <recipientCity>'.(string)$toWarehouse->getCity()->getNameTk().'</recipientCity>
                         <mass>'         . ($product['weight'] * 0.001)    . '</mass>
                         <height>'       . $product['height']    . '</height>
                         <width>'        . $product['width']     . '</width>
