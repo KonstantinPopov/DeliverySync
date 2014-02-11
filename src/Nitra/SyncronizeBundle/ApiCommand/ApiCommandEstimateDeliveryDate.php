@@ -26,27 +26,21 @@ class ApiCommandEstimateDeliveryDate extends ApiCommand
     
     /**
      * город получатель
-     * @var Nitra\DeliveryBundle\Entity\City $city - Город
+     * @var Nitra\DeliveryBundle\Entity\City $toCity - Город
      */
-    private $city;
+    private $toCity;
     
     /**
      * склад получатель
-     * @var Nitra\DeliveryBundle\Entity\Warehouse $warehouse - склад
+     * @var Nitra\DeliveryBundle\Entity\Warehouse $toWarehouse - склад
      */
-    private $warehouse;
+    private $toWarehouse;
     
     /**
      * массив городов отправителей
      * @var array $tkFromCities - массив городов NitraDeliveryBundle:City ТК отправителей
      */
     private $tkFromCities;
-    
-    /**
-     * дата отправки
-     * @var DateTime
-     */
-    private $sendDate;
     
     /**
      * {@inheritDoc}
@@ -56,44 +50,44 @@ class ApiCommandEstimateDeliveryDate extends ApiCommand
         
         // получить массив параметров
         $parameters = $this->getParameters();
-        
         // проверить склад получатель
         if (!isset($parameters['toWarehouseId']) || !$parameters['toWarehouseId']) {
             return 'Не указан обязательный параметр: toWarehouseId - ID склада получателя.';
         }
         
         // получить склад получатель
-        $this->warehouse = $this->em
+        $this->toWarehouse = $this->em
             ->getRepository('NitraDeliveryBundle:Warehouse')
             ->find($parameters['toWarehouseId']);
-        if (!$this->warehouse) {
+        if (!$this->toWarehouse) {
             return "Не найден склад получатель toWarehouseId: ".$parameters['toWarehouseId'].".";
         }
         
         // получить ТК
-        $this->delivery = $this->warehouse->getDelivery();
+        $this->delivery = $this->toWarehouse->getDelivery();
         if (!$this->delivery) {
-            return "Для склада ".(string)$this->warehouse." не указана ТК.";
+            return "Для склада ".(string)$this->toWarehouse." не указана ТК.";
         }
         
-        // получить Город
-        $this->city = $this->warehouse->getCity();
-        if (!$this->city) {
-            return "Не для склада ID: ".$this->warehouse->getId().' => '.(string)$this->warehouse." не подвязан город ТК.";
+        // получить Город получатель
+        $this->toCity = $this->toWarehouse->getCity();
+        if (!$this->toCity) {
+            return "Не для склада ID: ".$this->toWarehouse->getId().' => '.(string)$this->toWarehouse." не подвязан город ТК.";
         }
         
         // дата отправки
         // преобразовать к DateTime, 
         // для каждой ТК формат даты отправки может быть свой
-        if (isset($parameters['sendDate'])) {
+        if (isset($parameters['sendDate']) && is_string($parameters['sendDate']) ) {
             // получаем дату отправки в качестве параметра
             // формат должен быть YYYY.MM.DD пример 2014.01.13
-            $this->sendDate = \DateTime::createFromFormat('Y.m.d', $parameters['sendDate']);
+            $sendDate = \DateTime::createFromFormat('Y.m.d', $parameters['sendDate']);
+            $this->setParameter('sendDate', $sendDate);
             
         } else {
             // дата отправки не определена
             // по умолчанию = сегодня
-            $this->sendDate = new \DateTime();
+            $this->setParameter('sendDate', new \DateTime());
         }
         
         // проверить город отправитель
@@ -183,7 +177,7 @@ class ApiCommandEstimateDeliveryDate extends ApiCommand
             // вернуть результат рачета
             return array(
                 'estimateDate' => $estimateDate,
-                'message' => 'Дата расчета времени ьыла успешно получена.',
+                'message' => 'Дата расчета времени была успешно получена.',
             );
         }
         
@@ -203,7 +197,7 @@ class ApiCommandEstimateDeliveryDate extends ApiCommand
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $this->getParameter('apiUrl'));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, Array("Content-Type: text/xml"));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, Array('Content-Type: text/xml'));
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $xmlRequest);
         curl_setopt($ch, CURLOPT_POST, 1);
@@ -226,6 +220,7 @@ class ApiCommandEstimateDeliveryDate extends ApiCommand
     
     /**
      * расчет времени доставки ТК Новая Почта
+     * @link http://orders.novaposhta.ua/api.php?todo=api_form
      * @return timestamp - дата ориентировчной доставки
      * @return null - нет данных по расчету времени доставки
      */
@@ -243,7 +238,6 @@ class ApiCommandEstimateDeliveryDate extends ApiCommand
         
         // определить тип доставки 
         // тип доставки: 
-        // http://orders.novaposhta.ua/api.php?todo=api_form 
         // Визначення орієнтовної дати доставки вантажу<
         // 1 - Двері-Двері; 
         // 2 - Двері-Склад; 
@@ -272,7 +266,7 @@ class ApiCommandEstimateDeliveryDate extends ApiCommand
                     <getEstimatedDeliveryDate>
                         <senderCity>'.(string)$nameTk.'</senderCity>
                         <recipientCity>'.(string)$this->city->getNameTk().'</recipientCity>
-                        <date>'.$this->sendDate->format('d.m.Y').'</date>
+                        <date>'.$this->getParameter('sendDate')->format('d.m.Y').'</date>
                         <deliveryTypeId>'.$deliveryTypeId.'</deliveryTypeId>
                         <satDelivery>'.(($this->hasParameter('deliveryAtSaturday') && $this->getParameter('deliveryAtSaturday')) ? "1" : "0").'</satDelivery>
                     </getEstimatedDeliveryDate>
@@ -307,6 +301,7 @@ class ApiCommandEstimateDeliveryDate extends ApiCommand
     
     /**
      * расчет времени доставки ТК ИнТайм
+     * @link http://www.intime.ua/userfiles/API_intime.pdf
      * @return timestamp - дата ориентировчной доставки
      * @return null - нет данных по расчету времени доставки
      */
@@ -314,7 +309,6 @@ class ApiCommandEstimateDeliveryDate extends ApiCommand
     {
         
         // определить тип доставки
-        // http://www.intime.ua/userfiles/API_intime.pdf
         // справочник - видперевозки 
         // тип доставки: 
         // 1 Дверь - Дверь
@@ -361,8 +355,8 @@ class ApiCommandEstimateDeliveryDate extends ApiCommand
             // массив параметров расчета
             $options = array(
                 'GorodOtpravitel' => $businessKey,
-                'GorodPoluchatel' => $this->city->getBusinessKey(),
-                'Data' => $this->sendDate->format('Ymd'),
+                'GorodPoluchatel' => $this->toCity->getBusinessKey(),
+                'Data' => $this->getParameter('sendDate')->format('Ymd'),
                 'VidPerevozki' => $deliveryTypeId,
             );
             
