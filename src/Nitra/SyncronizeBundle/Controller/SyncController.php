@@ -44,11 +44,14 @@ class SyncController extends Controller
             return new JsonResponse(array('type'=> 'error', 'message'=> "Не указана команда."));
         }
         
+        // название команды
+        $commandName = 'ApiCommand'.Inflector::classify($request->get('command'));
         // скласс команды 
-        $commandClass = "\Nitra\SyncronizeBundle\ApiCommand\ApiCommand" . Inflector::classify($request->get('command'));
+        $commandClass = "\\Nitra\\SyncronizeBundle\\ApiCommand\\".$commandName;
+        
         // проверить существование вызываемого классаs
         if (!class_exists($commandClass)) {
-            return new JsonResponse(array('type'=> 'error', 'message'=> "Обработчик команды \"".$request->get('command')."\" не найден."));
+            return new JsonResponse(array('type'=> 'error', 'message'=> "Для команды \"".$request->get('command')."\" не найден обработчик: \"".$commandName."\"."));
         }
         
         // создать комманду
