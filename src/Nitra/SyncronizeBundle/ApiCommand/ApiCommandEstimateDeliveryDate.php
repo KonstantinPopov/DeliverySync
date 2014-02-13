@@ -186,39 +186,6 @@ class ApiCommandEstimateDeliveryDate extends ApiCommand
     }
     
     /**
-     * Отправить запрос на сервер
-     * @param string $xmlRequest - отправлемый xml запрос
-     * @param string $xpath - xml xpath в xml ответе
-     * @return array $responseArray - массив элемоенов SimpleXMLElement - ответ сервера
-     */
-    protected function novaposhtaApiSendRequest($xmlRequest, $xpath)
-    {
-        // отправить запрос на сервер 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $this->getParameter('apiUrl'));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, Array('Content-Type: text/xml'));
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $xmlRequest);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        $xmlResponse = curl_exec($ch);
-        curl_close($ch);
-        
-        // преобразовать получить массив из xml ответа 
-        // получить xml
-        $xml = simplexml_load_string($xmlResponse);
-        // проверить xml 
-        if ($xml instanceof \SimpleXMLElement) {
-            return $xml->xpath($xpath);
-        }
-        
-        // $xmlResponse не xml формат преобразование в массив не возможно
-        return null;
-    }
-    
-    
-    /**
      * расчет времени доставки ТК Новая Почта
      * @link http://orders.novaposhta.ua/api.php?todo=api_form
      * @return timestamp - дата ориентировчной доставки
