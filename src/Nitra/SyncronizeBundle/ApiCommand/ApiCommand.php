@@ -205,5 +205,47 @@ class ApiCommand
         throw new \LogicException('Необходимо добавить метод processCommand() в класс API команды.');
     }
     
+    /**
+     * Отправить запрос на сервер НовойПочты
+     * @param string $xmlRequest - отправлемый xml запрос
+     * @param string $xpath - xml xpath в xml ответе
+     * @return array $responseArray - массив элемоенов SimpleXMLElement - ответ сервера
+     */
+    protected function novaposhtaApiSendRequest($xmlRequest, $xpath=false)
+    {
+        // получить параметры  из файла настроек
+        $containerParameters = $this->getContainer()->getParameter('novaposhta');
+        
+        // отправить запрос на сервер 
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $containerParameters['api_url']);
+        curl_setopt($ch, CURLOPT_URL, $containerParameters['api_url']);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, Array('Content-Type: text/xml'));
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $xmlRequest);
+        $xmlResponse = curl_exec($ch);
+        curl_close($ch);
+        
+        // преобразовать получить массив из xml ответа 
+        // получить xml
+        $xml = simplexml_load_string($xmlResponse);
+        // проверить xml 
+        if ($xml instanceof \SimpleXMLElement) {
+            
+            // вернуть элемент в ответе
+            if ($xpath) {
+                return $xml->xpath($xpath);
+            }
+            
+            // вернуть xml 
+            return $xml;
+        }
+        
+        // $xmlResponse не xml формат преобразование в массив не возможно
+        return null;
+    }
     
 }

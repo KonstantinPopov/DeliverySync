@@ -45,8 +45,8 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         'percentProductCost' => 0.5,    // Процент от оценочной стоимости, %
         'percentInsurance' => 0.5,      // Размер страховки, %
         'сostService' => 10.00,         // Стоимость оформления груза
-//        'сostSecurityPack' => 4.80,     // Стоимость сикерпака
-//        'сostLessKg' => 0.00,           // Стоимость перевозки груза до 1 кг
+        'сostSecurityPack' => 4.80,     // Стоимость сикерпака
+        'сostLessKg' => 0.00,           // Стоимость перевозки груза до 1 кг
     );
     
     /**
@@ -59,7 +59,13 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         'сostService' => 10,              // Стоимость оформления груза
         
     );
-
+    
+    /**
+     * Город получатель
+     * @var Nitra\GeoBundle\Entity\City $toCity - город получатель
+     */
+    private $toCity;
+    
     /**
      * склад получатель
      * @var Nitra\DeliveryBundle\Entity\Warehouse $toWarehouse - склад
@@ -73,28 +79,34 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
     {
         
         // проверить склад получатель
-        if (!$this->hasParameter('toWarehouseId') || !$this->getParameter('toWarehouseId')) {
-            return 'Не указан обязательный параметр: toWarehouseId - ID склада получателя.';
+        if (!$this->hasParameter('toCityId') || !$this->getParameter('toCityId')) {
+            return 'Не указан обязательный параметр: toCityId - ID города получателя.';
         }
         
         // получить склад получатель
-        $this->toWarehouse = $this->em
-            ->getRepository('NitraDeliveryBundle:Warehouse')
-            ->find($this->getParameter('toWarehouseId'));
-        if (!$this->toWarehouse) {
-            return "Не найден склад получатель toWarehouseId: ".$this->getParameter('toWarehouseId').".";
+        $this->toCity = $this->em
+            ->getRepository('NitraGeoBundle:City')
+            ->find($this->getParameter('toCityId'));
+        if (!$this->toCity) {
+            return "Не найден город получатель toCityId: ".$this->getParameter('toCityId').".";
+        }
+        
+        // если указан параметр склада
+        // получчить склад получатель
+        if ($this->hasParameter('toWarehouseId') && $this->getParameter('toWarehouseId')) {
+            // получить склад
+            $this->toWarehouse = $this->em
+                ->getRepository('NitraDeliveryBundle:Warehouse')
+                ->find($this->getParameter('toWarehouseId'));
+            if (!$this->toWarehouse) {
+                return "Не найден склад получатель toWarehouseId: ".$this->getParameter('toWarehouseId').".";
+            }
         }
         
         // получить ТК клиента
         $this->deliveries = $this->getClient()->getDeliveries();
         if ($this->deliveries->count() == 0) {
             return "Для клиента \"".(string)$this->getClient()."\" не установлена ни одна ТК.";
-        }
-        
-        // получить Город получатель
-        $this->toCity = $this->toWarehouse->getCity();
-        if (!$this->toCity) {
-            return "Не для склада ID: ".$this->toWarehouse->getId().' => '.(string)$this->toWarehouse." не подвязан город ТК.";
         }
         
         // дата отправки
@@ -211,29 +223,31 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                     continue;
                 }
                 
-                // Склад получатель принадледит складу ТК
-                if ($this->toWarehouse->getDelivery()->getId() == $delivery->getId()){
+                // если указан конкретный склад получатель
+                if ($this->toWarehouse && 
+                    // Склад получатель принадледит складу ТК
+                    $this->toWarehouse->getDelivery()->getId() == $delivery->getId()){
                     // склад получатель равен конечному складу
                     $toWarehouse = $this->toWarehouse;
                     
                 } else {
                     // склад получатель не принаджелит ТК 
-                    // получить первый склад с городе ТК 
+                    // получить первый склад с городе ТК получателе
                     
                     // получить первый город по ТК в городе получателе
                     $toCity = $this->em
                         ->getRepository('NitraDeliveryBundle:City')
                         ->findOneBy(array(
-                            'geoCity' => $this->toWarehouse->getCity()->getGeoCity()->getId(),
+                            'geoCity' => $this->toCity->getId(),
                             'delivery' => $delivery->getId(),
                         ));
-                    
+
                     // город получатель не найден
                     if(!$toCity) {
                         // перейти к след. продукту
                         continue;
                     }
-                    
+
                     // получить первый склад ТК в городе получателе
                     $toWarehouse = $this->em
                         ->getRepository('NitraDeliveryBundle:Warehouse')
@@ -241,7 +255,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                             'city' => $toCity->getId(),
                             'delivery' => $delivery->getId(),
                         ));
-                    
+
                     // склад получатель не найден
                     if(!$toWarehouse) {
                         // перейти к след. продукту
@@ -307,6 +321,8 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                     'toWarehouse' => 0,
                     // стоимость доставки Склад-Двери
                     'toDoor' => 0,
+                    // стоимость обратной доставки
+                    'toBack' => 0,
                 ),
                 
                 // массив дат доставки продуктов
@@ -338,6 +354,12 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                     $deliveries[$deliveryId]['productsCounterToWarehouse'] += 1;
                     // обновляем итоговую стоимость доставки для ТК 
                     $deliveries[$deliveryId]['estimateCost']['toWarehouse'] += $estimateCost['toWarehouse']['cost'];
+                }
+                
+                // проверить стоимость ТК $deliveryId обратной доставки Склад-Склад
+                if (isset($estimateCost['toBack']['cost']) && $estimateCost['toBack']['cost']) {
+                    // обновляем итоговую стоимость обратной доставки 
+                    $deliveries[$deliveryId]['estimateCost']['toBack'] += $estimateCost['toBack']['cost'];
                 }
                 
                 // проверить дату ТК $deliveryId может доставить продукт Склад-Склад
@@ -505,6 +527,11 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             // Склад-Двері
             'toDoor' => array(
             ),
+            // обратная доставка Склад-Склад
+            'toBack' => array(
+                'date' => null,
+                'cost' => $costBack),
+            
         );
         
         // вернуть результирующий массив
@@ -570,7 +597,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                 // получен не правильны ответ от сервера
                 return null;
             }
-
+            
             // преобразовать получить массив из xml ответа 
             // получить xml Склад-Склад
             $xmlCostWarehouse = simplexml_load_string($soapResponseCostWarehouse->result);
@@ -578,7 +605,33 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                 // получен не правильны ответ от сервера
                 return null;
             }
-
+            
+            // обратная доставка Склад-Склад 
+            $optionsToBack = $optionsCommon;
+            $optionsToBack['VidPerevozki'] = 2;
+            $optionsToBack['Upakovka'] = 'ЦОФ-00019';
+            $optionsToBack['GorodOtpravitel'] = $toWarehouse->getCity()->getBusinessKey();
+            $optionsToBack['GorodPoluchatel'] = $fromWarehouse->getCity()->getBusinessKey();
+            $optionsToBack['KontragentPoluchatel'] = 'Продавец';
+            $optionsToBack['Ves'] = '';
+            $optionsToBack['Obyom'] = '';
+            $optionsToBack['SposobOplaty'] = '';
+            
+            // стоимость обратной доставки Склад-Склад
+            $soapResponseCostBack = $soapClient->CalculateTTN($optionsToBack);
+            if (!$soapResponseCostBack instanceof \stdClass || !isset($soapResponseCostBack->result)) {
+                // получен не правильны ответ от сервера
+                return null;
+            }
+            
+            // преобразовать получить массив из xml ответа 
+            // получить xml Склад-Склад
+            $xmlCostBack = simplexml_load_string($soapResponseCostBack->result);
+            if (!$xmlCostBack instanceof \SimpleXMLElement || !isset($xmlCostBack[0])) {
+                // получен не правильны ответ от сервера
+                return null;
+            }
+            
             // Склад-Двери массив параметров расчета
             $optionsToDoor = $optionsCommon;
             $optionsToDoor['VidPerevozki'] = 3;
@@ -605,6 +658,16 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             $costToWarehouse = $product['priceOut'] * self::$intimeOptions['percentProductCost'] / 100
                                 + self::$intimeOptions['сostService'] 
                                 + ($product['quantity'] * $tkCostToWarehouse);
+            
+            
+            // стоимоть обратной доставки Склад-Склад полученная от ТК
+            $tkCostToBack = (string)str_replace(',', '.', $xmlCostBack[0]);
+            
+            // итоговая стоимость доставки Склад-Склад 
+            $costToBack = 0 // $product['priceOut'] * self::$intimeOptions['percentProductCost'] / 100
+                               // + self::$intimeOptions['сostSecurityPack'] 
+                                + ($tkCostToBack);
+            
             
             
             // стоимоть доставки Склад-Двері полученная от ТК
@@ -678,6 +741,11 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             'toDoor' => array(
                 'date' => $dateToDoor,
                 'cost' => (isset($costToDoor)) ?$costToDoor : null),
+            // обратная доставка Склад-Склад
+            'toBack' => array(
+                'date' => null,
+                'cost' => $costToBack),
+            
         );
         
         // вернуть результирующий массив
@@ -725,7 +793,45 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                             <date>'.$this->getParameter('sendDate')->format('d.m.Y').'</date>
                         </countPrice>
                     </file>';
-
+            
+            // получить стоимость склад-склад
+            $xmlCostWarehouse = $this->novaposhtaApiSendRequest($xmlRequestToWarehouse);
+            if (!$xmlCostWarehouse instanceof \SimpleXMLElement || !isset($xmlCostWarehouse->date) || !isset($xmlCostWarehouse->cost)) {
+                // получен не правильны ответ от сервера
+                return null;
+            }
+            
+            // xml запрос стоимость обратной доставки Склад-Склад
+            $xmlRequestToBack = '<?xml version="1.0" encoding="UTF-8"?>
+                <file>
+                    <auth>'.$containerParameters['api_token'].'</auth>
+                        <countPrice>
+                            <senderCity>'.(string)$fromWarehouse->getCity()->getNameTk().'</senderCity>
+                            <recipientCity>'.(string)$toWarehouse->getCity()->getNameTk().'</recipientCity>
+                            <mass>'         . $product['weight']    . '</mass>
+                            <height>'       . $product['height']    . '</height>
+                            <width>'        . $product['width']     . '</width>
+                            <depth>'        . $product['length']    . '</depth>
+                            <publicPrice>'  . $product['priceOut']  . '</publicPrice>
+                            <deliveryType_id>4</deliveryType_id>
+                            <loadType_id>'.(($this->hasParameter('loadType_id')) ? $this->hasParameter('loadType_id') : '1').'</loadType_id>
+                            <floor_count>'.(($this->hasParameter('floor_count')) ? $this->hasParameter('floor_count') : '0').'</floor_count>
+                            <postpay_sum>'.$product['priceOut'].'</postpay_sum>
+                            <date>'.$this->getParameter('sendDate')->format('d.m.Y').'</date>
+                            <additionalRedelivery>
+                                <redeliveryPrice>'.$product['priceOut'].'</redeliveryPrice>
+                                <redeliveryLoadTypeId>2</redeliveryLoadTypeId>
+                            </additionalRedelivery>                        
+                        </countPrice>
+                    </file>';
+            
+            // получить стоимость обратной доставки Склад-Склад
+            $xmlCostBack = $this->novaposhtaApiSendRequest($xmlRequestToBack);
+            if (!$xmlCostBack instanceof \SimpleXMLElement || !isset($xmlCostBack->date) || !isset($xmlCostBack->cost)) {
+                // получен не правильны ответ от сервера
+                return null;
+            }
+            
             // xml запрос стоимость доставки до двери, адресная доставка
             $xmlRequestToDoor = '<?xml version="1.0" encoding="UTF-8"?>
                 <file>
@@ -745,46 +851,14 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                             <date>'.$this->getParameter('sendDate')->format('d.m.Y').'</date>
                         </countPrice>
                     </file>';
-
-
-            // инициализировать curl
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $containerParameters['api_url']);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, Array('Content-Type: text/xml'));
-            curl_setopt($ch, CURLOPT_HEADER, 0);
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-            // получить стоимость склад-склад
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $xmlRequestToWarehouse);
-            $xmlResponseCostWarehouse = curl_exec($ch);
+            
             // получить стоимость склад-двери
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $xmlRequestToDoor);
-            $xmlResponseCostDoor = curl_exec($ch);
-            curl_close($ch);
-
-            // преобразовать в xml 
-            $xmlCostWarehouse = simplexml_load_string($xmlResponseCostWarehouse);
-            if (!$xmlCostWarehouse instanceof \SimpleXMLElement || !isset($xmlCostWarehouse->date) || !isset($xmlCostWarehouse->cost)) {
-                // получен не правильны ответ от сервера
-                return null;
-            }
-
-            // преобразовать в xml 
-            $xmlCostDoor = simplexml_load_string($xmlResponseCostDoor);
+            $xmlCostDoor = $this->novaposhtaApiSendRequest($xmlRequestToDoor);
             if (!$xmlCostDoor instanceof \SimpleXMLElement || !isset($xmlCostDoor->date) || !isset($xmlCostDoor->cost)) {
                 // получен не правильны ответ от сервера
                 return null;
             }
-
-            // дата доставки Склад-Склад
-            $date = \DateTime::createFromFormat('d.m.Y', (string)$xmlCostWarehouse->date);
-            $dateToWarehouse = $date->getTimestamp();
-
-            // дата доставки Склад-Двери
-            $date = \DateTime::createFromFormat('d.m.Y', (string)$xmlCostDoor->date);
-            $dateToDoor = $date->getTimestamp();
-
+            
             // стоимоть доставки Склад-Склад полученная от ТК
             $tkCostToWarehouse = (string)str_replace(',', '.', $xmlCostWarehouse->cost);
             
@@ -792,7 +866,17 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             $costToWarehouse = $product['priceOut'] * self::$novaposhtaOptions['percentProductCost'] / 100
                                 + self::$novaposhtaOptions['сostService'] 
                                 + ($product['quantity'] * $tkCostToWarehouse);
-
+            
+            
+            // стоимоть обратной доставки Склад-Склад полученная от ТК
+            $tkCostToBack = (string)str_replace(',', '.', $xmlCostBack->cost);
+            
+            // итоговая стоимость обратная доставки Склад-Склад
+            $costToBack = 0 //$product['priceOut'] * self::$novaposhtaOptions['percentProductCost'] / 100
+                                // + self::$novaposhtaOptions['сostService'] 
+                                + ($tkCostToBack);
+            
+            
             // стоимоть доставки Склад-Двери полученная от ТК
             $tkCostToDoor = (string)str_replace(',', '.', $xmlCostDoor->cost);
             
@@ -800,6 +884,19 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             $costToDoor = $product['priceOut'] * self::$novaposhtaOptions['percentProductCost'] / 100
                                 + self::$novaposhtaOptions['сostService'] 
                                 + ($product['quantity'] * $tkCostToDoor);
+            
+            
+            // дата доставки Склад-Склад
+            $date = \DateTime::createFromFormat('d.m.Y', (string)$xmlCostWarehouse->date);
+            $dateToWarehouse = $date->getTimestamp();
+            
+            // дата обратной доставки Склад-Склад
+            $date = \DateTime::createFromFormat('d.m.Y', (string)$xmlCostBack->date);
+            $dateToBack = $date->getTimestamp();
+            
+            // дата доставки Склад-Двери
+            $date = \DateTime::createFromFormat('d.m.Y', (string)$xmlCostDoor->date);
+            $dateToDoor = $date->getTimestamp();
             
             // результирующий массив 
             $result = array(
@@ -811,6 +908,11 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                 'toDoor' => array(
                     'date' => $dateToDoor,
                     'cost' => $costToDoor),
+                // обратная доставка Склад-Склад
+                'toBack' => array(
+                    'date' => $dateToBack,
+                    'cost' => $costToBack),
+                
             );
 
             // вернуть результирующий массив
@@ -834,6 +936,13 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                 </getEstimatedDeliveryDate>
             </file>';
         
+        // получить время доставки Склад-Склад
+        $xmlDateWarehouse = $this->novaposhtaApiSendRequest($xmlRequestToWarehouse);
+        if (!$xmlDateWarehouse instanceof \SimpleXMLElement || !isset($xmlDateWarehouse->estimatedDeliveryDate)) {
+            // получен не правильны ответ от сервера
+            return null;
+        }
+        
         // xml запрос время доставки Склад-Двери
         $xmlRequestToDoor = '<?xml version="1.0" encoding="UTF-8"?>
             <file>
@@ -847,31 +956,8 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                 </getEstimatedDeliveryDate>
             </file>';
         
-        // инициализировать curl
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $containerParameters['api_url']);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, Array('Content-Type: text/xml'));
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        // получить стоимость склад-склад
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $xmlRequestToWarehouse);
-        $xmlResponseDateWarehouse = curl_exec($ch);
-        // получить стоимость склад-двери
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $xmlRequestToDoor);
-        $xmlResponseDateDoor = curl_exec($ch);
-        curl_close($ch);
-        
-        // преобразовать в xml 
-        $xmlDateWarehouse = simplexml_load_string($xmlResponseDateWarehouse);
-        if (!$xmlDateWarehouse instanceof \SimpleXMLElement || !isset($xmlDateWarehouse->estimatedDeliveryDate)) {
-            // получен не правильны ответ от сервера
-            return null;
-        }
-        
-        // преобразовать в xml 
-        $xmlDateDoor = simplexml_load_string($xmlResponseDateDoor);
+        // получить время доставки Склад-Двери
+        $xmlDateDoor = $this->novaposhtaApiSendRequest($xmlRequestToDoor);
         if (!$xmlDateDoor instanceof \SimpleXMLElement || !isset($xmlDateDoor->estimatedDeliveryDate)) {
             // получен не правильны ответ от сервера
             return null;
