@@ -22,8 +22,8 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
 {
     
     /**
-     * ТК клиента
-     * @var Doctrine\ORM\PersistentCollection
+     * массив ТК клиента
+     * @var array
      */
     private $deliveries;
     
@@ -73,6 +73,13 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
     private $toWarehouse;
     
     /**
+     * Массив складов получателей для ТК
+     * @var array 
+     * array ( deliveryId => Nitra\DeliveryBundle\Entity\Warehouse )
+     */
+    private $toWarehouseByDelivery;
+    
+    /**
      * {@inheritDoc}
      */
     public function validateCommand()
@@ -91,7 +98,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             return "Не найден город получатель toCityId: ".$this->getParameter('toCityId').".";
         }
         
-        // если указан параметр склада
+        // если указан конкретный ID склада получателя
         // получчить склад получатель
         if ($this->hasParameter('toWarehouseId') && $this->getParameter('toWarehouseId')) {
             // получить склад
@@ -103,10 +110,79 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             }
         }
         
-        // получить ТК клиента
-        $this->deliveries = $this->getClient()->getDeliveries();
-        if ($this->deliveries->count() == 0) {
+        // проверить ТК клиента
+        $deliveries = $this->getClient()->getDeliveries();
+        if ($deliveries->count() == 0) {
             return "Для клиента \"".(string)$this->getClient()."\" не установлена ни одна ТК.";
+        }
+        
+        // сохранить ТК клиента
+        $this->deliveries = array();
+        $this->toWarehouseByDelivery = array();
+        foreach($deliveries as $delivery) {
+            
+            // ID ТК
+            $deliveryId = $delivery->getId();
+            
+            // склад получатель ТК в городе получателе 
+            $toWarehouse = false;
+            
+            // если указан конкретный склад получатель
+            if ($this->toWarehouse && 
+                // Склад получатель принадледит складу ТК
+                $this->toWarehouse->getDelivery()->getId() == $deliveryId
+            ) {
+                // склад получатель равен конечному конкретному складу
+                $toWarehouse = $this->toWarehouse;
+                
+            } else {
+                // склад получатель не принаджелит ТК 
+                // получить первый склад ТК в городе получателе
+                $toWarehouse = $this->em
+                    ->getRepository('NitraDeliveryBundle:Warehouse')
+                    ->getFirstDeliveryWarehouseInGeoCity($deliveryId, $this->toCity->getId());
+            }
+            
+            // запомнить склад получатель для ТК
+            $this->toWarehouseByDelivery[$deliveryId] = $toWarehouse;
+            
+            // запомнить ТК 
+            $this->deliveries[$deliveryId] = array(
+                'id' => $deliveryId,
+                'name' => (string)$delivery,
+                
+                // флаг ТК доступна для доставки
+                // в городе получателе есть склад ТК 
+                'isAvailable' => ($toWarehouse) ? true : false,
+                
+                // ID склада получателя 
+                'toWarehouseId' => ($toWarehouse) ? $toWarehouse->getId() : false,
+                
+                // Массив расчетов стоимостей доставки
+                'estimateCost' => array(
+                    // стоимость доставки Склад-Склад
+                    'toWarehouse' => 0,
+                    // стоимость доставки Склад-Двери
+                    'toDoor' => 0,
+                    // стоимость обратной доставки
+                    'toBack' => 0,
+                ),
+                
+                // массив дат доставки продуктов
+                // из данного массива получаем самую максимальную дату
+                'deliveryDatesToWarehouse' => array(),
+                'deliveryDatesToDoor' => array(),
+                
+                // Массив расчетов максимальных дат доставки
+                'estimateDate' => array(
+                    // максимальная дата доставки Склад-Склад
+                    'toWarehouse' => 0,
+                    // максимальная дата доставки Склад-Двери
+                    'toDoor' => 0,
+                ),
+                
+                
+            );
         }
         
         // дата отправки
@@ -189,33 +265,32 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         
         // обойти все ТК клинета
         // расчет стоимости по каждой ТК
-        foreach($this->deliveries as $delivery) {
+        foreach($this->deliveries as $deliveryId => $delivery) {
+            
+            
+            // проверить склад полуатель 
+            // если склад получатель для ТЕ не был получен ранее
+            // перейти к следующей ТК
+            if (!isset($this->toWarehouseByDelivery[$deliveryId]) ||
+                !$this->toWarehouseByDelivery[$deliveryId]
+            ) {
+                // склад получатель не найден
+                // перейти к след ТК 
+                continue;
+            }
+            
+            // склад получатель для ТК 
+            $toWarehouse = $this->toWarehouseByDelivery[$deliveryId];
+            
             
             // расчитать стоимость доставки
             // каждого продукта по каждой ТК 
             foreach($products as $key => $product) {
                 
-                // получить первый город по ТК в городе отправителе
-                $fromCity = $this->em
-                    ->getRepository('NitraDeliveryBundle:City')
-                    ->findOneBy(array(
-                        'geoCity' => $product['fromCityId'],
-                        'delivery' => $delivery->getId(),
-                    ));
-                
-                // город отправитель не найден
-                if(!$fromCity) {
-                    // перейти к след. продукту
-                    continue;
-                }
-                
-                // получить первый склад ТК в городе отправителе 
+                // получить первый склад ТК в городе отправителе
                 $fromWarehouse = $this->em
                     ->getRepository('NitraDeliveryBundle:Warehouse')
-                    ->findOneBy(array(
-                        'city' => $fromCity->getId(),
-                        'delivery' => $delivery->getId(),
-                    ));
+                    ->getFirstDeliveryWarehouseInGeoCity($deliveryId, $product['fromCityId']);
                 
                 // склад отправитель не найден
                 if(!$fromWarehouse) {
@@ -223,65 +298,25 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                     continue;
                 }
                 
-                // если указан конкретный склад получатель
-                if ($this->toWarehouse && 
-                    // Склад получатель принадледит складу ТК
-                    $this->toWarehouse->getDelivery()->getId() == $delivery->getId()){
-                    // склад получатель равен конечному складу
-                    $toWarehouse = $this->toWarehouse;
-                    
-                } else {
-                    // склад получатель не принаджелит ТК 
-                    // получить первый склад с городе ТК получателе
-                    
-                    // получить первый город по ТК в городе получателе
-                    $toCity = $this->em
-                        ->getRepository('NitraDeliveryBundle:City')
-                        ->findOneBy(array(
-                            'geoCity' => $this->toCity->getId(),
-                            'delivery' => $delivery->getId(),
-                        ));
-
-                    // город получатель не найден
-                    if(!$toCity) {
-                        // перейти к след. продукту
-                        continue;
-                    }
-
-                    // получить первый склад ТК в городе получателе
-                    $toWarehouse = $this->em
-                        ->getRepository('NitraDeliveryBundle:Warehouse')
-                        ->findOneBy(array(
-                            'city' => $toCity->getId(),
-                            'delivery' => $delivery->getId(),
-                        ));
-
-                    // склад получатель не найден
-                    if(!$toWarehouse) {
-                        // перейти к след. продукту
-                        continue;
-                    }
-                }
-                
                 // в зависимости от ID ТК разные методы расчетеов
-                switch($delivery->getId()) {
+                switch($deliveryId) {
 
                     // ТК Новая Почта
                     case self::$deliveryIdNovaposhta:
                         $estimateCost = $this->novaposhtaEstimate($fromWarehouse, $toWarehouse, $product);
-                        $products[$key]['estimateCost'][$delivery->getId()] = $estimateCost;
+                        $products[$key]['estimateCost'][$deliveryId] = $estimateCost;
                         break;
                     
                     // ТК ИнТайм
                     case self::$deliveryIdIntime:
                         $estimateCost = $this->intimeEstimate($fromWarehouse, $toWarehouse, $product);
-                        $products[$key]['estimateCost'][$delivery->getId()] = $estimateCost;
+                        $products[$key]['estimateCost'][$deliveryId] = $estimateCost;
                         break;
 
                     // ТК Автолюкс
                     case self::$deliveryIdAutolux:
                         $estimateCost = $this->autoluxEstimate($fromWarehouse, $toWarehouse, $product);
-                        $products[$key]['estimateCost'][$delivery->getId()] = $estimateCost;
+                        $products[$key]['estimateCost'][$deliveryId] = $estimateCost;
                         break;
 
                     // по умолчанию не определен механизм расчета
@@ -296,50 +331,6 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             
         }
         
-        // массив ТК клиента возвращаемый в результирующем массиве
-        $deliveries = array();
-        foreach($this->deliveries as $delivery) {
-            $deliveries[$delivery->getId()] = array(
-                'id' => $delivery->getId(),
-                'name' => (string)$delivery,
-                
-                // счетчик продуктов которые может доставить ТК Склад-Склад
-                'productsCounterToWarehouse' => 0,
-                
-                // счетчик продуктов которые может доставить ТК Склад-Двери
-                'productsCounterToDoor' => 0,
-                
-                // флаг ТК может доставить товары Склад-Склад
-                'isAvailableToWarehouse' => false,
-                
-                // флаг ТК может доставить товары Склад-Двери
-                'isAvailableToDoor' => false,
-                
-                // Массив расчетов стоимостей доставки
-                'estimateCost' => array(
-                    // стоимость доставки Склад-Склад
-                    'toWarehouse' => 0,
-                    // стоимость доставки Склад-Двери
-                    'toDoor' => 0,
-                    // стоимость обратной доставки
-                    'toBack' => 0,
-                ),
-                
-                // массив дат доставки продуктов
-                'deliveryDatesToWarehouse' => array(),
-                'deliveryDatesToDoor' => array(),
-                
-                // Массив расчетов максимальных дат доставки
-                'estimateDate' => array(
-                    // максимальная дата доставки Склад-Склад
-                    'toWarehouse' => 0,
-                    // максимальная дата доставки Склад-Двери
-                    'toDoor' => 0,
-                ),
-                
-            );
-        }
-        
         // обойти массив продуктов, 
         // расчитать флаги и счетчики в результируюем массиве ТК
         // наполнить сортировочные массивы дат доставки
@@ -350,72 +341,52 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                 
                 // проверить стоимость ТК $deliveryId может доставить продукт Склад-Склад
                 if (isset($estimateCost['toWarehouse']['cost']) && $estimateCost['toWarehouse']['cost']) {
-                    // увеличиваем соответсвующий счетчик
-                    $deliveries[$deliveryId]['productsCounterToWarehouse'] += 1;
                     // обновляем итоговую стоимость доставки для ТК 
-                    $deliveries[$deliveryId]['estimateCost']['toWarehouse'] += $estimateCost['toWarehouse']['cost'];
+                    $this->deliveries[$deliveryId]['estimateCost']['toWarehouse'] += $estimateCost['toWarehouse']['cost'];
                 }
                 
                 // проверить стоимость ТК $deliveryId обратной доставки Склад-Склад
                 if (isset($estimateCost['toBack']['cost']) && $estimateCost['toBack']['cost']) {
                     // обновляем итоговую стоимость обратной доставки 
-                    $deliveries[$deliveryId]['estimateCost']['toBack'] += $estimateCost['toBack']['cost'];
+                    $this->deliveries[$deliveryId]['estimateCost']['toBack'] += $estimateCost['toBack']['cost'];
                 }
                 
                 // проверить дату ТК $deliveryId может доставить продукт Склад-Склад
                 if (isset($estimateCost['toWarehouse']['date'])) {
                     // запомнить дату доставки
-                    $deliveries[$deliveryId]['deliveryDatesToWarehouse'][] = ($estimateCost['toWarehouse']['date']) ? $estimateCost['toWarehouse']['date'] : 0;
+                    $this->deliveries[$deliveryId]['deliveryDatesToWarehouse'][] = ($estimateCost['toWarehouse']['date']) ? $estimateCost['toWarehouse']['date'] : 0;
                 }
                 
                 // проверить ТК $deliveryId может доставить продукт Склад-Двери
                 if (isset($estimateCost['toDoor']['cost']) && $estimateCost['toDoor']['cost']) {
-                    // увеличиваем соответсвующий счетчик
-                    $deliveries[$deliveryId]['productsCounterToDoor'] += 1;
                     // обновляем итоговую стоимость доставки для ТК 
-                    $deliveries[$deliveryId]['estimateCost']['toDoor'] += $estimateCost['toDoor']['cost'];
+                    $this->deliveries[$deliveryId]['estimateCost']['toDoor'] += $estimateCost['toDoor']['cost'];
                 }
                 
                 // проверить дату ТК $deliveryId может доставить продукт Склад-Двери
                 if (isset($estimateCost['toDoor']['date'])) {
                     // запомнить дату доставки
-                    $deliveries[$deliveryId]['deliveryDatesToDoor'][] = ($estimateCost['toDoor']['date']) ? $estimateCost['toDoor']['date'] : 0;
+                    $this->deliveries[$deliveryId]['deliveryDatesToDoor'][] = ($estimateCost['toDoor']['date']) ? $estimateCost['toDoor']['date'] : 0;
                 }
                 
             }
             
             // массив ТК доступных для доставки продукта
             $products[$prKey]['deliveries'] = array();
-            foreach($deliveries as $deliveryId => $delivery) {
+            foreach($this->deliveries as $deliveryId => $delivery) {
                 $products[$prKey]['deliveries'][$deliveryId] = array(
                     // название ТК 
                     'name' => $delivery['name'],
                     // флаг ТК пожет доставить продукт
-                    'isAvailable' => (($deliveries[$deliveryId]['estimateCost']['toWarehouse'])
-                        ? true 
-                        : false),
+                    'isAvailable' => $this->deliveries[$deliveryId]['isAvailable'],
                 );
             }
+            
         }
         
         // обойти результирующий массив ТК
         // для обновления флагов доставки ТК на Склад-Склад и Склад-Двери
-        foreach($deliveries as $deliveryId => $delivery) {
-            
-            // проверить ТК может довезти все продукты на Склад-Склад
-            // если кол-во продуктов(кот. может довезти ТК) равно общему кол-ву продуктов
-            if ($delivery['productsCounterToWarehouse'] == count($products)) {
-                // обновить флаг 
-                $deliveries[$deliveryId]['isAvailableToWarehouse'] = true;
-            }
-            
-            // проверить ТК может довезти все продукты на Склад-Двери
-            // если кол-во продуктов(кот. может довезти ТК) равно общему кол-ву продуктов
-            if ($delivery['productsCounterToDoor'] == count($products)) {
-                // обновить флаг 
-                $deliveries[$deliveryId]['isAvailableToDoor'] = true;
-            }
-            
+        foreach($this->deliveries as $deliveryId => $delivery) {
             
             // сортировочный массив дат доставки Склад-Склад
             $sortByDateToWarehouse = array();
@@ -427,7 +398,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             if ($sortByDateToWarehouse) {
                 arsort($sortByDateToWarehouse);
                 $array_values = array_values($sortByDateToWarehouse);
-                $deliveries[$deliveryId]['estimateDate']['toWarehouse'] = $array_values[0];
+                $this->deliveries[$deliveryId]['estimateDate']['toWarehouse'] = $array_values[0];
             }
         
             
@@ -441,7 +412,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             if ($sortByDateToDoor) {
                 arsort($sortByDateToDoor);
                 $array_values = array_values($sortByDateToDoor);
-                $deliveries[$deliveryId]['estimateDate']['toDoor'] = $array_values[0];
+                $this->deliveries[$deliveryId]['estimateDate']['toDoor'] = $array_values[0];
             }
             
         }
@@ -449,7 +420,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         // результирующий массив
         $result = array(
             'isAvailableEstimateCost' => $this->getParameter('isAvailableEstimateCost'),
-            'deliveries' => $deliveries,
+            'deliveries' => $this->deliveries,
             'products' => $products,
         );
         
@@ -736,15 +707,15 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             // Склад-Склад
             'toWarehouse' => array(
                 'date' => $dateToWarehouse,
-                'cost' => (isset($costToWarehouse)) ?$costToWarehouse : null),
+                'cost' => (isset($costToWarehouse)) ? $costToWarehouse : null),
             // Склад-Двері
             'toDoor' => array(
                 'date' => $dateToDoor,
-                'cost' => (isset($costToDoor)) ?$costToDoor : null),
+                'cost' => (isset($costToDoor)) ? $costToDoor : null),
             // обратная доставка Склад-Склад
             'toBack' => array(
                 'date' => null,
-                'cost' => $costToBack),
+                'cost' => (isset($costToBack)) ? $costToBack : null),
             
         );
         
@@ -874,7 +845,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             // итоговая стоимость обратная доставки Склад-Склад
             $costToBack = 0 //$product['priceOut'] * self::$novaposhtaOptions['percentProductCost'] / 100
                                 // + self::$novaposhtaOptions['сostService'] 
-                                + ($tkCostToBack);
+                                + ($tkCostToBack - $tkCostToWarehouse);
             
             
             // стоимоть доставки Склад-Двери полученная от ТК
@@ -914,7 +885,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                     'cost' => $costToBack),
                 
             );
-
+            
             // вернуть результирующий массив
             // расчет стоимости доставки
             return $result;
