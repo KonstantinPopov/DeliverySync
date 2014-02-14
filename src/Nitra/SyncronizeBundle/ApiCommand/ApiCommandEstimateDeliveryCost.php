@@ -845,7 +845,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             // итоговая стоимость обратная доставки Склад-Склад
             $costToBack = 0 //$product['priceOut'] * self::$novaposhtaOptions['percentProductCost'] / 100
                                 // + self::$novaposhtaOptions['сostService'] 
-                                + ($tkCostToBack);
+                                + ($tkCostToBack - $tkCostToWarehouse);
             
             
             // стоимоть доставки Склад-Двери полученная от ТК
@@ -885,7 +885,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                     'cost' => $costToBack),
                 
             );
-
+            
             // вернуть результирующий массив
             // расчет стоимости доставки
             return $result;
