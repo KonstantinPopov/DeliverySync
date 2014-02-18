@@ -1,15 +1,23 @@
-/app/cache/*
-/app/logs/*
-/app/bootstrap.php.cache
-/app/config/parameters.yml
-*~
-/build/
-/vendor/
-/bin/
-/components/
-/web/assetic/*
-/web/bundles/*
-/web/css/*
-/web/js/*
-/web/components/*
+# Bootstrap
+app/bootstrap*
 
+# Symfony directories
+build/*
+vendor/*
+bin/*
+components/*
+*/logs/*
+*/cache/*
+web/uploads/*
+web/bundles/*
+web/assetic/*
+web/components/*
+web/css/*
+web/js/*
+
+# Configuration files
+app/config/parameters.ini
+app/config/parameters.yml
+
+# edit history files
+*~
