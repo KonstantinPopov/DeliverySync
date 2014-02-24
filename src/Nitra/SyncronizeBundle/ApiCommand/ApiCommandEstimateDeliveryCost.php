@@ -57,7 +57,6 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         'percentProductCost' => 0.5,      // инимальный процент для наложенного платежа pay on delivery
         'percentInsurance' => 0.5,        // Размер страховки, %
         'сostService' => 10,              // Стоимость оформления груза
-        
     );
     
     /**
@@ -220,6 +219,10 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         $products = $this->getParameter('products');
         foreach($products as $prKey => $product) {
             
+            // обнулить (инициализация) 
+            // результирующий массив расчетов по продукту
+            $products[$prKey]['estimateCost'] = array();
+            
             // проверить город отправитель 
             if (!isset($product['fromCityId']) || !$product['fromCityId']) {
                 return 'Для продукта не указан обязаетльный параметр fromCityId.';
@@ -267,9 +270,8 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         // расчет стоимости по каждой ТК
         foreach($this->deliveries as $deliveryId => $delivery) {
             
-            
             // проверить склад полуатель 
-            // если склад получатель для ТЕ не был получен ранее
+            // если склад получатель для ТК не был получен ранее
             // перейти к следующей ТК
             if (!isset($this->toWarehouseByDelivery[$deliveryId]) ||
                 !$this->toWarehouseByDelivery[$deliveryId]
@@ -707,15 +709,15 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             // Склад-Склад
             'toWarehouse' => array(
                 'date' => $dateToWarehouse,
-                'cost' => (isset($costToWarehouse)) ? $costToWarehouse : null),
+                'cost' => (isset($costToWarehouse)) ? ceil($costToWarehouse) : null),
             // Склад-Двері
             'toDoor' => array(
                 'date' => $dateToDoor,
-                'cost' => (isset($costToDoor)) ? $costToDoor : null),
+                'cost' => (isset($costToDoor)) ? ceil($costToDoor) : null),
             // обратная доставка Склад-Склад
             'toBack' => array(
                 'date' => null,
-                'cost' => (isset($costToBack)) ? $costToBack : null),
+                'cost' => (isset($costToBack)) ? ceil($costToBack) : null),
             
         );
         
@@ -874,15 +876,15 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                 // Склад-Склад
                 'toWarehouse' => array(
                     'date' => $dateToWarehouse,
-                    'cost' => $costToWarehouse),
+                    'cost' => ceil($costToWarehouse)),
                 // Склад-Двері
                 'toDoor' => array(
                     'date' => $dateToDoor,
-                    'cost' => $costToDoor),
+                    'cost' => ceil($costToDoor)),
                 // обратная доставка Склад-Склад
                 'toBack' => array(
                     'date' => $dateToBack,
-                    'cost' => $costToBack),
+                    'cost' => ceil($costToBack)),
                 
             );
             
