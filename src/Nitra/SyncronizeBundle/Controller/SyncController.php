@@ -61,7 +61,7 @@ class SyncController extends Controller
         $errorMessage = $apiCommand->validateCommand();
         if ($errorMessage) {
             // валидация не пройдена
-            return new JsonResponse(array('type'=> 'error', 'message'=> "Ошибка команды API: ".$request->get('command').". ".$errorMessage));
+            return new JsonResponse(array('type'=> 'error', 'message'=> "Невозможно выполнить команду. ". $errorMessage));
         }
         
         // попытка выполнить команду
