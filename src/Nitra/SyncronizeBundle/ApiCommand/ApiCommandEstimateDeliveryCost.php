@@ -31,10 +31,34 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
      * @var ID ТК Новая Почта
      */
     protected static $deliveryIdNovaposhta = 1;
+    protected static $deliveryIdNovaposhtaIM = -1; // ID от обычной со знаком минус
     protected static $novaposhtaOptions = array(
-        'percentProductCost' => 0.1,    // Процент от оценочной стоимости, %
-        'percentInsurance' => 0.1,      // Размер страховки, %
-        'сostService' => 12.00,         // Стоимость оформления груза
+        
+        // тариф Интернет магазина доставка 1 кг.
+        'tarifKg' => 1.65,
+        // максимальный вес до которого действует тариф Интернет магазина
+        'maxWeight' => 300,             
+        
+        // стоимость услуг оформления доставки
+        'сostServiceDelivery' => 12,
+        // стоимость услуг оформления обратного конверта
+        'сostServiceBack' => 13,
+        
+        // минимаьная сумма страховки
+        'minSumInsurance' => 400, 
+        // Размер страховки, %
+        'percentInsurance' => 0.005,
+        // Процент от оценочной стоимости, %
+        'percentProductCost' => 0.1,
+        // % услуги по формлению наложенного платежа
+        'percentPOD' => 0.02,
+        
+        // стоимость доставки до двери 
+        'deliveryToDoorWeight_1' => 20,
+        'deliveryToDoorWeight_1_10' => 25,
+        'deliveryToDoorWeight_11_300' => 40,
+        'deliveryToDoorWeight_301_500' => 75,
+        'deliveryToDoorWeight_default' => null,
     );
     
     /**
@@ -42,11 +66,22 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
      */
     protected static $deliveryIdIntime = 2;
     protected static $intimeOptions = array(
-        'percentProductCost' => 0.5,    // Процент от оценочной стоимости, %
-        'percentInsurance' => 0.5,      // Размер страховки, %
-        'сostService' => 10.00,         // Стоимость оформления груза
-        'сostSecurityPack' => 4.80,     // Стоимость сикерпака
-        'сostLessKg' => 0.00,           // Стоимость перевозки груза до 1 кг
+        
+        // минимаьная сумма страховки
+        'minSumInsurance' => 200, 
+        
+        // стоимость услуг оформления доставки
+        'сostServiceDelivery' => 10,
+        
+        // стоимость услуг оформления обратного конверта // Стоимость сикерпака
+        'сostServiceBack' => 4.80,
+        
+        // Процент от оценочной стоимости, %
+        'percentProductCost' => 0.5,
+        
+        // % услуги по формлению наложенного платежа
+        'percentPOD' => 0.5,
+        
     );
     
     /**
@@ -54,9 +89,9 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
      */
     protected static $deliveryIdAutolux = 3;
     protected static $autoluxOptions = array(
-        'percentProductCost' => 0.5,      // инимальный процент для наложенного платежа pay on delivery
+        'percentPOD' => 0.5,              // инимальный процент для наложенного платежа pay on delivery
         'percentInsurance' => 0.5,        // Размер страховки, %
-        'сostService' => 10,              // Стоимость оформления груза
+        'сostServiceDelivery' => 10,      // Стоимость оформления груза
     );
     
     /**
@@ -77,6 +112,52 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
      * array ( deliveryId => Nitra\DeliveryBundle\Entity\Warehouse )
      */
     private $toWarehouseByDelivery;
+    
+    /**
+     * Получить объемный вес
+     * @param float $width  - ширина
+     * @param float $height - высота
+     * @param float $length - длина
+     * @return float - расчетный объемный вес
+     */
+    public static function getVWeight($width, $height, $length)
+    {
+        return ($width * $height * $length / 4000);
+    }
+    
+    /**
+     * Получить максимальный вес
+     * @param float $weight - обычный вес
+     * @param float $width  - ширина
+     * @param float $height - высота
+     * @param float $length - длина
+     * @return float - максимальный вес
+     */
+    public static function getMaxWeight($weight, $width, $height, $length)
+    {
+        // получить объемный вес
+        $vWeight = self::getVWeight($width, $height, $length);
+        
+        // если обычный вес больше объемного веса
+        if ($weight > $vWeight) {
+            // вернуть больщий вес
+            return $weight;
+        }
+        
+        // вернуть расчетный (больший) вес
+        return $vWeight;
+    }
+    
+    /**
+     * выполнить округление
+     * @param  float $val значение для округления
+     * @return float результат округления
+     * @example CurrencyRepository::round(343.259999999) ... return 343.25
+     */
+    public static function round($val)
+    {
+        return (intval($val*100)/100);
+    }
     
     /**
      * {@inheritDoc}
@@ -159,29 +240,31 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                 
                 // Массив расчетов стоимостей доставки
                 'estimateCost' => array(
-                    // стоимость доставки Склад-Склад
-                    'toWarehouse' => 0,
-                    // стоимость доставки Склад-Двери
-                    'toDoor' => 0,
+                    // стоимость даставки
+                    'costTk' => 0,
                     // стоимость обратной доставки
-                    'toBack' => 0,
+                    'costBack' => 0,
+                    // Склад-Склад
+                    'costToWarehouse' => 0,
+                    // Склад-Двері
+                    'costToDoor' => 0,
                 ),
+                
+                // максимальная дата доставки
+                // расчитывается из deliveryDates
+                'estimateDate' => null,
                 
                 // массив дат доставки продуктов
                 // из данного массива получаем самую максимальную дату
-                'deliveryDatesToWarehouse' => array(),
-                'deliveryDatesToDoor' => array(),
-                
-                // Массив расчетов максимальных дат доставки
-                'estimateDate' => array(
-                    // максимальная дата доставки Склад-Склад
-                    'toWarehouse' => 0,
-                    // максимальная дата доставки Склад-Двери
-                    'toDoor' => 0,
-                ),
-                
-                
+                'deliveryDates' => array(),
             );
+            
+            // ТК тариф Интернет магазин
+            if ($deliveryId == self::$deliveryIdNovaposhta) {
+                // запомнить ТК тариф ИМ
+                $this->deliveries[self::$deliveryIdNovaposhtaIM] = $this->deliveries[self::$deliveryIdNovaposhta];
+                $this->deliveries[self::$deliveryIdNovaposhtaIM]['name'] .= ' (тариф ИМ)';
+            }
         }
         
         // дата отправки
@@ -230,11 +313,13 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             
             // флаг продукта 
             // провеверити валидность продукта для расчета стоимости доставки
+            // weight - не участвует в валидации продукта, 
+            // потому что, если weight не указан то можено вычислись объемный вес
+            // используя метод $this->getVWeight()
             if (!isset($product['quantity']) || !$product['quantity'] ||
                 !isset($product['width']) || !$product['width'] ||
                 !isset($product['height']) || !$product['height'] ||
                 !isset($product['length']) || !$product['length'] ||
-                !isset($product['weight']) || !$product['weight'] ||
                 !isset($product['priceOut']) || !$product['priceOut']
             ) {
                 // если хотя бы один продукт не валидный 
@@ -268,7 +353,10 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         
         // обойти все ТК клинета
         // расчет стоимости по каждой ТК
-        foreach($this->deliveries as $deliveryId => $delivery) {
+        foreach($this->deliveries as $deliveryKey => $delivery) {
+            
+            // ID ТК, ключ не используем т.к. Новая Почта ИМ ключь -1
+            $deliveryId = $delivery['id'];
             
             // проверить склад полуатель 
             // если склад получатель для ТК не был получен ранее
@@ -287,7 +375,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             
             // расчитать стоимость доставки
             // каждого продукта по каждой ТК 
-            foreach($products as $key => $product) {
+            foreach($products as $prKey => $product) {
                 
                 // получить первый склад ТК в городе отправителе
                 $fromWarehouse = $this->em
@@ -301,24 +389,30 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                 }
                 
                 // в зависимости от ID ТК разные методы расчетеов
-                switch($deliveryId) {
-
+                switch($deliveryKey) {
+                    
                     // ТК Новая Почта
                     case self::$deliveryIdNovaposhta:
                         $estimateCost = $this->novaposhtaEstimate($fromWarehouse, $toWarehouse, $product);
-                        $products[$key]['estimateCost'][$deliveryId] = $estimateCost;
+                        $products[$prKey]['estimateCost'][$deliveryKey] = $estimateCost;
                         break;
+                    
+                    // ТК Новая Почта ИМ
+                    case self::$deliveryIdNovaposhtaIM:
+                        $estimateCost = $this->novaposhtaIMEstimate($fromWarehouse, $toWarehouse, $product);
+                        $products[$prKey]['estimateCost'][$deliveryKey] = $estimateCost;
+                        break;                    
                     
                     // ТК ИнТайм
                     case self::$deliveryIdIntime:
                         $estimateCost = $this->intimeEstimate($fromWarehouse, $toWarehouse, $product);
-                        $products[$key]['estimateCost'][$deliveryId] = $estimateCost;
+                        $products[$prKey]['estimateCost'][$deliveryKey] = $estimateCost;
                         break;
 
                     // ТК Автолюкс
                     case self::$deliveryIdAutolux:
                         $estimateCost = $this->autoluxEstimate($fromWarehouse, $toWarehouse, $product);
-                        $products[$key]['estimateCost'][$deliveryId] = $estimateCost;
+                        $products[$prKey]['estimateCost'][$deliveryKey] = $estimateCost;
                         break;
 
                     // по умолчанию не определен механизм расчета
@@ -339,48 +433,45 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         foreach($products as $prKey => $product) {
             
             // обойти расчетный массив доставки продукта
-            foreach($product['estimateCost'] as $deliveryId => $estimateCost) {
+            foreach($product['estimateCost'] as $deliveryKey => $estimateCost) {
                 
-                // проверить стоимость ТК $deliveryId может доставить продукт Склад-Склад
-                if (isset($estimateCost['toWarehouse']['cost']) && $estimateCost['toWarehouse']['cost']) {
-                    // обновляем итоговую стоимость доставки для ТК 
-                    $this->deliveries[$deliveryId]['estimateCost']['toWarehouse'] += $estimateCost['toWarehouse']['cost'];
+                // проверить стоимость доставки, обновить итого  
+                if (isset($estimateCost['costTk']) && $estimateCost['costTk']) {
+                    $this->deliveries[$deliveryKey]['estimateCost']['costTk'] += $estimateCost['costTk'];
                 }
                 
-                // проверить стоимость ТК $deliveryId обратной доставки Склад-Склад
-                if (isset($estimateCost['toBack']['cost']) && $estimateCost['toBack']['cost']) {
-                    // обновляем итоговую стоимость обратной доставки 
-                    $this->deliveries[$deliveryId]['estimateCost']['toBack'] += $estimateCost['toBack']['cost'];
+                // проверить стоимость обратной доставки, обновить итого
+                if (isset($estimateCost['costBack']) && $estimateCost['costBack']) {
+                    $this->deliveries[$deliveryKey]['estimateCost']['costBack'] += $estimateCost['costBack'];
                 }
                 
-                // проверить дату ТК $deliveryId может доставить продукт Склад-Склад
-                if (isset($estimateCost['toWarehouse']['date'])) {
-                    // запомнить дату доставки
-                    $this->deliveries[$deliveryId]['deliveryDatesToWarehouse'][] = ($estimateCost['toWarehouse']['date']) ? $estimateCost['toWarehouse']['date'] : 0;
+                // проверить стоимость доставки Склад-Склад, обновить итого
+                if (isset($estimateCost['costToWarehouse']) && $estimateCost['costToWarehouse']) {
+                    $this->deliveries[$deliveryKey]['estimateCost']['costToWarehouse'] += $estimateCost['costToWarehouse'];
                 }
                 
-                // проверить ТК $deliveryId может доставить продукт Склад-Двери
-                if (isset($estimateCost['toDoor']['cost']) && $estimateCost['toDoor']['cost']) {
-                    // обновляем итоговую стоимость доставки для ТК 
-                    $this->deliveries[$deliveryId]['estimateCost']['toDoor'] += $estimateCost['toDoor']['cost'];
+                // проверить стоимость доставки Склад-Двери, обновить итого
+                if (isset($estimateCost['costToDoor']) && $estimateCost['costToDoor']) {
+                    $this->deliveries[$deliveryKey]['estimateCost']['costToDoor'] += $estimateCost['costToDoor'];
                 }
                 
-                // проверить дату ТК $deliveryId может доставить продукт Склад-Двери
-                if (isset($estimateCost['toDoor']['date'])) {
-                    // запомнить дату доставки
-                    $this->deliveries[$deliveryId]['deliveryDatesToDoor'][] = ($estimateCost['toDoor']['date']) ? $estimateCost['toDoor']['date'] : 0;
+                // запомнить дату доставки
+                if (isset($estimateCost['date'])) {
+                    $this->deliveries[$deliveryKey]['deliveryDates'][] = ($estimateCost['date']) 
+                        ? $estimateCost['date']
+                        : 0;
                 }
                 
             }
             
             // массив ТК доступных для доставки продукта
             $products[$prKey]['deliveries'] = array();
-            foreach($this->deliveries as $deliveryId => $delivery) {
-                $products[$prKey]['deliveries'][$deliveryId] = array(
+            foreach($this->deliveries as $deliveryKey => $delivery) {
+                $products[$prKey]['deliveries'][$deliveryKey] = array(
                     // название ТК 
                     'name' => $delivery['name'],
                     // флаг ТК пожет доставить продукт
-                    'isAvailable' => $this->deliveries[$deliveryId]['isAvailable'],
+                    'isAvailable' => $this->deliveries[$deliveryKey]['isAvailable'],
                 );
             }
             
@@ -388,33 +479,20 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         
         // обойти результирующий массив ТК
         // для обновления флагов доставки ТК на Склад-Склад и Склад-Двери
-        foreach($this->deliveries as $deliveryId => $delivery) {
+        foreach($this->deliveries as $deliveryKey => $delivery) {
             
             // сортировочный массив дат доставки Склад-Склад
-            $sortByDateToWarehouse = array();
-            foreach($delivery['deliveryDatesToWarehouse'] as $date) {
-                $sortByDateToWarehouse[] = $date;
+            $sortByDeliveryDates= array();
+            foreach($delivery['deliveryDates'] as $timestamp) {
+                $sortByDeliveryDates[] = $timestamp;
             }
-            // отсортировать массив 
-            // самая поздняя дата будет первой
-            if ($sortByDateToWarehouse) {
-                arsort($sortByDateToWarehouse);
-                $array_values = array_values($sortByDateToWarehouse);
-                $this->deliveries[$deliveryId]['estimateDate']['toWarehouse'] = $array_values[0];
-            }
-        
             
-            // сортировочный массив дат доставки Склад-Двери
-            $sortByDateToDoor = array();
-            foreach($delivery['deliveryDatesToDoor'] as $date) {
-                $sortByDateToDoor[] = $date;
-            }
             // отсортировать массив 
             // самая поздняя дата будет первой
-            if ($sortByDateToDoor) {
-                arsort($sortByDateToDoor);
-                $array_values = array_values($sortByDateToDoor);
-                $this->deliveries[$deliveryId]['estimateDate']['toDoor'] = $array_values[0];
+            if ($sortByDeliveryDates) {
+                arsort($sortByDeliveryDates);
+                $arrayValues = array_values($sortByDeliveryDates);
+                $this->deliveries[$deliveryKey]['estimateDate'] = $arrayValues[0];
             }
             
         }
@@ -483,27 +561,35 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             $bigestValue = $product['weight'] * $apiResponse->weight;
         }
         
-        // расчет стоимости доставки на склад получатель
-        $costToWh = $bigestValue + self::$autoluxOptions['сostService'] + self::$autoluxOptions['percentInsurance'] * $product['priceOut'] / 100;
+        // стоимость доставки
+        $costTk = $bigestValue 
+                    + self::$autoluxOptions['сostServiceDelivery'] 
+                    + self::$autoluxOptions['percentInsurance'] * $product['priceOut'] / 100;
         
-        // расчет обратной доставки 
-        $beckSum = $product['priceOut'];
-        $costBack = ceil((self::$autoluxOptions['percentProductCost'] * $beckSum / 100) + 14);
+        // стоимоть обратной доставки 
+        $costBack = (self::$autoluxOptions['percentPOD'] * $product['priceOut']/ 100 + 14);
+        
+        // итоговая стоимость доставки Склад-Склад
+        $costToWarehouse = ($costTk + $costBack);
+        
+        // итоговая стоимость доставки Склад-Двери
+        $costToDoor = null; // доставка Склад-Двери не расчитывается для данной ТК
+        
+        // дата доставки Склад-Склад
+        $dateToWarehouse = null; // дату доставки не расчитывам для данной ТК
         
         // результирующий массив 
         $result = array(
+            // стоимость даставки
+            'costTk' => self::round($costTk),
+            // стоимость обратной доставки
+            'costBack' => self::round($costBack),
             // Склад-Склад
-            'toWarehouse' => array(
-                'date' => null,
-                'cost' => ceil($costToWh + $costBack),
-            ),
+            'costToWarehouse' => self::round($costToWarehouse),
             // Склад-Двері
-            'toDoor' => array(
-            ),
-            // обратная доставка Склад-Склад
-            'toBack' => array(
-                'date' => null,
-                'cost' => $costBack),
+            'costToDoor' => null,
+            // дата доставки 
+            'date' => null,
             
         );
         
@@ -537,6 +623,9 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         // проверить валидность для расчета стоимости доставки
         if ($this->getParameter('isAvailableEstimateCost')) {
             
+            // получить максимальный вес продукта
+            $maxWeight = self::getMaxWeight($product['weight'], $product['width'], $product['height'], $product['length']);
+            
             // общий массив параметров расчета
             $optionsCommon = array(
                 'Oplachivaet' => (($this->hasParameter('Oplachivaet')) ? $this->hasParameter('Oplachivaet') : 'POL'),
@@ -545,9 +634,9 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                 'GorodPoluchatel' => $toWarehouse->getCity()->getBusinessKey(),
                 'KontragentPoluchatel' => (($this->hasParameter('KontragentPoluchatel')) ? $this->hasParameter('KontragentPoluchatel') : 'Покупатель'),
                 'OpisanieGruza' => (($this->hasParameter('OpisanieGruza')) ? $this->hasParameter('OpisanieGruza') : '114'),
-                'Ves' => $product['weight'],
+                'Ves' => $maxWeight,
                 'Obyom' => ($product['width'] * 0.01 * $product['height'] * 0.01 * $product['length'] * 0.01),
-                'Cennost' => $product['priceOut'],
+                'Cennost' => ($product['priceOut'] < self::$intimeOptions['minSumInsurance']) ? self::$intimeOptions['minSumInsurance'] : $product['priceOut'], 
                 'SposobOplaty' => (($this->hasParameter('SposobOplaty')) ? $this->hasParameter('SposobOplaty') : 'Nal'),
                 'KvoMest' => (($this->hasParameter('KvoMest')) ? $this->hasParameter('KvoMest') : '1'),
                 'PostService' => (($this->hasParameter('PostService')) ? $this->hasParameter('PostService') : '1'),
@@ -559,10 +648,10 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                 'ID' => $containerParameters['soap_id'],
                 'KEY' => $containerParameters['soap_key'],
             );
-
+            
             // Склад-Склад массив параметров расчета
             $optionsToWarehouse = $optionsCommon;
-            $optionsToWarehouse['VidPerevozki'] = 2;
+            $optionsToWarehouse['VidPerevozki'] = 2; // Склад-Склад
 
             // стоимость доставки Склад-Склад
             $soapResponseCostWarehouse = $soapClient->CalculateTTN($optionsToWarehouse);
@@ -581,8 +670,8 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             
             // обратная доставка Склад-Склад 
             $optionsToBack = $optionsCommon;
-            $optionsToBack['VidPerevozki'] = 2;
-            $optionsToBack['Upakovka'] = 'ЦОФ-00019';
+            $optionsToBack['VidPerevozki'] = 2; // Склад-Склад
+            $optionsToBack['Upakovka'] = 'ЦОФ-00019'; // Секьюрпак
             $optionsToBack['GorodOtpravitel'] = $toWarehouse->getCity()->getBusinessKey();
             $optionsToBack['GorodPoluchatel'] = $fromWarehouse->getCity()->getBusinessKey();
             $optionsToBack['KontragentPoluchatel'] = 'Продавец';
@@ -607,7 +696,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             
             // Склад-Двери массив параметров расчета
             $optionsToDoor = $optionsCommon;
-            $optionsToDoor['VidPerevozki'] = 3;
+            $optionsToDoor['VidPerevozki'] = 3; // Склад-Двери
 
             // стоимость доставки Склад-Двери
             $soapResponseCostDoor = $soapClient->CalculateTTN($optionsToDoor);
@@ -624,32 +713,22 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                 return null;
             }
             
-            // стоимоть доставки Склад-Склад полученная от ТК
-            $tkCostToWarehouse = (string)str_replace(',', '.', $xmlCostWarehouse[0]);
             
-            // итоговая стоимость доставки Склад-Склад 
-            $costToWarehouse = $product['priceOut'] * self::$intimeOptions['percentProductCost'] / 100
-                                + self::$intimeOptions['сostService'] 
-                                + ($product['quantity'] * $tkCostToWarehouse);
+            // стоимость доставки
+            $costTk = $product['priceOut'] * self::$intimeOptions['percentProductCost'] / 100
+                                + self::$intimeOptions['сostServiceDelivery'] 
+                                + ($product['quantity'] * str_replace(',', '.', (string)$xmlCostWarehouse[0]));
             
+            // стоимоть обратной доставки 
+            $costBack = str_replace(',', '.', (string)$xmlCostBack[0]);
             
-            // стоимоть обратной доставки Склад-Склад полученная от ТК
-            $tkCostToBack = (string)str_replace(',', '.', $xmlCostBack[0]);
-            
-            // итоговая стоимость доставки Склад-Склад 
-            $costToBack = 0 // $product['priceOut'] * self::$intimeOptions['percentProductCost'] / 100
-                               // + self::$intimeOptions['сostSecurityPack'] 
-                                + ($tkCostToBack);
-            
-            
-            
-            // стоимоть доставки Склад-Двері полученная от ТК
-            $tkCostToDoor = (string)str_replace(',', '.', $xmlCostDoor[0]);
+            // итоговая стоимость доставки Склад-Склад
+            $costToWarehouse = ($costTk + $costBack);
             
             // итоговая стоимость доставки Склад-Двери
             $costToDoor = $product['priceOut'] * self::$intimeOptions['percentProductCost'] / 100
-                                + self::$intimeOptions['сostService'] 
-                                + ($product['quantity'] * $tkCostToDoor);
+                                + self::$intimeOptions['сostServiceDelivery'] 
+                                + ($product['quantity'] * str_replace(',', '.', (string)$xmlCostDoor[0]));
         }
         
         // Продукты не валидные для расчета стоимости
@@ -664,7 +743,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         
         // Склад-Склад массив параметров расчета
         $optionsToWarehouse = $optionsCommon;
-        $optionsToWarehouse['VidPerevozki'] = 2;
+        $optionsToWarehouse['VidPerevozki'] = 2; // Склад-Склад
         
         // дата доставки Склад-Склад
         $soapResponseDateWarehouse = $soapClient->DenDostavki($optionsToWarehouse);
@@ -678,51 +757,145 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         if ($soapResponseDateWarehouse instanceof \stdClass && isset($soapResponseDateWarehouse->result)) {
             $result = explode(':', $soapResponseDateWarehouse->result);
             if (isset($result[1]) && trim($result[1])) {
-                $date = \DateTime::createFromFormat('d.m.Y', trim($result[1]));
-                $dateToWarehouse = $date->getTimestamp();
-            }
-        }
-        
-        // Склад-Двери массив параметров расчета
-        $optionsToDoor = $optionsCommon;
-        $optionsToDoor['VidPerevozki'] = 3;
-        
-        // дата доставки Склад-Двери
-        $soapResponseDateDoor = $soapClient->DenDostavki($optionsToDoor);
-        if (!$soapResponseDateDoor instanceof \stdClass || !isset($soapResponseDateDoor->result)) {
-            // получен не правильны ответ от сервера
-            return null;
-        }
-        
-        // дата доставки Склад-Склад
-        $dateToDoor = null;
-        if ($soapResponseDateDoor instanceof \stdClass && isset($soapResponseDateDoor->result)) {
-            $result = explode(':', $soapResponseDateDoor->result);
-            if (isset($result[1]) && trim($result[1])) {
-                $date = \DateTime::createFromFormat('d.m.Y', trim($result[1]));
-                $dateToDoor = $date->getTimestamp();
+                $dateToWarehouse = \DateTime::createFromFormat('d.m.Y', trim($result[1]));
             }
         }
         
         // результирующий массив 
         $result = array(
+            // стоимость даставки
+            'costTk' => (isset($costTk)) ? self::round($costTk) : null,
+            // стоимость обратной доставки
+            'costBack' => (isset($costBack)) ? self::round($costBack) : null,
             // Склад-Склад
-            'toWarehouse' => array(
-                'date' => $dateToWarehouse,
-                'cost' => (isset($costToWarehouse)) ? ceil($costToWarehouse) : null),
+            'costToWarehouse' => (isset($costToWarehouse)) ? self::round($costToWarehouse) : null,
             // Склад-Двері
-            'toDoor' => array(
-                'date' => $dateToDoor,
-                'cost' => (isset($costToDoor)) ? ceil($costToDoor) : null),
-            // обратная доставка Склад-Склад
-            'toBack' => array(
-                'date' => null,
-                'cost' => (isset($costToBack)) ? ceil($costToBack) : null),
+            'costToDoor' => (isset($costToDoor)) ? self::round($costToDoor) : null,
+            // дата доставки 
+            'date' => ($dateToWarehouse) ? $dateToWarehouse->getTimestamp() : null,
             
         );
         
         // вернуть результирующий массив
         return $result;
+    }
+    
+    /**
+     * ТК Новая Почта
+     * Получить стоимость доставки Склад-Двери по весу продукта
+     * @param float $maxWeight - максимальный вес доставляемого продукта 
+     * @return float стоимость доставки до дверей
+     */
+    public static function novaposhtaDeliveryToDoorByWeight($maxWeight)
+    {
+        
+        if ($maxWeight > 0 && $maxWeight <= 1 ) {
+            return self::$novaposhtaOptions['deliveryToDoorWeight_1'];
+            
+        } elseif ($maxWeight > 1 && $maxWeight <= 10 ) {
+            return self::$novaposhtaOptions['deliveryToDoorWeight_1_10'];
+            
+        } elseif ($maxWeight >= 11 && $maxWeight <= 300 ) {
+            return self::$novaposhtaOptions['deliveryToDoorWeight_11_300'];
+            
+        } elseif ($maxWeight >= 301 && $maxWeight <= 500 ) {
+            return self::$novaposhtaOptions['deliveryToDoorWeight_301_500'];
+        }
+        
+        // стоимость доставки по умолчанию
+        return self::$novaposhtaOptions['deliveryToDoorWeight_default'];
+    }
+
+
+    /**
+     * расчет стоимости доставки ТК Новая Почта
+     * @param Warehouse $fromWarehouse - склда отправитель
+     * @param Warehouse $toWarehouse - склда получатель
+     * @param array $product - массив данных перевозимого продукта
+     */
+    protected function novaposhtaIMEstimate(Warehouse $fromWarehouse, Warehouse $toWarehouse, array $product)
+    {
+        
+        // проверить валидность для расчета стоимости доставки
+        // проудкт не валидный - расчитываем по обычной схеме
+        if (!$this->getParameter('isAvailableEstimateCost')) {
+            // вернуть обычный расчет стоимости 
+            return $this->novaposhtaEstimate($fromWarehouse, $toWarehouse, $product);
+        }
+        
+        // продукт валидный
+        // получить максимальный вес
+        $maxWeight = self::getMaxWeight($product['weight'], $product['width'], $product['height'], $product['length']);
+        // если максимальный вес в пределах тарифа Интернет Магазина
+        // производим расчет по тариыу Интерент Магазина
+        if ($maxWeight < self::$novaposhtaOptions['maxWeight']) {
+            
+            // получить параметры  из файла настроек
+            $containerParameters = $this->getContainer()->getParameter('novaposhta');
+            
+            // страховка
+            $insurance = ($product['priceOut'] > self::$novaposhtaOptions['minSumInsurance'])
+                ? $product['priceOut'] * self::$novaposhtaOptions['percentInsurance']
+                : self::$novaposhtaOptions['minSumInsurance'] * self::$novaposhtaOptions['percentInsurance'];
+            
+            // стоимость доставки
+            $costTk = $maxWeight * self::$novaposhtaOptions['tarifKg'] 
+                    + self::$novaposhtaOptions['сostServiceDelivery']
+                    + $insurance;
+            
+            // стоимоть обратной доставки 
+            $costBack = self::$novaposhtaOptions['сostServiceBack'] 
+                        + $product['priceOut'] * self::$novaposhtaOptions['percentPOD'];
+            
+            // итоговая стоимость доставки Склад-Склад
+            $costToWarehouse = ($costTk + $costBack);
+            
+            // итоговая стоимость доставки Склад-Двери
+            $costToDoor = $costToWarehouse 
+                        + self::novaposhtaDeliveryToDoorByWeight($maxWeight);
+            
+            // xml запрос время доставки Склад-Склад
+            $xmlRequestToWarehouse = '<?xml version="1.0" encoding="UTF-8"?>
+                <file>
+                    <auth>'.$containerParameters['api_token'].'</auth>
+                    <getEstimatedDeliveryDate>
+                        <senderCity>'.(string)$fromWarehouse->getCity()->getNameTk().'</senderCity>
+                        <recipientCity>'.(string)$toWarehouse->getCity()->getNameTk().'</recipientCity>
+                        <date>'.$this->getParameter('sendDate')->format('d.m.Y').'</date>
+                        <deliveryTypeId>4</deliveryTypeId>
+                        <satDelivery>'.(($this->hasParameter('deliveryAtSaturday') && $this->getParameter('deliveryAtSaturday')) ? "1" : "0").'</satDelivery>
+                    </getEstimatedDeliveryDate>
+                </file>';
+            
+            // получить время доставки Склад-Склад
+            $xmlDateWarehouse = $this->novaposhtaApiSendRequest($xmlRequestToWarehouse);
+            if ($xmlDateWarehouse instanceof \SimpleXMLElement && isset($xmlDateWarehouse->estimatedDeliveryDate)) {
+                // дата доставки Склад-Склад
+                $dateToWarehouse = \DateTime::createFromFormat('d.m.Y', (string)$xmlDateWarehouse->estimatedDeliveryDate);
+            }
+            
+            // результирующий массив 
+            $result = array(
+                // стоимость даставки
+                'costTk' => self::round($costTk),
+                // стоимость обратной доставки
+                'costBack' => self::round($costBack),
+                // Склад-Склад
+                'costToWarehouse' => self::round($costToWarehouse),
+                // Склад-Двері
+                'costToDoor' => self::round($costToDoor),
+                // дата доставки 
+                'date' => (isset($dateToWarehouse)) ? $dateToWarehouse->getTimestamp() : null,
+            );
+            
+            // вернуть результирующий массив
+            return $result;
+        }
+        
+        // максимальный вес за пределами тарифа Интернет Магазина
+        // производим расчет по обычному тарифу
+        // вернуть обычный расчет стоимости 
+        return $this->novaposhtaEstimate($fromWarehouse, $toWarehouse, $product);
     }
     
     /**
@@ -747,6 +920,9 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         // проверить валидность для расчета стоимости доставки
         if ($this->getParameter('isAvailableEstimateCost')) {
             
+            // получить максимальный вес продукта
+            $maxWeight = self::getMaxWeight($product['weight'], $product['width'], $product['height'], $product['length']);
+            
             // xml запрос стоимость доставки до склада
             $xmlRequestToWarehouse = '<?xml version="1.0" encoding="UTF-8"?>
                 <file>
@@ -754,15 +930,12 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                         <countPrice>
                             <senderCity>'.(string)$fromWarehouse->getCity()->getNameTk().'</senderCity>
                             <recipientCity>'.(string)$toWarehouse->getCity()->getNameTk().'</recipientCity>
-                            <mass>'         . $product['weight']    . '</mass>
+                            <mass>'         . $maxWeight            . '</mass>
                             <height>'       . $product['height']    . '</height>
                             <width>'        . $product['width']     . '</width>
                             <depth>'        . $product['length']    . '</depth>
                             <publicPrice>'  . $product['priceOut']  . '</publicPrice>
                             <deliveryType_id>4</deliveryType_id>
-                            <loadType_id>'.(($this->hasParameter('loadType_id')) ? $this->hasParameter('loadType_id') : '1').'</loadType_id>
-                            <floor_count>'.(($this->hasParameter('floor_count')) ? $this->hasParameter('floor_count') : '0').'</floor_count>
-                            <postpay_sum>'.$product['priceOut'].'</postpay_sum>
                             <date>'.$this->getParameter('sendDate')->format('d.m.Y').'</date>
                         </countPrice>
                     </file>';
@@ -774,118 +947,37 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                 return null;
             }
             
-            // xml запрос стоимость обратной доставки Склад-Склад
-            $xmlRequestToBack = '<?xml version="1.0" encoding="UTF-8"?>
-                <file>
-                    <auth>'.$containerParameters['api_token'].'</auth>
-                        <countPrice>
-                            <senderCity>'.(string)$fromWarehouse->getCity()->getNameTk().'</senderCity>
-                            <recipientCity>'.(string)$toWarehouse->getCity()->getNameTk().'</recipientCity>
-                            <mass>'         . $product['weight']    . '</mass>
-                            <height>'       . $product['height']    . '</height>
-                            <width>'        . $product['width']     . '</width>
-                            <depth>'        . $product['length']    . '</depth>
-                            <publicPrice>'  . $product['priceOut']  . '</publicPrice>
-                            <deliveryType_id>4</deliveryType_id>
-                            <loadType_id>'.(($this->hasParameter('loadType_id')) ? $this->hasParameter('loadType_id') : '1').'</loadType_id>
-                            <floor_count>'.(($this->hasParameter('floor_count')) ? $this->hasParameter('floor_count') : '0').'</floor_count>
-                            <postpay_sum>'.$product['priceOut'].'</postpay_sum>
-                            <date>'.$this->getParameter('sendDate')->format('d.m.Y').'</date>
-                            <additionalRedelivery>
-                                <redeliveryPrice>'.$product['priceOut'].'</redeliveryPrice>
-                                <redeliveryLoadTypeId>2</redeliveryLoadTypeId>
-                            </additionalRedelivery>                        
-                        </countPrice>
-                    </file>';
+            // стоимость доставки
+            $costTk = $product['priceOut'] * self::$novaposhtaOptions['percentProductCost'] / 100
+                                + self::$novaposhtaOptions['сostServiceDelivery'] 
+                                + ($product['quantity'] * str_replace(',', '.', (string)$xmlCostWarehouse->cost));
             
-            // получить стоимость обратной доставки Склад-Склад
-            $xmlCostBack = $this->novaposhtaApiSendRequest($xmlRequestToBack);
-            if (!$xmlCostBack instanceof \SimpleXMLElement || !isset($xmlCostBack->date) || !isset($xmlCostBack->cost)) {
-                // получен не правильны ответ от сервера
-                return null;
-            }
+            // стоимоть обратной доставки 
+            $costBack = self::$novaposhtaOptions['сostServiceBack'] 
+                        + $product['priceOut'] * self::$novaposhtaOptions['percentPOD'];
             
-            // xml запрос стоимость доставки до двери, адресная доставка
-            $xmlRequestToDoor = '<?xml version="1.0" encoding="UTF-8"?>
-                <file>
-                    <auth>'.$containerParameters['api_token'].'</auth>
-                        <countPrice>
-                            <senderCity>'.(string)$fromWarehouse->getCity()->getNameTk().'</senderCity>
-                            <recipientCity>'.(string)$toWarehouse->getCity()->getNameTk().'</recipientCity>
-                            <mass>'         . $product['weight']    . '</mass>
-                            <height>'       . $product['height']    . '</height>
-                            <width>'        . $product['width']     . '</width>
-                            <depth>'        . $product['length']    . '</depth>
-                            <publicPrice>'  . $product['priceOut']  . '</publicPrice>
-                            <deliveryType_id>3</deliveryType_id>
-                            <loadType_id>'.(($this->hasParameter('loadType_id')) ? $this->hasParameter('loadType_id') : '1').'</loadType_id>
-                            <floor_count>'.(($this->hasParameter('floor_count')) ? $this->hasParameter('floor_count') : '0').'</floor_count>
-                            <postpay_sum>'.$product['priceOut'].'</postpay_sum>
-                            <date>'.$this->getParameter('sendDate')->format('d.m.Y').'</date>
-                        </countPrice>
-                    </file>';
-            
-            // получить стоимость склад-двери
-            $xmlCostDoor = $this->novaposhtaApiSendRequest($xmlRequestToDoor);
-            if (!$xmlCostDoor instanceof \SimpleXMLElement || !isset($xmlCostDoor->date) || !isset($xmlCostDoor->cost)) {
-                // получен не правильны ответ от сервера
-                return null;
-            }
-            
-            // стоимоть доставки Склад-Склад полученная от ТК
-            $tkCostToWarehouse = (string)str_replace(',', '.', $xmlCostWarehouse->cost);
-            
-            // итоговая стоимость доставки Склад-Склад 
-            $costToWarehouse = $product['priceOut'] * self::$novaposhtaOptions['percentProductCost'] / 100
-                                + self::$novaposhtaOptions['сostService'] 
-                                + ($product['quantity'] * $tkCostToWarehouse);
-            
-            
-            // стоимоть обратной доставки Склад-Склад полученная от ТК
-            $tkCostToBack = (string)str_replace(',', '.', $xmlCostBack->cost);
-            
-            // итоговая стоимость обратная доставки Склад-Склад
-            $costToBack = 0 //$product['priceOut'] * self::$novaposhtaOptions['percentProductCost'] / 100
-                                // + self::$novaposhtaOptions['сostService'] 
-                                + ($tkCostToBack - $tkCostToWarehouse);
-            
-            
-            // стоимоть доставки Склад-Двери полученная от ТК
-            $tkCostToDoor = (string)str_replace(',', '.', $xmlCostDoor->cost);
-            
+            // итоговая стоимость доставки Склад-Склад
+            $costToWarehouse = ($costTk + $costBack);
+                
             // итоговая стоимость доставки Склад-Двери
-            $costToDoor = $product['priceOut'] * self::$novaposhtaOptions['percentProductCost'] / 100
-                                + self::$novaposhtaOptions['сostService'] 
-                                + ($product['quantity'] * $tkCostToDoor);
-            
+            $costToDoor = $costToWarehouse 
+                        + self::novaposhtaDeliveryToDoorByWeight($maxWeight);
             
             // дата доставки Склад-Склад
-            $date = \DateTime::createFromFormat('d.m.Y', (string)$xmlCostWarehouse->date);
-            $dateToWarehouse = $date->getTimestamp();
-            
-            // дата обратной доставки Склад-Склад
-            $date = \DateTime::createFromFormat('d.m.Y', (string)$xmlCostBack->date);
-            $dateToBack = $date->getTimestamp();
-            
-            // дата доставки Склад-Двери
-            $date = \DateTime::createFromFormat('d.m.Y', (string)$xmlCostDoor->date);
-            $dateToDoor = $date->getTimestamp();
+            $dateToWarehouse = \DateTime::createFromFormat('d.m.Y', (string)$xmlCostWarehouse->date);
             
             // результирующий массив 
             $result = array(
+                // стоимость даставки
+                'costTk' => self::round($costTk),
+                // стоимость обратной доставки
+                'costBack' => self::round($costBack),
                 // Склад-Склад
-                'toWarehouse' => array(
-                    'date' => $dateToWarehouse,
-                    'cost' => ceil($costToWarehouse)),
+                'costToWarehouse' => self::round($costToWarehouse),
                 // Склад-Двері
-                'toDoor' => array(
-                    'date' => $dateToDoor,
-                    'cost' => ceil($costToDoor)),
-                // обратная доставка Склад-Склад
-                'toBack' => array(
-                    'date' => $dateToBack,
-                    'cost' => ceil($costToBack)),
-                
+                'costToDoor' => self::round($costToDoor),
+                // дата доставки 
+                'date' => $dateToWarehouse->getTimestamp(),
             );
             
             // вернуть результирующий массив
@@ -911,51 +1003,23 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         
         // получить время доставки Склад-Склад
         $xmlDateWarehouse = $this->novaposhtaApiSendRequest($xmlRequestToWarehouse);
-        if (!$xmlDateWarehouse instanceof \SimpleXMLElement || !isset($xmlDateWarehouse->estimatedDeliveryDate)) {
-            // получен не правильны ответ от сервера
-            return null;
+        if ($xmlDateWarehouse instanceof \SimpleXMLElement && isset($xmlDateWarehouse->estimatedDeliveryDate)) {
+            // дата доставки Склад-Склад
+            $dateToWarehouse = \DateTime::createFromFormat('d.m.Y', (string)$xmlDateWarehouse->estimatedDeliveryDate);
         }
-        
-        // xml запрос время доставки Склад-Двери
-        $xmlRequestToDoor = '<?xml version="1.0" encoding="UTF-8"?>
-            <file>
-                <auth>'.$containerParameters['api_token'].'</auth>
-                <getEstimatedDeliveryDate>
-                    <senderCity>'.(string)$fromWarehouse->getCity()->getNameTk().'</senderCity>
-                    <recipientCity>'.(string)$toWarehouse->getCity()->getNameTk().'</recipientCity>
-                    <date>'.$this->getParameter('sendDate')->format('d.m.Y').'</date>
-                    <deliveryTypeId>3</deliveryTypeId>
-                    <satDelivery>'.(($this->hasParameter('deliveryAtSaturday') && $this->getParameter('deliveryAtSaturday')) ? "1" : "0").'</satDelivery>
-                </getEstimatedDeliveryDate>
-            </file>';
-        
-        // получить время доставки Склад-Двери
-        $xmlDateDoor = $this->novaposhtaApiSendRequest($xmlRequestToDoor);
-        if (!$xmlDateDoor instanceof \SimpleXMLElement || !isset($xmlDateDoor->estimatedDeliveryDate)) {
-            // получен не правильны ответ от сервера
-            return null;
-        }
-        
-        // дата доставки Склад-Склад
-        $date = \DateTime::createFromFormat('d.m.Y', (string)$xmlDateWarehouse->estimatedDeliveryDate);
-        $dateToWarehouse = $date->getTimestamp();
-        
-        // дата доставки Склад-Двери
-        $date = \DateTime::createFromFormat('d.m.Y', (string)$xmlDateDoor->estimatedDeliveryDate);
-        $dateToDoor = $date->getTimestamp();
         
         // результирующий массив 
         $result = array(
+            // стоимость даставки
+            'costTk' => null,
+            // стоимость обратной доставки
+            'costBack' => null,
             // Склад-Склад
-            'toWarehouse' => array(
-                'date' => $dateToWarehouse,
-                'cost' => null,
-                ),
+            'costToWarehouse' => null,
             // Склад-Двері
-            'toDoor' => array(
-                'date' => $dateToDoor,
-                'cost' => null,
-                ),
+            'costToDoor' => null,
+            // дата доставки 
+            'date' => (isset($dateToWarehouse)) ? $dateToWarehouse->getTimestamp() : null,
         );
         
         // вернуть результирующий массив
