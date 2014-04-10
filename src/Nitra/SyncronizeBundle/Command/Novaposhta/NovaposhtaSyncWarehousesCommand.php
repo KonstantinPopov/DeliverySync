@@ -96,6 +96,13 @@ class NovaposhtaSyncWarehousesCommand extends NovaposhtaSync
         // обойти массив ответа
         foreach($responseArray as $tkWh) {
             
+            // адрес склада берем по умолчанию русское знаяение
+            $whAddress = trim((string)$tkWh->addressRu);
+            if (!$whAddress) {
+                // нет русского значения берем то что есть
+                $whAddress = trim((string)$tkWh->address);
+            }
+            
             // проверить существует ли склад в DS
             $businessKey = (string)$tkWh->wareId;
             if (!isset($dsWarehouses[$businessKey])) {
@@ -104,7 +111,7 @@ class NovaposhtaSyncWarehousesCommand extends NovaposhtaSync
                 $dsWarehouse = new Warehouse();
                 $dsWarehouse->setDelivery($this->getDelivery());
                 $dsWarehouse->setBusinessKey($businessKey);
-                $dsWarehouse->setNameTk(trim((string)$tkWh->addressRu));
+                $dsWarehouse->setNameTk($whAddress);
                 
                 // запомнить для сохранения
                 $this->getEntityManager()->persist($dsWarehouse);
@@ -124,7 +131,7 @@ class NovaposhtaSyncWarehousesCommand extends NovaposhtaSync
                trim((string)$tkWh->wareId),
                trim((string)$tkWh->number),
                trim((string)$tkWh->city_id),
-               trim((string)$tkWh->addressRu),
+               trim((string)$whAddress),
                trim((string)$tkWh->phone),
             ));
             
@@ -150,9 +157,9 @@ class NovaposhtaSyncWarehousesCommand extends NovaposhtaSync
                 
                 // наполнить склад DS данными
                 $dsWarehouse->setNumber((string)$tkWh->number);
-                $dsWarehouse->setName('Новая почта - '.(string)$tkWh->addressRu);
-                $dsWarehouse->setNameTk((string)$tkWh->addressRu);
-                $dsWarehouse->setAddress((string)$tkWh->addressRu);
+                $dsWarehouse->setName('Новая почта - '.(string)$whAddress);
+                $dsWarehouse->setNameTk((string)$whAddress);
+                $dsWarehouse->setAddress((string)$whAddress);
                 $dsWarehouse->setPhone((string)$tkWh->phone);
                 $dsWarehouse->setLatitude((string)$tkWh->y);
                 $dsWarehouse->setLongitude((string)$tkWh->x);

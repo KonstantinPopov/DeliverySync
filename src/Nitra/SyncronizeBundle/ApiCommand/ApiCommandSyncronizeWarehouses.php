@@ -86,6 +86,7 @@ class ApiCommandSyncronizeWarehouses extends ApiCommand
             ->innerJoin('geoCity.region', 'geoRegion')
             ->innerJoin('geoRegion.country', 'geoCountry')
             ->where('d.id IN(:deliveryIds)')->setParameter('deliveryIds', $this->deliveryIds)
+            ->andWhere('w.address != :emptyAddress')->setParameter('emptyAddress', '')
             ;
         
         // получить массив параметров
