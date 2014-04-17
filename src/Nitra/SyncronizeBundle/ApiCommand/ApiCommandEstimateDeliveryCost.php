@@ -35,17 +35,17 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
     protected static $novaposhtaOptions = array(
         
         // тариф Интернет магазина доставка 1 кг.
-        'tarifKg' => 1.65,
+        'tarifKg' => 1.85,
         // максимальный вес до которого действует тариф Интернет магазина
-        'maxWeight' => 300,             
+        'maxWeight' => 300,
         
         // стоимость услуг оформления доставки
-        'сostServiceDelivery' => 12,
+        'сostServiceDelivery' => 17,
         // стоимость услуг оформления обратного конверта
-        'сostServiceBack' => 13,
+        'сostServiceBack' => 17,
         
         // минимаьная сумма страховки
-        'minSumInsurance' => 400, 
+        'minSumInsurance' => 400,
         // Размер страховки, %
         'percentInsurance' => 0.005,
         // Процент от оценочной стоимости, %
@@ -89,9 +89,10 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
      */
     protected static $deliveryIdAutolux = 3;
     protected static $autoluxOptions = array(
-        'percentPOD' => 0.5,              // инимальный процент для наложенного платежа pay on delivery
+        'percentPOD' => 1,              // инимальный процент для наложенного платежа pay on delivery
         'percentInsurance' => 0.5,        // Размер страховки, %
         'сostServiceDelivery' => 10,      // Стоимость оформления груза
+        'сostServiceBack' => 13,          // Стоимость оформления обратной доставки
     );
     
     /**
@@ -567,7 +568,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                     + self::$autoluxOptions['percentInsurance'] * $product['priceOut'] / 100;
         
         // стоимоть обратной доставки 
-        $costBack = (self::$autoluxOptions['percentPOD'] * $product['priceOut']/ 100 + 14);
+        $costBack = (self::$autoluxOptions['percentPOD'] * $product['priceOut']/ 100 + self::$autoluxOptions['сostServiceBack']);
         
         // итоговая стоимость доставки Склад-Склад
         $costToWarehouse = ($costTk + $costBack);
