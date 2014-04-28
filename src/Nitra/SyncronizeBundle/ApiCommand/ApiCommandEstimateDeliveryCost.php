@@ -312,6 +312,12 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                 return 'Для продукта не указан обязаетльный параметр fromCityId.';
             }
             
+            // вес продукта по умолчанию 
+            if (!isset($product['weight']) || !$product['weight']) {
+                $product['weight'] = 0;
+                $products[$prKey]['weight'] = $product['weight'];
+            }
+            
             // флаг продукта 
             // провеверити валидность продукта для расчета стоимости доставки
             // weight - не участвует в валидации продукта, 
@@ -327,6 +333,12 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                 // то сброс флага доступности расчета стоимости доставки 
                 $this->setParameter('isAvailableEstimateCost', false);
             }
+            
+            // Получить объемный вес продукта
+            $products[$prKey]['VWeight'] = $product['quantity'] * self::getVWeight($product['width'], $product['height'], $product['length']);
+            
+            // Получить максимальный вес
+            $products[$prKey]['maxWeight'] = $product['quantity'] * self::getMaxWeight($product['weight'], $product['width'], $product['height'], $product['length']);
         }
         
         // обновить массив параметров, обновить доставляемые продукты
@@ -428,10 +440,22 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             
         }
         
+        // итого вес продуктов
+        $totalWeight = 0;
+        
+        // итого объемный вес продуктов
+        $totalVWeight = 0;
+        
         // обойти массив продуктов, 
         // расчитать флаги и счетчики в результируюем массиве ТК
         // наполнить сортировочные массивы дат доставки
         foreach($products as $prKey => $product) {
+            
+            // обновить вес продуктов
+            $totalWeight += $product['weight'];
+            
+            // обновить объемный вес продуктов
+            $totalVWeight += $product['VWeight'];
             
             // обойти расчетный массив доставки продукта
             foreach($product['estimateCost'] as $deliveryKey => $estimateCost) {
@@ -502,6 +526,8 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         $result = array(
             'isAvailableEstimateCost' => $this->getParameter('isAvailableEstimateCost'),
             'deliveries' => $this->deliveries,
+            'totalWeight' => $totalWeight,
+            'totalVWeight' => $totalVWeight,
             'products' => $products,
         );
         
@@ -563,7 +589,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         }
         
         // стоимость доставки
-        $costTk = $bigestValue 
+        $costTk = $product['quantity'] * $bigestValue 
                     + self::$autoluxOptions['сostServiceDelivery'] 
                     + self::$autoluxOptions['percentInsurance'] * $product['priceOut'] / 100;
         
@@ -625,7 +651,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         if ($this->getParameter('isAvailableEstimateCost')) {
             
             // получить максимальный вес продукта
-            $maxWeight = self::getMaxWeight($product['weight'], $product['width'], $product['height'], $product['length']);
+            $maxWeight = $product['maxWeight'];
             
             // общий массив параметров расчета
             $optionsCommon = array(
@@ -825,8 +851,9 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         }
         
         // продукт валидный
-        // получить максимальный вес
-        $maxWeight = self::getMaxWeight($product['weight'], $product['width'], $product['height'], $product['length']);
+        // получить максимальный вес продукта
+        $maxWeight = $product['maxWeight'];
+        
         // если максимальный вес в пределах тарифа Интернет Магазина
         // производим расчет по тариыу Интерент Магазина
         if ($maxWeight < self::$novaposhtaOptions['maxWeight']) {
@@ -840,7 +867,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                 : self::$novaposhtaOptions['minSumInsurance'] * self::$novaposhtaOptions['percentInsurance'];
             
             // стоимость доставки
-            $costTk = $maxWeight * self::$novaposhtaOptions['tarifKg'] 
+            $costTk = $product['quantity'] * $maxWeight * self::$novaposhtaOptions['tarifKg'] 
                     + self::$novaposhtaOptions['сostServiceDelivery']
                     + $insurance;
             
@@ -922,7 +949,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         if ($this->getParameter('isAvailableEstimateCost')) {
             
             // получить максимальный вес продукта
-            $maxWeight = self::getMaxWeight($product['weight'], $product['width'], $product['height'], $product['length']);
+            $maxWeight = $product['maxWeight'];
             
             // xml запрос стоимость доставки до склада
             $xmlRequestToWarehouse = '<?xml version="1.0" encoding="UTF-8"?>
