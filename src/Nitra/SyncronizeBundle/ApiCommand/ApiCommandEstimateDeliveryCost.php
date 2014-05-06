@@ -292,22 +292,10 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             return 'Не указан обязательный параметр: products - массив доставляемых продуктов.';
         }
         
-        
-        // флаг достпости расчета стоимости доставки по продуктам
-        // по умолчанию true - предполагаем что все продукты валидные для расчета стоимости доставки
-        // если хотя бы один продукт не валидный то флаг меняется на false 
-        $this->setParameter('isAvailableEstimateCost', true);
-
         // получить массив доставляемых продуктов
         // валидировать каждый продукт
         $products = $this->getParameter('products');
         foreach($products as $prKey => $product) {
-            
-            // обнулить (инициализация)  объемный вес продукта
-            $products[$prKey]['VWeight'] = 0;
-            
-            // обнулить (инициализация)  максимальный вес продукта
-            $products[$prKey]['maxWeight'] = 0;
             
             // обнулить (инициализация) 
             // результирующий массив расчетов по продукту
@@ -324,7 +312,10 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                 $products[$prKey]['weight'] = $product['weight'];
             }
             
-            // флаг продукта 
+            // флаг доступности расчета стоимости доставки по продукту
+            // по умолчанию true - предполагаем что продукт валидный для расчета стоимости доставки
+            $products[$prKey]['isAvailableEstimateCost'] = true;
+            
             // провеверити валидность продукта для расчета стоимости доставки
             // weight - не участвует в валидации продукта, 
             // потому что, если weight не указан то можено вычислись объемный вес
@@ -335,20 +326,27 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                 !isset($product['length']) || !$product['length'] ||
                 !isset($product['priceOut']) || !$product['priceOut']
             ) {
-                // если хотя бы один продукт не валидный 
-                // то сброс флага доступности расчета стоимости доставки 
-                $this->setParameter('isAvailableEstimateCost', false);
-                
-            } else {
+                // сброс флага доступности расчета 
+                // стоимости доставки для продукта 
+                $products[$prKey]['isAvailableEstimateCost'] = false;
+            }
+            
+            // обнулить (инициализация)  объемный вес продукта
+            $products[$prKey]['VWeight'] = 0;
+            // обнулить (инициализация)  максимальный вес продукта
+            $products[$prKey]['maxWeight'] = 0;            
+            
+            // если продукт доступен для расчета стоимости доставки
+            // расчитать объемный вес продукта 
+            // расчитать максимальный вес продукта
+            if ($products[$prKey]['isAvailableEstimateCost']) {
                 // продукт валидный 
-                // расчитать объемный вес продукта и максимальный вес продукта
-                
-                // Получить объемный вес продукта
+                // расчитать объемный вес продукта 
                 $products[$prKey]['VWeight'] = $product['quantity'] * self::getVWeight($product['width'], $product['height'], $product['length']);
-
-                // Получить максимальный вес
+                // расчитать максимальный вес продукта
                 $products[$prKey]['maxWeight'] = $product['quantity'] * self::getMaxWeight($product['weight'], $product['width'], $product['height'], $product['length']);
             }
+            
         }
         
         // обновить массив параметров, обновить доставляемые продукты
@@ -534,7 +532,6 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         
         // результирующий массив
         $result = array(
-            'isAvailableEstimateCost' => $this->getParameter('isAvailableEstimateCost'),
             'deliveries' => $this->deliveries,
             'totalWeight' => $totalWeight,
             'totalVWeight' => $totalVWeight,
@@ -560,8 +557,8 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         // АвтоЛюкс нет интерфейса расчета даты доставки
         // предоставлен только расчет стоимости
         // проверить валидность для расчета стоимости доставки
-        if (!$this->getParameter('isAvailableEstimateCost')) {
-            // продукты не валидны для расчет стоимости
+        if (!$product['isAvailableEstimateCost']) {
+            // продукт не валиден для расчета стоимости
             return;
         }
         
@@ -658,7 +655,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         $soapClient = new \SoapClient($containerParameters['soap_url']);
         
         // проверить валидность для расчета стоимости доставки
-        if ($this->getParameter('isAvailableEstimateCost')) {
+        if ($product['isAvailableEstimateCost']) {
             
             // получить максимальный вес продукта
             $maxWeight = $product['maxWeight'];
@@ -855,7 +852,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         
         // проверить валидность для расчета стоимости доставки
         // проудкт не валидный - расчитываем по обычной схеме
-        if (!$this->getParameter('isAvailableEstimateCost')) {
+        if (!$product['isAvailableEstimateCost']) {
             // вернуть обычный расчет стоимости 
             return $this->novaposhtaEstimate($fromWarehouse, $toWarehouse, $product);
         }
@@ -956,7 +953,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         $containerParameters = $this->getContainer()->getParameter('novaposhta');
         
         // проверить валидность для расчета стоимости доставки
-        if ($this->getParameter('isAvailableEstimateCost')) {
+        if ($product['isAvailableEstimateCost']) {
             
             // получить максимальный вес продукта
             $maxWeight = $product['maxWeight'];
