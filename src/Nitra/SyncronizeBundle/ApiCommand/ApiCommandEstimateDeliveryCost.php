@@ -303,6 +303,12 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         $products = $this->getParameter('products');
         foreach($products as $prKey => $product) {
             
+            // обнулить (инициализация)  объемный вес продукта
+            $products[$prKey]['VWeight'] = 0;
+            
+            // обнулить (инициализация)  максимальный вес продукта
+            $products[$prKey]['maxWeight'] = 0;
+            
             // обнулить (инициализация) 
             // результирующий массив расчетов по продукту
             $products[$prKey]['estimateCost'] = array();
@@ -332,13 +338,17 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                 // если хотя бы один продукт не валидный 
                 // то сброс флага доступности расчета стоимости доставки 
                 $this->setParameter('isAvailableEstimateCost', false);
+                
+            } else {
+                // продукт валидный 
+                // расчитать объемный вес продукта и максимальный вес продукта
+                
+                // Получить объемный вес продукта
+                $products[$prKey]['VWeight'] = $product['quantity'] * self::getVWeight($product['width'], $product['height'], $product['length']);
+
+                // Получить максимальный вес
+                $products[$prKey]['maxWeight'] = $product['quantity'] * self::getMaxWeight($product['weight'], $product['width'], $product['height'], $product['length']);
             }
-            
-            // Получить объемный вес продукта
-            $products[$prKey]['VWeight'] = $product['quantity'] * self::getVWeight($product['width'], $product['height'], $product['length']);
-            
-            // Получить максимальный вес
-            $products[$prKey]['maxWeight'] = $product['quantity'] * self::getMaxWeight($product['weight'], $product['width'], $product['height'], $product['length']);
         }
         
         // обновить массив параметров, обновить доставляемые продукты
