@@ -334,7 +334,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             // обнулить (инициализация)  объемный вес продукта
             $products[$prKey]['VWeight'] = 0;
             // обнулить (инициализация)  максимальный вес продукта
-            $products[$prKey]['maxWeight'] = 0;            
+            $products[$prKey]['maxWeight'] = 0;
             
             // если продукт доступен для расчета стоимости доставки
             // расчитать объемный вес продукта 
