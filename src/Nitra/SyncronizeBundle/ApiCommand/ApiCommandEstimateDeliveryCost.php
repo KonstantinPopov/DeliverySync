@@ -534,7 +534,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         $result = array(
             'deliveries' => $this->deliveries,
             'totalWeight' => $totalWeight,
-            'totalVWeight' => $totalVWeight,
+            'totalVWeight' => ceil($totalVWeight),
             'products' => $products,
         );
         
@@ -749,7 +749,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             
             
             // стоимость доставки
-            $costTk = $product['priceOut'] * self::$intimeOptions['percentProductCost'] / 100
+            $costTk = $product['quantity'] * $product['priceOut'] * self::$intimeOptions['percentProductCost'] / 100
                                 + self::$intimeOptions['сostServiceDelivery'] 
                                 + ($product['quantity'] * str_replace(',', '.', (string)$xmlCostWarehouse[0]));
             
@@ -760,7 +760,8 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             $costToWarehouse = ($costTk + $costBack);
             
             // итоговая стоимость доставки Склад-Двери
-            $costToDoor = $product['priceOut'] * self::$intimeOptions['percentProductCost'] / 100
+            $costToDoor = $product['quantity'] * $product['priceOut'] * self::$intimeOptions['percentProductCost'] / 100
+                                + $costBack
                                 + self::$intimeOptions['сostServiceDelivery'] 
                                 + ($product['quantity'] * str_replace(',', '.', (string)$xmlCostDoor[0]));
         }
@@ -863,14 +864,14 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         
         // если максимальный вес в пределах тарифа Интернет Магазина
         // производим расчет по тариыу Интерент Магазина
-        if ($maxWeight < self::$novaposhtaOptions['maxWeight']) {
+        if ($product['quantity'] * $maxWeight < self::$novaposhtaOptions['maxWeight']) {
             
             // получить параметры  из файла настроек
             $containerParameters = $this->getContainer()->getParameter('novaposhta');
             
             // страховка
-            $insurance = ($product['priceOut'] > self::$novaposhtaOptions['minSumInsurance'])
-                ? $product['priceOut'] * self::$novaposhtaOptions['percentInsurance']
+            $insurance = ($product['quantity'] * $product['priceOut'] > self::$novaposhtaOptions['minSumInsurance'])
+                ? $product['quantity'] * $product['priceOut'] * self::$novaposhtaOptions['percentInsurance']
                 : self::$novaposhtaOptions['minSumInsurance'] * self::$novaposhtaOptions['percentInsurance'];
             
             // стоимость доставки
@@ -880,14 +881,14 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             
             // стоимоть обратной доставки 
             $costBack = self::$novaposhtaOptions['сostServiceBack'] 
-                        + $product['priceOut'] * self::$novaposhtaOptions['percentPOD'];
+                        + $product['quantity'] * $product['priceOut'] * self::$novaposhtaOptions['percentPOD'];
             
             // итоговая стоимость доставки Склад-Склад
             $costToWarehouse = ($costTk + $costBack);
             
             // итоговая стоимость доставки Склад-Двери
             $costToDoor = $costToWarehouse 
-                        + self::novaposhtaDeliveryToDoorByWeight($maxWeight);
+                        + self::novaposhtaDeliveryToDoorByWeight($product['quantity'] * $maxWeight);
             
             // xml запрос время доставки Склад-Склад
             $xmlRequestToWarehouse = '<?xml version="1.0" encoding="UTF-8"?>
@@ -983,20 +984,21 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             }
             
             // стоимость доставки
-            $costTk = $product['priceOut'] * self::$novaposhtaOptions['percentProductCost'] / 100
-                                + self::$novaposhtaOptions['сostServiceDelivery'] 
-                                + ($product['quantity'] * str_replace(',', '.', (string)$xmlCostWarehouse->cost));
+            $costTk = // $product['quantity'] * $product['priceOut'] * self::$novaposhtaOptions['percentProductCost'] / 100
+                                // + self::$novaposhtaOptions['сostServiceDelivery']  + 
+                                // в ответе НП $xmlCostWarehouse->cost уже учтено percentProductCost и сostServiceDelivery
+                                ($product['quantity'] * str_replace(',', '.', (string)$xmlCostWarehouse->cost));
             
             // стоимоть обратной доставки 
             $costBack = self::$novaposhtaOptions['сostServiceBack'] 
-                        + $product['priceOut'] * self::$novaposhtaOptions['percentPOD'];
+                        + $product['quantity'] * $product['priceOut'] * self::$novaposhtaOptions['percentPOD'];
             
             // итоговая стоимость доставки Склад-Склад
             $costToWarehouse = ($costTk + $costBack);
                 
             // итоговая стоимость доставки Склад-Двери
             $costToDoor = $costToWarehouse 
-                        + self::novaposhtaDeliveryToDoorByWeight($maxWeight);
+                        + self::novaposhtaDeliveryToDoorByWeight($product['quantity'] * $maxWeight);
             
             // дата доставки Склад-Склад
             $dateToWarehouse = \DateTime::createFromFormat('d.m.Y', (string)$xmlCostWarehouse->date);
