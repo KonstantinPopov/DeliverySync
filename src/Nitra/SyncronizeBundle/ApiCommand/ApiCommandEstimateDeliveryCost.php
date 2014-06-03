@@ -71,16 +71,16 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         'minSumInsurance' => 200, 
         
         // стоимость услуг оформления доставки
-        'сostServiceDelivery' => 10,
+        'сostServiceDelivery' => 14,
         
         // стоимость услуг оформления обратного конверта // Стоимость сикерпака
-        'сostServiceBack' => 4.80,
+        'сostServiceBack' => 6,
         
         // Процент от оценочной стоимости, %
-        'percentProductCost' => 0.5,
+        'percentProductCost' => 1,
         
         // % услуги по формлению наложенного платежа
-        'percentPOD' => 0.5,
+        'percentPOD' => 1,
         
     );
     
