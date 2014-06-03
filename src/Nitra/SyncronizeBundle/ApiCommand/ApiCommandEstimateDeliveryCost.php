@@ -80,7 +80,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         'percentProductCost' => 1,
         
         // % услуги по формлению наложенного платежа
-        'percentPOD' => 1,
+        'percentPOD' => 0.01,
         
     );
     
