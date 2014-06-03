@@ -754,7 +754,9 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                                 + ($product['quantity'] * str_replace(',', '.', (string)$xmlCostWarehouse[0]));
             
             // стоимоть обратной доставки 
-            $costBack = str_replace(',', '.', (string)$xmlCostBack[0]);
+            $costBack = str_replace(',', '.', (string)$xmlCostBack[0]) 
+                        + self::$intimeOptions['сostServiceBack'] 
+                        + $product['quantity'] * $product['priceOut'] * self::$intimeOptions['percentPOD'];
             
             // итоговая стоимость доставки Склад-Склад
             $costToWarehouse = ($costTk + $costBack);
