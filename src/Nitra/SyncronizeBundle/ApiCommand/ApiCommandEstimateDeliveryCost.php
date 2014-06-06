@@ -77,7 +77,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         'сostServiceBack' => 6,
         
         // Процент от оценочной стоимости, %
-        'percentProductCost' => 1,
+        'percentProductCost' => 0.01,
         
         // % услуги по формлению наложенного платежа
         'percentPOD' => 0.01,
@@ -702,31 +702,31 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                 return null;
             }
             
-            // обратная доставка Склад-Склад 
-            $optionsToBack = $optionsCommon;
-            $optionsToBack['VidPerevozki'] = 2; // Склад-Склад
-            $optionsToBack['Upakovka'] = 'ЦОФ-00019'; // Секьюрпак
-            $optionsToBack['GorodOtpravitel'] = $toWarehouse->getCity()->getBusinessKey();
-            $optionsToBack['GorodPoluchatel'] = $fromWarehouse->getCity()->getBusinessKey();
-            $optionsToBack['KontragentPoluchatel'] = 'Продавец';
-            $optionsToBack['Ves'] = '';
-            $optionsToBack['Obyom'] = '';
-            $optionsToBack['SposobOplaty'] = '';
-            
-            // стоимость обратной доставки Склад-Склад
-            $soapResponseCostBack = $soapClient->CalculateTTN($optionsToBack);
-            if (!$soapResponseCostBack instanceof \stdClass || !isset($soapResponseCostBack->result)) {
-                // получен не правильны ответ от сервера
-                return null;
-            }
-            
-            // преобразовать получить массив из xml ответа 
-            // получить xml Склад-Склад
-            $xmlCostBack = simplexml_load_string($soapResponseCostBack->result);
-            if (!$xmlCostBack instanceof \SimpleXMLElement || !isset($xmlCostBack[0])) {
-                // получен не правильны ответ от сервера
-                return null;
-            }
+//            // обратная доставка Склад-Склад 
+//            $optionsToBack = $optionsCommon;
+//            $optionsToBack['VidPerevozki'] = 2; // Склад-Склад
+//            $optionsToBack['Upakovka'] = 'ЦОФ-00019'; // Секьюрпак
+//            $optionsToBack['GorodOtpravitel'] = $toWarehouse->getCity()->getBusinessKey();
+//            $optionsToBack['GorodPoluchatel'] = $fromWarehouse->getCity()->getBusinessKey();
+//            $optionsToBack['KontragentPoluchatel'] = 'Продавец';
+//            $optionsToBack['Ves'] = '';
+//            $optionsToBack['Obyom'] = '';
+//            $optionsToBack['SposobOplaty'] = '';
+//            
+//            // стоимость обратной доставки Склад-Склад
+//            $soapResponseCostBack = $soapClient->CalculateTTN($optionsToBack);
+//            if (!$soapResponseCostBack instanceof \stdClass || !isset($soapResponseCostBack->result)) {
+//                // получен не правильны ответ от сервера
+//                return null;
+//            }
+//            
+//            // преобразовать получить массив из xml ответа 
+//            // получить xml Склад-Склад
+//            $xmlCostBack = simplexml_load_string($soapResponseCostBack->result);
+//            if (!$xmlCostBack instanceof \SimpleXMLElement || !isset($xmlCostBack[0])) {
+//                // получен не правильны ответ от сервера
+//                return null;
+//            }
             
             // Склад-Двери массив параметров расчета
             $optionsToDoor = $optionsCommon;
@@ -749,20 +749,24 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             
             
             // стоимость доставки
-            $costTk = $product['quantity'] * $product['priceOut'] * self::$intimeOptions['percentProductCost'] / 100
+            $costTk = $product['quantity'] * $product['priceOut'] * self::$intimeOptions['percentProductCost']
                                 + self::$intimeOptions['сostServiceDelivery'] 
                                 + ($product['quantity'] * str_replace(',', '.', (string)$xmlCostWarehouse[0]));
             
+//            // стоимоть обратной доставки 
+//            $costBack = str_replace(',', '.', (string)$xmlCostBack[0]) 
+//                        + self::$intimeOptions['сostServiceBack'] 
+//                        + $product['quantity'] * $product['priceOut'] * self::$intimeOptions['percentPOD'];
+            
             // стоимоть обратной доставки 
-            $costBack = str_replace(',', '.', (string)$xmlCostBack[0]) 
-                        + self::$intimeOptions['сostServiceBack'] 
+            $costBack = self::$intimeOptions['сostServiceBack'] 
                         + $product['quantity'] * $product['priceOut'] * self::$intimeOptions['percentPOD'];
             
             // итоговая стоимость доставки Склад-Склад
             $costToWarehouse = ($costTk + $costBack);
             
             // итоговая стоимость доставки Склад-Двери
-            $costToDoor = $product['quantity'] * $product['priceOut'] * self::$intimeOptions['percentProductCost'] / 100
+            $costToDoor = $product['quantity'] * $product['priceOut'] * self::$intimeOptions['percentProductCost']
                                 + $costBack
                                 + self::$intimeOptions['сostServiceDelivery'] 
                                 + ($product['quantity'] * str_replace(',', '.', (string)$xmlCostDoor[0]));
@@ -986,7 +990,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             }
             
             // стоимость доставки
-            $costTk = // $product['quantity'] * $product['priceOut'] * self::$novaposhtaOptions['percentProductCost'] / 100
+            $costTk = // $product['quantity'] * $product['priceOut'] * self::$novaposhtaOptions['percentProductCost']
                                 // + self::$novaposhtaOptions['сostServiceDelivery']  + 
                                 // в ответе НП $xmlCostWarehouse->cost уже учтено percentProductCost и сostServiceDelivery
                                 ($product['quantity'] * str_replace(',', '.', (string)$xmlCostWarehouse->cost));
