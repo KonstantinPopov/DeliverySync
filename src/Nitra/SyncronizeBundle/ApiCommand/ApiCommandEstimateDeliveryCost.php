@@ -600,6 +600,14 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                     + self::$autoluxOptions['сostServiceDelivery'] 
                     + self::$autoluxOptions['percentInsurance'] * $product['priceOut'] / 100;
         
+        // kontrabas 
+        // добавить скидку для клиента
+        if ($costTk > 0 && $this->client->getName() == 'kontrabas') {
+            // Скидка 10 процентов
+            $discount = ($costTk/100)*10; 
+            $costTk = $costTk - $discount;
+        }
+        
         // стоимоть обратной доставки 
         $costBack = (self::$autoluxOptions['percentPOD'] * $product['priceOut']/ 100 + self::$autoluxOptions['сostServiceBack']);
         
