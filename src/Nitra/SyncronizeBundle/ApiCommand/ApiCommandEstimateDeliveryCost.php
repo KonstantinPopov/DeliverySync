@@ -600,6 +600,14 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                     + self::$autoluxOptions['сostServiceDelivery'] 
                     + self::$autoluxOptions['percentInsurance'] * $product['priceOut'] / 100;
         
+        // kontrabas 
+        // добавить скидку для клиента
+        if ($costTk > 0 && $this->client->getName() == 'kontrabas') {
+            // Скидка 10 процентов
+            $discount = ($costTk/100)*10; 
+            $costTk = $costTk - $discount;
+        }
+        
         // стоимоть обратной доставки 
         $costBack = (self::$autoluxOptions['percentPOD'] * $product['priceOut']/ 100 + self::$autoluxOptions['сostServiceBack']);
         
@@ -749,9 +757,11 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             
             
             // стоимость доставки
-            $costTk = $product['quantity'] * $product['priceOut'] * self::$intimeOptions['percentProductCost']
-                                + self::$intimeOptions['сostServiceDelivery'] 
-                                + ($product['quantity'] * str_replace(',', '.', (string)$xmlCostWarehouse[0]));
+            $costTk = //$product['quantity'] * $product['priceOut'] * self::$intimeOptions['percentProductCost']
+                                // + self::$intimeOptions['сostServiceDelivery'] 
+                                // + ($product['quantity'] * str_replace(',', '.', (string)$xmlCostWarehouse[0]));
+                                // в ответе ИнТайм $xmlCostWarehouse[0] уже учтено percentProductCost и сostServiceDelivery
+                                ($product['quantity'] * str_replace(',', '.', (string)$xmlCostWarehouse[0]));
             
 //            // стоимоть обратной доставки 
 //            $costBack = str_replace(',', '.', (string)$xmlCostBack[0]) 
