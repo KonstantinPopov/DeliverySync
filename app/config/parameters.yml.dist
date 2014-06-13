@@ -32,8 +32,8 @@ parameters:
         # ID ТК в справочнике ТК
         delivery_id: 2
         # API ТК данные клиента
-        soap_id:  RezinaCC
-        soap_key: 52657a696e614343
+        soap_id:  7507982
+        soap_key: 8f1f4d5a-eaf2-11e3-b0fa-005056a7291e
         soap_url: https://ws.intime.ua/test98/ws/integration.1cws?wsdl
 
     # Настройки ТК АвтоЛюкс
