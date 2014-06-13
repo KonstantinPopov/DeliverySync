@@ -757,9 +757,11 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             
             
             // стоимость доставки
-            $costTk = $product['quantity'] * $product['priceOut'] * self::$intimeOptions['percentProductCost']
-                                + self::$intimeOptions['сostServiceDelivery'] 
-                                + ($product['quantity'] * str_replace(',', '.', (string)$xmlCostWarehouse[0]));
+            $costTk = //$product['quantity'] * $product['priceOut'] * self::$intimeOptions['percentProductCost']
+                                // + self::$intimeOptions['сostServiceDelivery'] 
+                                // + ($product['quantity'] * str_replace(',', '.', (string)$xmlCostWarehouse[0]));
+                                // в ответе ИнТайм $xmlCostWarehouse[0] уже учтено percentProductCost и сostServiceDelivery
+                                ($product['quantity'] * str_replace(',', '.', (string)$xmlCostWarehouse[0]));
             
 //            // стоимоть обратной доставки 
 //            $costBack = str_replace(',', '.', (string)$xmlCostBack[0]) 
