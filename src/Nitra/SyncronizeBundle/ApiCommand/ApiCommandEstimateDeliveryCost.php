@@ -91,7 +91,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
     protected static $autoluxOptions = array(
         'percentPOD' => 2,                // инимальный процент для наложенного платежа pay on delivery
         'percentInsurance' => 0.5,        // Размер страховки, %
-        'сostServiceDelivery' => 14,      // Стоимость оформления груза
+        'сostServiceDelivery' => 15,      // Стоимость оформления груза
         'сostServiceBack' => 13,          // Стоимость оформления обратной доставки
     );
     
@@ -769,17 +769,19 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
 //                        + $product['quantity'] * $product['priceOut'] * self::$intimeOptions['percentPOD'];
             
             // стоимоть обратной доставки 
-            $costBack = self::$intimeOptions['сostServiceBack'] 
+            $costBack = self::$intimeOptions['сostServiceDelivery'] 
+                        + self::$intimeOptions['сostServiceBack'] 
                         + $product['quantity'] * $product['priceOut'] * self::$intimeOptions['percentPOD'];
             
             // итоговая стоимость доставки Склад-Склад
             $costToWarehouse = ($costTk + $costBack);
             
             // итоговая стоимость доставки Склад-Двери
-            $costToDoor = $product['quantity'] * $product['priceOut'] * self::$intimeOptions['percentProductCost']
-                                + $costBack
-                                + self::$intimeOptions['сostServiceDelivery'] 
-                                + ($product['quantity'] * str_replace(',', '.', (string)$xmlCostDoor[0]));
+            $costToDoor = // $product['quantity'] * $product['priceOut'] * self::$intimeOptions['percentProductCost']
+                                // + $costBack
+                                // + self::$intimeOptions['сostServiceDelivery'] 
+                                // в ответе ИнТайм $xmlCostDoor[0] уже учтено percentProductCost и сostServiceDelivery
+                                ($product['quantity'] * str_replace(',', '.', (string)$xmlCostDoor[0]));
         }
         
         // Продукты не валидные для расчета стоимости
