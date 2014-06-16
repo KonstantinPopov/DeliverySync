@@ -89,9 +89,9 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
      */
     protected static $deliveryIdAutolux = 3;
     protected static $autoluxOptions = array(
-        'percentPOD' => 1,              // инимальный процент для наложенного платежа pay on delivery
+        'percentPOD' => 2,                // инимальный процент для наложенного платежа pay on delivery
         'percentInsurance' => 0.5,        // Размер страховки, %
-        'сostServiceDelivery' => 10,      // Стоимость оформления груза
+        'сostServiceDelivery' => 14,      // Стоимость оформления груза
         'сostServiceBack' => 13,          // Стоимость оформления обратной доставки
     );
     
