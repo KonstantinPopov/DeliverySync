@@ -83,10 +83,11 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         'percentPOD' => 0.01,
         
         // стоимость доставки до двери 
+        'deliveryToDoorWeight_10' => 35,
         'deliveryToDoorWeight_100' => 50,
-        'deliveryToDoorWeight_100_499' => 60,
-        'deliveryToDoorWeight_500_999' => 80,
-        'deliveryToDoorWeight_1000' => 120,
+        'deliveryToDoorWeight_500' => 60,
+        'deliveryToDoorWeight_1000' => 80,
+        'deliveryToDoorWeight_1000_plus' => 120,
         'deliveryToDoorWeight_default' => 0,
     );
     
@@ -655,17 +656,20 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
     public static function intimeDeliveryToDoorByWeight($maxWeight)
     {
         
-        if ($maxWeight > 0 && $maxWeight <= 100) {
+        if ($maxWeight > 0 && $maxWeight <= 10) {
+            return self::$intimeOptions['deliveryToDoorWeight_10'];
+            
+        } elseif ($maxWeight > 10 && $maxWeight <= 100) {
             return self::$intimeOptions['deliveryToDoorWeight_100'];
             
-        } elseif($maxWeight > 100 && $maxWeight <= 499) {
-            return self::$intimeOptions['deliveryToDoorWeight_100_499'];
+        } elseif($maxWeight > 100 && $maxWeight < 500) {
+            return self::$intimeOptions['deliveryToDoorWeight_500'];
             
-        } elseif($maxWeight > 499 && $maxWeight < 999 ) {
-            return self::$intimeOptions['deliveryToDoorWeight_500_999'];
-            
-        } elseif($maxWeight >= 1000) {
+        } elseif($maxWeight >= 500 && $maxWeight < 1000 ) {
             return self::$intimeOptions['deliveryToDoorWeight_1000'];
+            
+        } elseif($maxWeight > 1000) {
+            return self::$intimeOptions['deliveryToDoorWeight_1000_plus'];
         }
         
         // стоимость доставки по умолчанию
