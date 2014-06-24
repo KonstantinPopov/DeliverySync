@@ -82,6 +82,12 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         // % услуги по формлению наложенного платежа
         'percentPOD' => 0.01,
         
+        // стоимость доставки до двери 
+        'deliveryToDoorWeight_100' => 50,
+        'deliveryToDoorWeight_100_499' => 60,
+        'deliveryToDoorWeight_500_999' => 80,
+        'deliveryToDoorWeight_1000' => 120,
+        'deliveryToDoorWeight_default' => 0,
     );
     
     /**
@@ -637,7 +643,34 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         
         // вернуть результирующий массив
         return $result;
-    }    
+    }
+    
+    
+    /**
+     * ТК Интайм 
+     * Получить стоимость доставки Склад-Двери по весу продукта
+     * @param float $maxWeight - максимальный вес доставляемого продукта 
+     * @return float стоимость доставки до дверей
+     */
+    public static function intimeDeliveryToDoorByWeight($maxWeight)
+    {
+        
+        if ($maxWeight > 0 && $maxWeight <= 100) {
+            return self::$intimeOptions['deliveryToDoorWeight_100'];
+            
+        } elseif($maxWeight > 100 && $maxWeight <= 499) {
+            return self::$intimeOptions['deliveryToDoorWeight_100_499'];
+            
+        } elseif($maxWeight > 499 && $maxWeight < 999 ) {
+            return self::$intimeOptions['deliveryToDoorWeight_500_999'];
+            
+        } elseif($maxWeight >= 1000) {
+            return self::$intimeOptions['deliveryToDoorWeight_1000'];
+        }
+        
+        // стоимость доставки по умолчанию
+        return self::$intimeOptions['deliveryToDoorWeight_default'];
+    }
     
     /**
      * расчет стоимости доставки ТК ИнТайм
@@ -736,24 +769,24 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
 //                return null;
 //            }
             
-            // Склад-Двери массив параметров расчета
-            $optionsToDoor = $optionsCommon;
-            $optionsToDoor['VidPerevozki'] = 3; // Склад-Двери
-
-            // стоимость доставки Склад-Двери
-            $soapResponseCostDoor = $soapClient->CalculateTTN($optionsToDoor);
-            if (!$soapResponseCostDoor instanceof \stdClass || !isset($soapResponseCostDoor->result)) {
-                // получен не правильны ответ от сервера
-                return null;
-            }
-
-            // преобразовать получить массив из xml ответа 
-            // получить xml Склад-Двери
-            $xmlCostDoor = simplexml_load_string($soapResponseCostDoor->result);
-            if (!$xmlCostDoor instanceof \SimpleXMLElement || !isset($xmlCostDoor[0])) {
-                // получен не правильны ответ от сервера
-                return null;
-            }
+//            // Склад-Двери массив параметров расчета
+//            $optionsToDoor = $optionsCommon;
+//            $optionsToDoor['VidPerevozki'] = 3; // Склад-Двери
+//
+//            // стоимость доставки Склад-Двери
+//            $soapResponseCostDoor = $soapClient->CalculateTTN($optionsToDoor);
+//            if (!$soapResponseCostDoor instanceof \stdClass || !isset($soapResponseCostDoor->result)) {
+//                // получен не правильны ответ от сервера
+//                return null;
+//            }
+//
+//            // преобразовать получить массив из xml ответа 
+//            // получить xml Склад-Двери
+//            $xmlCostDoor = simplexml_load_string($soapResponseCostDoor->result);
+//            if (!$xmlCostDoor instanceof \SimpleXMLElement || !isset($xmlCostDoor[0])) {
+//                // получен не правильны ответ от сервера
+//                return null;
+//            }
             
             
             // стоимость доставки
@@ -777,11 +810,9 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             $costToWarehouse = ($costTk + $costBack);
             
             // итоговая стоимость доставки Склад-Двери
-            $costToDoor = // $product['quantity'] * $product['priceOut'] * self::$intimeOptions['percentProductCost']
-                                // + $costBack
-                                // + self::$intimeOptions['сostServiceDelivery'] 
-                                // в ответе ИнТайм $xmlCostDoor[0] уже учтено percentProductCost и сostServiceDelivery
-                                ($product['quantity'] * str_replace(',', '.', (string)$xmlCostDoor[0]));
+            $costToDoor = $costToWarehouse
+                        + self::intimeDeliveryToDoorByWeight($product['quantity'] * $maxWeight);
+                
         }
         
         // Продукты не валидные для расчета стоимости
@@ -858,8 +889,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         // стоимость доставки по умолчанию
         return self::$novaposhtaOptions['deliveryToDoorWeight_default'];
     }
-
-
+    
     /**
      * расчет стоимости доставки ТК Новая Почта
      * @param Warehouse $fromWarehouse - склда отправитель
