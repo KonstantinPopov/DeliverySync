@@ -10,6 +10,7 @@ params:
         geoCity:    { label: "Эталон город" }
         geoCityId:  { label: "ID эталон город" }
         name:       { label: "Название города" }
+        nameTk:     { label: "Название города в ТК" }
         updatedAt:  { label: "Обновлено" }
     object_actions:
         delete: ~
@@ -19,7 +20,7 @@ builders:
     list:
         params:
             title:          "Список городов ТК"
-            display:        [ delivery, geoCityId, geoCity, name, updatedAt ]
+            display:        [ delivery, geoCityId, geoCity, name, nameTk, updatedAt ]
             sort:           [ name, ASC ]
             max_per_page:   100
             actions:        []
@@ -30,7 +31,7 @@ builders:
                 
     filters:
         params:
-            display:    [ delivery, name ]
+            display:    [ delivery, name, nameTk ]
             
     new:
         params:
