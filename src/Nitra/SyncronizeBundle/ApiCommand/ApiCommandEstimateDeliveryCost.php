@@ -445,9 +445,9 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
 
                     // по умолчанию не определен механизм расчета
                     default:
-                        // ошибка
-                        return null;
+                        // не чего не делаем 
                         // throw new \Exception('Не определен механизм расчета стоимости доставки.');
+                        // если прервать выполенение (return null или throw то тетрадки не получат результат расчетов по всем ТК)
                         break;
                 }
                 
