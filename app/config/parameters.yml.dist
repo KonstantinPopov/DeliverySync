@@ -53,7 +53,7 @@ parameters:
         # ID страны на сервере ТК
         country_uuid: C35B6195-4EA3-11DE-8591-001D600938F8
         # ID ТК в справочнике ТК
-        delivery_id: 4
+        delivery_id: 6
         # API ТК данные клиента
         user:       user1
         password:   pass1
