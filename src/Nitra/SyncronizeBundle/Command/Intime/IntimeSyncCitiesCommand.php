@@ -35,9 +35,6 @@ class IntimeSyncCitiesCommand extends IntimeSync
         
         // выполнить синхронизацию
         $this->processSync($apiResponse, $output);
-        
-        // Синхронизация завершена
-        $output->writeln(date('Y-m-d H:i'). ' - Синхронизация городов ТК "ИнТайм" завершена успешно.');
     }
     
     /**
@@ -45,6 +42,10 @@ class IntimeSyncCitiesCommand extends IntimeSync
      */
     protected function processSync(array $responseArray, OutputInterface $output)
     {
+        // получить прогресс
+        $progress = $this->getHelperSet()->get('progress');
+        $progress->start($output, count($responseArray));
+        
         // массив названий не повторяющихся эталонов городов
         // ключ массива ID города эталона
         $geoCities = $this->getEntityManager()
@@ -97,6 +98,8 @@ class IntimeSyncCitiesCommand extends IntimeSync
                 $this->getEntityManager()->persist($dsCity);
             }
             
+            // обновить прогресс
+            $progress->advance();
         }
         
         // города не пришли в синхронизации 
@@ -120,6 +123,12 @@ class IntimeSyncCitiesCommand extends IntimeSync
         
         // сохранить города, если таковые имеются
         $this->getEntityManager()->flush();
+        
+        // Синхронизация завершена
+        $output->write(' ');
+        $output->write('Синхронизация городов ТК "ИнТайм" завершена успешно.');
+        // завершить прогресс
+        $progress->finish();
     }
     
 }

@@ -42,9 +42,6 @@ class NovaposhtaSyncCitiesCommand extends NovaposhtaSync
         
         // выполнить синхронизацию
         $this->processSync($apiResponse, $output);
-        
-        // Синхронизация завершена
-        $output->writeln(date('Y-m-d H:i'). ' - Синхронизация городов ТК "Новая Почта" завершена успешно.');
     }
     
     /**
@@ -73,6 +70,10 @@ class NovaposhtaSyncCitiesCommand extends NovaposhtaSync
      */
     protected function processSync(array $responseArray, OutputInterface $output)
     {
+        // получить прогресс
+        $progress = $this->getHelperSet()->get('progress');
+        $progress->start($output, count($responseArray));
+        
         // массив названий не повторяющихся эталонов городов
         // ключ массива ID города эталона
         $geoCities = $this->getEntityManager()
@@ -145,6 +146,8 @@ class NovaposhtaSyncCitiesCommand extends NovaposhtaSync
                 $this->getEntityManager()->persist($dsCity);
             }
             
+            // обновить прогресс
+            $progress->advance();
         }
         
         // города не пришли в синхронизации 
@@ -168,6 +171,12 @@ class NovaposhtaSyncCitiesCommand extends NovaposhtaSync
         
         // сохранить города, если таковые имеются
         $this->getEntityManager()->flush();
+        
+        // Синхронизация завершена
+        $output->write(' ');
+        $output->write('Синхронизация городов ТК "Новая Почта" завершена успешно.');
+        // завершить прогресс
+        $progress->finish();
     }
     
 }

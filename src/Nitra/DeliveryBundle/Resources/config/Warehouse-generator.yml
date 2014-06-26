@@ -9,6 +9,7 @@ params:
         delivery:   { label: "Транспортная компания" }
         city:       { label: "Город" }
         name:       { label: "Название склада" }
+        nameTk:     { label: "Название склада в ТК" }
         address:    { label: "Адресс склада" }
         phone:      { label: "Телефон" }
         updatedAt:  { label: "Обновлено" }
@@ -20,7 +21,7 @@ builders:
     list:
         params:
             title:          "Список складов ТК"
-            display:        [ delivery, city, name, address, phone ]
+            display:        [ delivery, city, name, address, nameTk, phone ]
             sort:           [ name, ASC ]
             max_per_page:   100
             actions:        []
@@ -28,7 +29,7 @@ builders:
             
     filters:
         params:
-            display:    [ delivery, city, name, address, phone ]
+            display:    [ delivery, city, name, address, nameTk, phone ]
     new:
         params:
             title:      "Добавить новый склад ТК"

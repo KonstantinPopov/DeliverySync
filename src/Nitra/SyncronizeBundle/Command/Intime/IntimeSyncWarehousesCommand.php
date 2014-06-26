@@ -35,9 +35,6 @@ class IntimeSyncWarehousesCommand extends IntimeSync
         
         // выполнить синхронизацию
         $this->processSync($apiResponse, $output);
-        
-        // Синхронизация завершена
-        $output->writeln(date('Y-m-d H:i'). ' - Синхронизация складов ТК "ИнТайм" завершена успешно.');
     }
     
     /**
@@ -45,6 +42,9 @@ class IntimeSyncWarehousesCommand extends IntimeSync
      */
     protected function processSync(array $responseArray, OutputInterface $output)
     {
+        // получить прогресс
+        $progress = $this->getHelperSet()->get('progress');
+        $progress->start($output, count($responseArray));
         
         // получить города DS
         // ключ массива ID города на стороне ТК
@@ -144,6 +144,9 @@ class IntimeSyncWarehousesCommand extends IntimeSync
                 }
                 
             }
+            
+            // обновить прогресс
+            $progress->advance();
         }
         
         // склады не пришли в синхронизации
@@ -166,7 +169,13 @@ class IntimeSyncWarehousesCommand extends IntimeSync
         }
         
         // сохранить склады
-        $this->getEntityManager()->flush();        
+        $this->getEntityManager()->flush();   
+        
+        // Синхронизация завершена
+        $output->write(' ');
+        $output->write('Синхронизация складов ТК "ИнТайм" завершена успешно.');
+        // завершить прогресс
+        $progress->finish();
     }
     
 }

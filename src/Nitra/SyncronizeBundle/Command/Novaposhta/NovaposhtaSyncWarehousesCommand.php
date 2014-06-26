@@ -42,9 +42,6 @@ class NovaposhtaSyncWarehousesCommand extends NovaposhtaSync
         
         // выполнить синхронизацию
         $this->processSync($apiResponse, $output);
-        
-        // Синхронизация завершена
-        $output->writeln(date('Y-m-d H:i'). ' - Синхронизация складов ТК "Новая Почта" завершена успешно.');
     }
     
     /**
@@ -73,6 +70,9 @@ class NovaposhtaSyncWarehousesCommand extends NovaposhtaSync
      */
     protected function processSync(array $responseArray, OutputInterface $output)
     {
+        // получить прогресс
+        $progress = $this->getHelperSet()->get('progress');
+        $progress->start($output, count($responseArray));
         
         // получить города DS
         // ключ массива ID города на стороне ТК
@@ -164,6 +164,9 @@ class NovaposhtaSyncWarehousesCommand extends NovaposhtaSync
                 $dsWarehouse->setLatitude((string)$tkWh->y);
                 $dsWarehouse->setLongitude((string)$tkWh->x);
             }
+            
+            // обновить прогресс
+            $progress->advance();
         }
         
         // склады не пришли в синхронизации
@@ -187,6 +190,12 @@ class NovaposhtaSyncWarehousesCommand extends NovaposhtaSync
         
         // сохранить склады
         $this->getEntityManager()->flush();
+        
+        // Синхронизация завершена
+        $output->write(' ');
+        $output->write('Синхронизация складов ТК "Новая Почта" завершена успешно.');
+        // завершить прогресс
+        $progress->finish();
     }
     
 }

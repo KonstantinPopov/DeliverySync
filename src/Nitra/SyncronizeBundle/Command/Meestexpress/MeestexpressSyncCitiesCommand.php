@@ -8,7 +8,7 @@ use Nitra\DeliveryBundle\Entity\City;
 
 /**
  * MeestexpressSyncCitiesCommand
- * Синхронизация городов для ТК Новая Почта
+ * Синхронизация городов для ТК Мист Експресс
  */
 class MeestexpressSyncCitiesCommand extends MeestexpressSync
 {
@@ -42,9 +42,6 @@ class MeestexpressSyncCitiesCommand extends MeestexpressSync
         
         // выполнить синхронизацию
         $this->processSync($apiResponse, $output);
-        
-        // Синхронизация завершена
-        $output->writeln(date('Y-m-d H:i'). ' - Синхронизация городов ТК "Мист Експресс" завершена успешно.');
     }
     
     /**
@@ -69,6 +66,10 @@ class MeestexpressSyncCitiesCommand extends MeestexpressSync
      */
     protected function processSync(array $responseArray, OutputInterface $output)
     {
+        // получить прогресс
+        $progress = $this->getHelperSet()->get('progress');
+        $progress->start($output, count($responseArray));
+        
         // массив названий не повторяющихся эталонов городов
         // ключ массива ID города эталона
         $geoCities = $this->getEntityManager()
@@ -122,6 +123,8 @@ class MeestexpressSyncCitiesCommand extends MeestexpressSync
                 $this->getEntityManager()->persist($dsCity);                
             }
             
+            // обновить прогресс
+            $progress->advance();
         }
         
         // города не пришли в синхронизации 
@@ -145,6 +148,12 @@ class MeestexpressSyncCitiesCommand extends MeestexpressSync
         
         // сохранить города, если таковые имеются
         $this->getEntityManager()->flush();
+        
+        // Синхронизация завершена
+        $output->write(' ');
+        $output->write('Синхронизация городов ТК "Мист Експресс" завершена успешно.');
+        // завершить прогресс
+        $progress->finish();
     }
     
 }
