@@ -1,16 +1,16 @@
 <?php
-namespace Nitra\SyncronizeBundle\Command\Intime;
+namespace Nitra\SyncronizeBundle\Command\Meestexpress;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Nitra\SyncronizeBundle\Command\Intime\IntimeSync;
+use Nitra\SyncronizeBundle\Command\Meestexpress\MeestexpressSync;
 use Nitra\DeliveryBundle\Entity\City;
 
 /**
- * IntimeSyncCitiesCommand
- * Синхронизация городов для ТК ИнТайм
+ * MeestexpressSyncCitiesCommand
+ * Синхронизация городов для ТК Мист Експресс
  */
-class IntimeSyncCitiesCommand extends IntimeSync
+class MeestexpressSyncCitiesCommand extends MeestexpressSync
 {
     
     /**
@@ -20,8 +20,8 @@ class IntimeSyncCitiesCommand extends IntimeSync
     {
         // настройка команды
         $this
-            ->setName('intime:sync-cities')
-            ->setDescription('Синхронизация городов ТК "ИнТайм".')
+            ->setName('nitra:meestexpress:sync-cities')
+            ->setDescription('Синхронизация городов ТК "Мист Експресс".')
         ;
     }
     
@@ -30,11 +30,35 @@ class IntimeSyncCitiesCommand extends IntimeSync
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        
         // отправить xml запрос на сервер
-        $apiResponse = $this->apiSendRequest('GetListCities', '/ListWarehouses/Warehouse', null);
+        $apiResponse = $this->apiSendRequest('1C_Query.php', $this->getXmlRequest(), $this->getXmlXpath());
+        
+        // проверить ответ
+        if (!$apiResponse) {
+            $errorMessage = date('Y-m-d H:i'). " - Ответ не был получен от сервера.";
+            throw new \Exception($errorMessage);
+        }
         
         // выполнить синхронизацию
         $this->processSync($apiResponse, $output);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    protected function getXmlRequest()
+    {
+        // запрос получения городов для страны
+        return $this->getXmlQuery('City', 'Countryuuid = "'.$this->getParameter('country_uuid').'" AND IsBranchInCity ="1"');
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    protected function getXmlXpath()
+    {
+        return 'result_table/items';
     }
     
     /**
@@ -53,7 +77,7 @@ class IntimeSyncCitiesCommand extends IntimeSync
             ->select('city.id, city.name')
             ->from('NitraGeoBundle:City', 'city')
             ->innerJoin('city.region', 'region')
-            ->innerJoin('region.country', 'country', 'WITH', 'country.id = :countryId')->setParameter('countryId', $this->getParameter('countryId'))
+            ->innerJoin('region.country', 'country', 'WITH', 'country.id = :country_id')->setParameter('country_id', $this->getParameter('country_id'))
             ->groupBy('city.name')
             ->getQuery()
             ->execute(array(), 'KeyPair');
@@ -68,25 +92,26 @@ class IntimeSyncCitiesCommand extends IntimeSync
             ->getQuery()
             ->execute(array(), 'KeyPair');
         
-        // обойти массив городов ТК
+        // обойти массив ответа
         foreach($responseArray as $tkCity) {
             
             // проверить существует ли город в городах ТК 
-            $businessKey = trim((string)$tkCity->Code);
+            $businessKey = trim((string)$tkCity->uuid);
             if (in_array($businessKey, array_keys($dsCities))) {
                 // удаляем из массива городов 
                 // оставшиеся города в массиве будут удалены, по ним ТК не работает
                 unset($dsCities[$businessKey]);
                 
             } else {
+                
                 // в ds нет города 
                 // добавить новый город 
-                $cityTkName = trim((string)$tkCity->Name);
+                $cityTkName = ($tkCity->DescriptionRU) ? trim($tkCity->DescriptionRU) : trim($tkCity->DescriptionUA);
                 
                 $dsCity = new City();
                 $dsCity->setDelivery($this->getDelivery());
                 $dsCity->setBusinessKey($businessKey);
-                $dsCity->setNameTk($cityTkName);
+                $dsCity->setNameTk(($tkCity->SeachName)?$tkCity->SeachName:$cityTkName);
                 $dsCity->setName($cityTkName);
                 
                 // автоподвязка к эталонному городу
@@ -95,7 +120,7 @@ class IntimeSyncCitiesCommand extends IntimeSync
                     $dsCity->setGeoCity($this->getEntityManager()->getReference('NitraGeoBundle:City', $geoCityId));
                 }                
                 // запомнить для сохранения
-                $this->getEntityManager()->persist($dsCity);
+                $this->getEntityManager()->persist($dsCity);                
             }
             
             // обновить прогресс
@@ -126,7 +151,7 @@ class IntimeSyncCitiesCommand extends IntimeSync
         
         // Синхронизация завершена
         $output->write(' ');
-        $output->write('Синхронизация городов ТК "ИнТайм" завершена успешно.');
+        $output->write('Синхронизация городов ТК "Мист Експресс" завершена успешно.');
         // завершить прогресс
         $progress->finish();
     }

@@ -45,4 +45,18 @@ parameters:
         # API ТК данные клиента
         # ссылка Api
         api_url: http://cabinet.autolux.ua/cabinet/api_calculator.php
-
+    
+    # Настройки ТК Meest Express
+    meestexpress:
+        # ID эталона страны в которой находится ТК
+        country_id:  1
+        # ID страны на сервере ТК
+        country_uuid: C35B6195-4EA3-11DE-8591-001D600938F8
+        # ID ТК в справочнике ТК
+        delivery_id: 4
+        # API ТК данные клиента
+        user:       user1
+        password:   pass1
+        clientUID:  '8458f0b0-930f-11e2-a91e-003048d2b473'
+        # ссылка Api
+        api_url:    http://api1c.meest-group.com/services/

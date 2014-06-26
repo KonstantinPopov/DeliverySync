@@ -98,6 +98,9 @@ class AutoluxSyncWarehousesCommand extends AutoluxSync
      */
     protected function processSyncCities(array $responseArray, OutputInterface $output)
     {
+        // получить прогресс
+        $progress = $this->getHelperSet()->get('progress');
+        $progress->start($output, count($responseArray));
         
         // массив названий не повторяющихся эталонов городов
         // ключ массива ID города эталона
@@ -151,6 +154,8 @@ class AutoluxSyncWarehousesCommand extends AutoluxSync
                 $this->getEntityManager()->persist($dsCity);
             }
             
+            // обновить прогресс
+            $progress->advance();
         }
         
         // города не пришли в синхронизации 
@@ -176,7 +181,10 @@ class AutoluxSyncWarehousesCommand extends AutoluxSync
         $this->getEntityManager()->flush();        
         
         // Синхронизация завершена
-        $output->writeln(date('Y-m-d H:i'). ' - Синхронизация городов ТК "АвтоЛюкс" завершена успешно.');
+        $output->write(' ');
+        $output->write('Синхронизация городов ТК "АвтоЛюкс" завершена успешно.');
+        // завершить прогресс
+        $progress->finish();
     }
     
     /**
@@ -186,6 +194,10 @@ class AutoluxSyncWarehousesCommand extends AutoluxSync
      */
     protected function processSyncWarehouses(array $responseArray, OutputInterface $output)
     {
+        // получить прогресс
+        $progress = $this->getHelperSet()->get('progress');
+        $progress->start($output, count($responseArray));
+        
         // получить города DS
         // ключ массива ID города на стороне ТК
         $dsCities = $this->getEntityManager()
@@ -271,6 +283,8 @@ class AutoluxSyncWarehousesCommand extends AutoluxSync
                 $dsWarehouse->setAddress((string)$tkWh['address']?:$tkWh['nameTk']);
             }
             
+            // обновить прогресс
+            $progress->advance();
         }
         
         // склады не пришли в синхронизации
@@ -296,7 +310,10 @@ class AutoluxSyncWarehousesCommand extends AutoluxSync
         $this->getEntityManager()->flush();
         
         // Синхронизация завершена
-        $output->writeln(date('Y-m-d H:i'). ' - Синхронизация складов ТК "АвтоЛюкс" завершена успешно.');
+        $output->write(' ');
+        $output->write('Синхронизация складов ТК "АвтоЛюкс" завершена успешно.');
+        // завершить прогресс
+        $progress->finish();
     }
     
     
