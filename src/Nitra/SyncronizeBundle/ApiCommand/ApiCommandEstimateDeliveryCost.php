@@ -1,6 +1,8 @@
 <?php
 namespace Nitra\SyncronizeBundle\ApiCommand;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Nitra\DeliveryBundle\Entity\Client;
 use Nitra\DeliveryBundle\Entity\Warehouse;
 
 /**
@@ -30,8 +32,8 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
     /**
      * @var ID ТК Новая Почта
      */
-    protected static $deliveryIdNovaposhta = 1;
-    protected static $deliveryIdNovaposhtaIM = -1; // ID от обычной со знаком минус
+    protected static $deliveryIdNovaposhta;
+    protected static $deliveryIdNovaposhtaIM ; // ID от обычной со знаком минус
     protected static $novaposhtaOptions = array(
         
         // тариф Интернет магазина доставка 1 кг.
@@ -64,7 +66,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
     /**
      * @var ID ТК ИнТайм
      */
-    protected static $deliveryIdIntime = 2;
+    protected static $deliveryIdIntime;
     protected static $intimeOptions = array(
         
         // минимаьная сумма страховки
@@ -94,13 +96,49 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
     /**
      * @var ID ТК АвтоЛюкс
      */
-    protected static $deliveryIdAutolux = 3;
+    protected static $deliveryIdAutolux;
     protected static $autoluxOptions = array(
         'percentPOD' => 2,                // инимальный процент для наложенного платежа pay on delivery
         'percentInsurance' => 0.5,        // Размер страховки, %
         'сostServiceDelivery' => 15,      // Стоимость оформления груза
         'сostServiceBack' => 13,          // Стоимость оформления обратной доставки
     );
+    
+    
+    
+    /**
+     * @var ID ТК Мест Експресс
+     */
+    protected static $deliveryIdMeestexpress;
+    protected static $meestexpressOptions = array(
+        
+//        // тариф Интернет магазина доставка 1 кг.
+//        'tarifKg' => 1.85,
+//        // максимальный вес до которого действует тариф Интернет магазина
+//        'maxWeight' => 300,
+//        
+//        // стоимость услуг оформления доставки
+//        'сostServiceDelivery' => 17,
+//        // стоимость услуг оформления обратного конверта
+//        'сostServiceBack' => 17,
+//        
+//        // минимаьная сумма страховки
+//        'minSumInsurance' => 400,
+//        // Размер страховки, %
+//        'percentInsurance' => 0.005,
+//        // Процент от оценочной стоимости, %
+//        'percentProductCost' => 0.1,
+//        // % услуги по формлению наложенного платежа
+//        'percentPOD' => 0.02,
+//        
+//        // стоимость доставки до двери 
+//        'deliveryToDoorWeight_1' => 20,
+//        'deliveryToDoorWeight_1_10' => 25,
+//        'deliveryToDoorWeight_11_300' => 40,
+//        'deliveryToDoorWeight_301_500' => 75,
+//        'deliveryToDoorWeight_default' => null,
+    );
+    
     
     /**
      * Город получатель
@@ -120,6 +158,33 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
      * array ( deliveryId => Nitra\DeliveryBundle\Entity\Warehouse )
      */
     private $toWarehouseByDelivery;
+    
+    /**
+     * Конструктор
+     */
+    public function __construct(ContainerInterface $container, Client $client, array $parameters = null)
+    {
+        // вызвать конструктор родителя
+        parent::__construct($container, $client, $parameters);
+        
+        // получить настройки ТК Новая Почта
+        $novaposhtaParameters = $this->getContainer()->getParameter('novaposhta');
+        self::$deliveryIdNovaposhta     = $novaposhtaParameters['delivery_id'];
+        self::$deliveryIdNovaposhtaIM   = ($novaposhtaParameters['delivery_id'] * -1);
+        
+        // получить настройки ТК ИнТайм
+        $intimeParameters = $this->getContainer()->getParameter('intime');
+        self::$deliveryIdIntime     =  $intimeParameters['delivery_id'];
+        
+        // получить настройки ТК АвтоЛюкс
+        $autoluxParameters = $this->getContainer()->getParameter('autolux');
+        self::$deliveryIdAutolux    = $autoluxParameters['delivery_id'];
+        
+        // получить настройки ТК Мист Експресс
+        $meestexpressParameters = $this->getContainer()->getParameter('meestexpress');
+        self::$deliveryIdMeestexpress = $meestexpressParameters['delivery_id'];
+    }
+    
     
     /**
      * Получить объемный вес
@@ -443,12 +508,18 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                         $products[$prKey]['estimateCost'][$deliveryKey] = $estimateCost;
                         break;
 
+                    // ТК Мист Експерсс
+                    case self::$deliveryIdMeestexpress:
+                        $estimateCost = $this->meestexpressEstimate($fromWarehouse, $toWarehouse, $product);
+                        $products[$prKey]['estimateCost'][$deliveryKey] = $estimateCost;
+                        break;
+                    
                     // по умолчанию не определен механизм расчета
-                    default:
+                    // default:
                         // не чего не делаем 
                         // throw new \Exception('Не определен механизм расчета стоимости доставки.');
                         // если прервать выполенение (return null или throw то тетрадки не получат результат расчетов по всем ТК)
-                        break;
+                        // break;
                 }
                 
             }
@@ -1115,5 +1186,168 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         // расчет врмени доставки
         return $result;
     }
+    
+    
+    
+    /**
+     * расчет стоимости доставки ТК Мист Експресс
+     * @link https://redmine.nitra.ua/issues/37027 - в титекете ссылка на googledocs
+     * @link https://docs.google.com/a/nitralabs.com/file/d/0B1wTeH74WNScMEgzbzkzUFR5WUpwbV81NGY2OE5aWUhwMWZN/edit
+     * @param Warehouse $fromWarehouse - склда отправитель
+     * @param Warehouse $toWarehouse - склда получатель
+     * @param array $product - массив данных перевозимого продукта
+     * @info xml
+     *      SenderService   - вид сервиса отправитель
+     *      ReceiverService - вид сервиса получатель
+     *                          Вид сервісу (Обов’язковий),
+     *                          якщо: 
+     *                          "0" - склад
+     *                          "1" - двері
+     * @return array - стоимость доставки
+     * @return null - нет данных по расчету стоимости доставки
+     */
+    protected function meestexpressEstimate(Warehouse $fromWarehouse, Warehouse $toWarehouse, array $product)
+    {
+        // получить параметры  из файла настроек
+        $containerParameters = $this->getContainer()->getParameter('meestexpress');
+        
+        // проверить валидность для расчета стоимости доставки
+        if ($product['isAvailableEstimateCost']) {
+            
+            // получить максимальный вес продукта
+            $maxWeight = $product['maxWeight'];
+            
+            // получить формат отправки для продукта
+            $sendingFormat = $this->meestexpressGetSendingFormatForProduct($product);
+            
+            // xml запрос стоимость доставки до склада
+            $xmlRequestToWarehouse = '
+                <CalculateShipment>
+                    <ClientUID>'    . $containerParameters['clientUID'] . '</ClientUID>
+                    <SenderService>0</SenderService>
+                    <SenderBranch_UID>' . $fromWarehouse->getBusinessKey() . '</SenderBranch_UID>
+                    <SenderCity_UID></SenderCity_UID>
+                    <ReceiverService>0</ReceiverService>
+                    <ReceiverBranch_UID>' . $toWarehouse->getBusinessKey() . '</ReceiverBranch_UID>
+                    <ReceiverCity_UID></ReceiverCity_UID>
+                    <COD>'.$product['priceOut'].'</COD>
+                    <Conditions_items>
+                        <ContitionsName></ContitionsName>
+                    </Conditions_items>
+                    <Places_items>
+                        <SendingFormat>'.(($sendingFormat) ? $sendingFormat['Code'] : '').'</SendingFormat>
+                        <Quantity>' . $product['quantity'] . '</Quantity>
+                        <Weight>'   . $maxWeight . '</Weight>
+                        <Length>'   . $product['length'] . '</Length>
+                        <Width>'    . $product['width'] . '</Width>
+                        <Height>'   . $product['height'] . '</Height>
+                        <Packaging />
+                        <Insurance>'. (($sendingFormat) ? $sendingFormat['MinInsurance'] : '') .'</Insurance>
+                    </Places_items>
+                </CalculateShipment>';
+            
+            // xml запрос стоимость доставки до двери
+            $xmlRequestToDoor = '
+                <CalculateShipment>
+                    <ClientUID>'    . $containerParameters['clientUID'] . '</ClientUID>
+                    <SenderService>0</SenderService>
+                    <SenderBranch_UID>' . $fromWarehouse->getBusinessKey() . '</SenderBranch_UID>
+                    <SenderCity_UID></SenderCity_UID>
+                    <ReceiverService>1</ReceiverService>
+                    <ReceiverBranch_UID>' . $toWarehouse->getBusinessKey() . '</ReceiverBranch_UID>
+                    <ReceiverCity_UID>'.$toWarehouse->getCity()->getBusinessKey().'</ReceiverCity_UID>
+                    <COD>'.$product['priceOut'].'</COD>
+                    <Conditions_items>
+                        <ContitionsName></ContitionsName>
+                    </Conditions_items>
+                    <Places_items>
+                        <SendingFormat>'.(($sendingFormat) ? $sendingFormat['Code'] : '').'</SendingFormat>
+                        <Quantity>' . $product['quantity'] . '</Quantity>
+                        <Weight>'   . $maxWeight . '</Weight>
+                        <Length>'   . $product['length'] . '</Length>
+                        <Width>'    . $product['width'] . '</Width>
+                        <Height>'   . $product['height'] . '</Height>
+                        <Packaging />
+                        <Insurance>'. (($sendingFormat) ? $sendingFormat['MinInsurance'] : '') .'</Insurance>
+                    </Places_items>
+                </CalculateShipment>';      
+            
+            // получить стоимость склад-склад
+            $xml = $this->meestexpressGetXmlDocument('CalculateShipments', $xmlRequestToWarehouse, '', 1);
+            $xmlCostWarehouse = $this->meestexpressApiSendRequest('1C_Document.php', $xml, 'result_table/items');
+            if (!$xmlCostWarehouse || !isset($xmlCostWarehouse[0]) || !isset($xmlCostWarehouse[0]->PriceOfDelivery)) {
+                // получен не правильны ответ от сервера
+                return null;
+            }
+            
+            // получить стоимость склад-двери
+            $xml = $this->meestexpressGetXmlDocument('CalculateShipments', $xmlRequestToDoor, '', 1);
+            $xmlCostDoor = $this->meestexpressApiSendRequest('1C_Document.php', $xml, 'result_table/items');
+            if (!$xmlCostDoor || !isset($xmlCostDoor[0]) || !isset($xmlCostDoor[0]->PriceOfDelivery)) {
+                // получен не правильны ответ от сервера
+                return null;
+            }
+            
+            
+            // стоимость доставки
+            $costTk = // в ответе $xmlCostWarehouse уже учтено percentProductCost и сostServiceDelivery
+                    ($product['quantity'] * str_replace(',', '.', (string)$xmlCostWarehouse[0]->PriceOfDelivery));
+            
+            // стоимоть обратной доставки 
+            $costBack = 0;
+                        // self::$meestexpressOptions['сostServiceBack'] 
+                        // + $product['quantity'] * $product['priceOut'] * self::$meestexpressOptions['percentPOD'];
+            
+            // итоговая стоимость доставки Склад-Склад
+            $costToWarehouse = ($costTk + $costBack);
+                
+            // итоговая стоимость доставки Склад-Двери
+            $costToDoor = // $costToWarehouse 
+                          // + self::novaposhtaDeliveryToDoorByWeight($product['quantity'] * $maxWeight);
+                    ($product['quantity'] * str_replace(',', '.', (string)$xmlCostDoor[0]->PriceOfDelivery));
+            
+            // дата доставки Склад-Склад
+            $dateToWarehouse = ''; // \DateTime::createFromFormat('d.m.Y', (string)$xmlCostWarehouse->date);
+            
+            // результирующий массив 
+            $result = array(
+                // стоимость даставки
+                'costTk' => self::round($costTk),
+                // стоимость обратной доставки
+                'costBack' => self::round($costBack),
+                // Склад-Склад
+                'costToWarehouse' => self::round($costToWarehouse),
+                // Склад-Двері
+                'costToDoor' => self::round($costToDoor),
+                // дата доставки 
+                'date' => $dateToWarehouse,
+            );
+            
+            // вернуть результирующий массив
+            // расчет стоимости доставки
+            return $result;
+        }
+        
+        // Продукты не валидные для расчета стоимости
+        return null;
+        
+        // результирующий массив 
+        $result = array(
+            // стоимость даставки
+            'costTk' => null,
+            // стоимость обратной доставки
+            'costBack' => null,
+            // Склад-Склад
+            'costToWarehouse' => null,
+            // Склад-Двері
+            'costToDoor' => null,
+            // дата доставки 
+            'date' => null,
+        );
+        
+        // вернуть результирующий массив
+        return $result;        
+    }
+    
     
 }

@@ -1,0 +1,6 @@
+parameters:
+    nitra.syncronize.apc.class: Nitra\SyncronizeBundle\Services\NitraSyncronizeApc
+
+services:
+    nitra.syncronize.apc:
+        class: %nitra.syncronize.apc.class%
