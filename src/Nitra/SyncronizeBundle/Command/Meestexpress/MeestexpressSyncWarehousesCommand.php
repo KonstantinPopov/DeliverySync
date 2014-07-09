@@ -49,23 +49,26 @@ class MeestexpressSyncWarehousesCommand extends MeestexpressSync
      */
     protected function getXmlRequest()
     {
-        // получить массив городов ТК
-        // array( businessKey => name )
-        $dsCities = $this->getEntityManager()
-            ->getRepository('NitraDeliveryBundle:City')
-            ->createQueryBuilder('city')
-            ->select('city.businessKey, city.businessKey')
-            ->where('city.delivery = :delivery')->setParameter('delivery', $this->getDelivery())
-            ->getQuery()
-            ->execute(array(), 'KeyPair');
+//        // получить массив городов ТК
+//        // array( businessKey => name )
+//        $dsCities = $this->getEntityManager()
+//            ->getRepository('NitraDeliveryBundle:City')
+//            ->createQueryBuilder('city')
+//            ->select('city.businessKey, city.businessKey')
+//            ->where('city.delivery = :delivery')->setParameter('delivery', $this->getDelivery())
+//            ->getQuery()
+//            ->execute(array(), 'KeyPair');
+//        
+//        // если не найдены города
+//        if (!$dsCities) {
+//            throw new \Exception('В первую очередь необходимо выполнить синхронизацию городов.');
+//        }
+//        
+//        // запрос получения городов для страны
+//        return $this->getXmlQuery('Branch', "CityUUID IN ('".implode("', '", $dsCities)."')");
         
-        // если не найдены города
-        if (!$dsCities) {
-            throw new \Exception('В первую очередь необходимо выполнить синхронизацию городов.');
-        }
-        
-        // запрос получения городов для страны
-        return $this->getXmlQuery('Branch', "CityUUID IN ('".implode("', '", $dsCities)."')");
+        // запрос получения всех отделений
+        return $this->getXmlQuery('Branch' );
     }
     
     /**
@@ -170,8 +173,8 @@ class MeestexpressSyncWarehousesCommand extends MeestexpressSync
                 
                 // добавить название улицы
                 $whAddress .= (trim((string)$street->DescriptionRU))
-                    ? trim((string)$street->DescriptionRU)
-                    : trim((string)$street->DescriptionUA);
+                    ? ' '.trim((string)$street->DescriptionRU)
+                    : ' '.trim((string)$street->DescriptionUA);
             }
             
             // адрес не был сформирован по данным улицы

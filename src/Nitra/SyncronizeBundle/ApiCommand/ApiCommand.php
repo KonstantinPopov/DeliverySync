@@ -31,6 +31,13 @@ class ApiCommand
      */
     protected $parameters;    
     
+    
+    /**
+     * @var cache
+     * Nitra\SyncronizeBundle\Services\NitraSyncronizeApc
+     */
+    protected $apc;
+
     /**
      * constructor
      * @param Client $client     - клиент 
@@ -65,6 +72,22 @@ class ApiCommand
     protected function getContainer()
     {
         return $this->container;
+    }
+    
+    /**
+     * получить сервис кеширования
+     * @return Nitra\SyncronizeBundle\Services\NitraSyncronizeApc
+     */
+    public function getApc()
+    {
+        // кеш сервис ранее не получали 
+        if ($this->apc === null) {
+            // получить кеш сервис
+            $this->apc = $this->getContainer()->get('nitra.syncronize.apc');
+        }
+        
+        // вернуть кеш сервис
+        return $this->apc;
     }
 
     /**
@@ -206,7 +229,7 @@ class ApiCommand
     }
     
     /**
-     * Отправить запрос на сервер НовойПочты
+     * Отправить запрос на сервер ТК Новая Почта
      * @param string $xmlRequest - отправлемый xml запрос
      * @param string $xpath - xml xpath в xml ответе
      * @return array $responseArray - массив элемоенов SimpleXMLElement - ответ сервера
@@ -218,7 +241,6 @@ class ApiCommand
         
         // отправить запрос на сервер 
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $containerParameters['api_url']);
         curl_setopt($ch, CURLOPT_URL, $containerParameters['api_url']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_HTTPHEADER, Array('Content-Type: text/xml'));
@@ -245,6 +267,161 @@ class ApiCommand
         }
         
         // $xmlResponse не xml формат преобразование в массив не возможно
+        return null;
+    }
+    
+    
+    /**
+     * Получить xml Query ТК Мист Експресс
+     * @param string $function  - название функции выполянемой на сервере ТК
+     * @param string $where     - условие поиска
+     * @param string $order     - сортировка
+     * @return string           - xml
+     */
+    protected function meestexpressGetXmlQuery($function, $where='', $order='')
+    {
+        // получить параметры  из файла настроек
+        $containerParameters = $this->getContainer()->getParameter('meestexpress');
+        
+        // подпись запроса = md5 ( login + password + function + where + order)
+        $sign = md5($containerParameters['user'] . $containerParameters['password']
+            . $function . $where . $order
+        );
+        
+        // вернуть xml запрос
+        return 
+        '<?xml version="1.0" encoding="UTF-8"?>
+            <param>
+                <login>'    . $containerParameters['user'] . '</login>
+                <function>' . $function . '</function>
+                <where>'    . $where . '</where>
+                <order>'    . $order . '</order>
+                <sign>'     . $sign . '</sign>
+            </param>';
+    }
+    
+    /**
+     * Получить xml Document ТК Мист Експресс
+     * @param string    $function   - название функции выполянемой на сервере ТК
+     * @param string    $request    - xml запрос 
+     * @param string    $request_id - ID запроса используется для получения результатов по запросу
+     * @param boolean   $wait       - флаг ожидание результата, держит соединение доя возвращения результата
+     * @return string               - xml
+     */
+    protected function meestexpressGetXmlDocument($function, $request='', $request_id='', $wait='')
+    {
+        // получить параметры  из файла настроек
+        $containerParameters = $this->getContainer()->getParameter('meestexpress');
+        
+        // подпись запроса = md5 ( login + password + function + where + order)
+        $sign = md5($containerParameters['user'] . $containerParameters['password'] 
+            . $function . $request . $request_id . $wait
+        );
+        
+        // вернуть xml запрос
+        return 
+        '<?xml version="1.0" encoding="UTF-8"?>
+            <param>
+                <login>'        . $containerParameters['user'] . '</login>
+                <function>'     . $function . '</function>
+                <request>'      . $request . '</request>
+                <request_id>'   . $request_id . '</request_id>
+                <wait>'         . $wait . '</wait>
+                <sign>'         . $sign . '</sign>
+            </param>';
+    }
+    
+    
+    
+    /**
+     * Отправить запрос на сервер ТК Мист Експресс
+     * @param string $scriptPath - название скрипта на который отправляется xml запрос
+     * @param string $xmlRequest - отправлемый xml запрос
+     * @param string $xpath - xml xpath в xml ответе
+     * @return array $responseArray - массив элемоенов SimpleXMLElement - ответ сервера
+     */
+    protected function meestexpressApiSendRequest($scriptPath, $xmlRequest, $xpath=false)
+    {
+        // получить параметры  из файла настроек
+        $containerParameters = $this->getContainer()->getParameter('meestexpress');
+        
+        // отправить запрос на сервер 
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $containerParameters['api_url'].$scriptPath);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, Array('Content-Type: text/xml'));
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $xmlRequest);
+        $xmlResponse = curl_exec($ch);
+        curl_close($ch);
+        
+        // преобразовать получить массив из xml ответа 
+        // получить xml
+        $xml = simplexml_load_string($xmlResponse);
+        // проверить xml 
+        if ($xml instanceof \SimpleXMLElement) {
+            
+            // вернуть элемент в ответе
+            if ($xpath) {
+                return $xml->xpath($xpath);
+            }
+            
+            // вернуть xml 
+            return $xml;
+        }
+        
+        // $xmlResponse не xml формат преобразование в массив не возможно
+        return null;
+    }
+    
+    /**
+     * Получить формат отправики ТК Мист Експресс для продукта
+     * @param arrat $product массив данных продукта
+     * @return array массив данных отправки
+     */
+    public function meestexpressGetSendingFormatForProduct(array $product)
+    {
+        
+        // получить кеш 
+        $apc = $this->getApc();
+        
+        // ключь кеша
+        $cacheId = 'meestexpressShipmentFormats';
+        
+        // получить форматы 
+        $apiShipmentFormats = $apc->apcFetch($cacheId, $has, function() use($apc, $cacheId) {
+            // xml получения списка 
+            $xml = $this->meestexpressGetXmlQuery('ShipmentFormats');
+            // получить форматы доставки из ТК 
+            $apiResponse = $this->meestexpressApiSendRequest('1C_Query.php', $xml , 'result_table/items');
+            $apiArray = json_decode(json_encode($apiResponse), true);
+            // сохранить данные в кеше 
+            $apc->apcStore($cacheId, $apiArray, 24*60*60);
+            // вернуть кешированные данные
+            return $apiArray;
+        });
+        
+        // доступные форматы 
+        $allowForamts = array('PAX', 'PL5', 'PL7', 'PL1');
+        $shipmentFormats = array();
+        if ($apiShipmentFormats) {
+            foreach($apiShipmentFormats as $shipmentFormat) {
+                if (in_array($shipmentFormat['Code'], $allowForamts)) {
+                    $shipmentFormats[$shipmentFormat['Code']] = $shipmentFormat;
+                }
+            }
+        }
+        
+        // обойти все доступные форматы врнуть самый досутпный
+        foreach($shipmentFormats as $shipmentFormat) {
+            if ($product['maxWeight'] <= $shipmentFormat['MaxWeight']) {
+                return $shipmentFormat;
+            }
+        }
+        
+        // доступный формат не найден
         return null;
     }
     
