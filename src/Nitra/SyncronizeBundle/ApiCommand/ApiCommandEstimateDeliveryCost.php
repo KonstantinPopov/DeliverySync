@@ -112,31 +112,10 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
     protected static $deliveryIdMeestexpress;
     protected static $meestexpressOptions = array(
         
-//        // тариф Интернет магазина доставка 1 кг.
-//        'tarifKg' => 1.85,
-//        // максимальный вес до которого действует тариф Интернет магазина
-//        'maxWeight' => 300,
-//        
-//        // стоимость услуг оформления доставки
-//        'сostServiceDelivery' => 17,
-//        // стоимость услуг оформления обратного конверта
-//        'сostServiceBack' => 17,
-//        
-//        // минимаьная сумма страховки
-//        'minSumInsurance' => 400,
-//        // Размер страховки, %
-//        'percentInsurance' => 0.005,
-//        // Процент от оценочной стоимости, %
-//        'percentProductCost' => 0.1,
-//        // % услуги по формлению наложенного платежа
-//        'percentPOD' => 0.02,
-//        
-//        // стоимость доставки до двери 
-//        'deliveryToDoorWeight_1' => 20,
-//        'deliveryToDoorWeight_1_10' => 25,
-//        'deliveryToDoorWeight_11_300' => 40,
-//        'deliveryToDoorWeight_301_500' => 75,
-//        'deliveryToDoorWeight_default' => null,
+        // % услуги по формлению наложенного платежа
+        // 2% от суммы, но не меньше 10,00 грн.
+        'percentPOD' => 0.02,
+        'podMin' => 10,
     );
     
     
@@ -1242,7 +1221,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                         <Width>'    . $product['width'] . '</Width>
                         <Height>'   . $product['height'] . '</Height>
                         <Packaging />
-                        <Insurance>'. (($sendingFormat) ? $sendingFormat['MinInsurance'] : '') .'</Insurance>
+                        <Insurance>'. $product['priceOut'] /*(($sendingFormat) ? $sendingFormat['MinInsurance'] : '')*/ .'</Insurance>
                     </Places_items>
                 </CalculateShipment>';
             
@@ -1268,7 +1247,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                         <Width>'    . $product['width'] . '</Width>
                         <Height>'   . $product['height'] . '</Height>
                         <Packaging />
-                        <Insurance>'. (($sendingFormat) ? $sendingFormat['MinInsurance'] : '') .'</Insurance>
+                        <Insurance>'. $product['priceOut'] /*(($sendingFormat) ? $sendingFormat['MinInsurance'] : '')*/ .'</Insurance>
                     </Places_items>
                 </CalculateShipment>';      
             
@@ -1294,9 +1273,12 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                     ($product['quantity'] * str_replace(',', '.', (string)$xmlCostWarehouse[0]->PriceOfDelivery));
             
             // стоимоть обратной доставки 
-            $costBack = 0;
-                        // self::$meestexpressOptions['сostServiceBack'] 
-                        // + $product['quantity'] * $product['priceOut'] * self::$meestexpressOptions['percentPOD'];
+            $costBack = $product['quantity'] * $product['priceOut'] * self::$meestexpressOptions['percentPOD'];
+            // стоимость меньше минимальной
+            if ($costBack < self::$meestexpressOptions['podMin']) {
+                // установить минимальную стоимость
+                $costBack = self::$meestexpressOptions['podMin'];
+            }
             
             // итоговая стоимость доставки Склад-Склад
             $costToWarehouse = ($costTk + $costBack);
