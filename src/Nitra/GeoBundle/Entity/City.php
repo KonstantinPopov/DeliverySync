@@ -10,7 +10,7 @@ use Knp\DoctrineBehaviors\Model as ORMBehaviors;
  * Nitra\GeoBundle\Entity\City
  * @ORM\Table(name="geo_city")
  * @ORM\Entity(repositoryClass="Nitra\GeoBundle\Repository\CityRepository")
- * @UniqueEntity(fields="name", message="Город с таким названием уже существует")
+ * @UniqueEntity(fields={"name", "region"}, message="Город с таким названием уже существует")
  */
 class City
 {
