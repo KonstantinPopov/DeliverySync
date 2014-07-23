@@ -463,34 +463,54 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                 // в зависимости от ID ТК разные методы расчетеов
                 switch($deliveryKey) {
                     
+                    // для каждой ТК  вызов метода расчет обрамлен в try ... catch 
+                    // потому что 
+                    // если возникает ошибка по какой-то одной ТК 
+                    // то результат расчета будет содержать результаты по другим другим ТК 
+                    // в противном случае не будет результат расчет по всем ТК 
+                    // другими словами 
+                    // если нет try ... catch  для каждой ТК 
+                    // и в расчете ТК Интайм возникала ошибка то не будет результатов и по другим ТК 
+                    
                     // ТК Новая Почта
                     case self::$deliveryIdNovaposhta:
-                        $estimateCost = $this->novaposhtaEstimate($fromWarehouse, $toWarehouse, $product);
-                        $products[$prKey]['estimateCost'][$deliveryKey] = $estimateCost;
+                        // попытка выполнить расчет 
+                        try {
+                            $estimateCost = $this->novaposhtaEstimate($fromWarehouse, $toWarehouse, $product);
+                            $products[$prKey]['estimateCost'][$deliveryKey] = $estimateCost;
+                        } catch (\Exception $ex) {}
                         break;
                     
                     // ТК Новая Почта ИМ
                     case self::$deliveryIdNovaposhtaIM:
-                        $estimateCost = $this->novaposhtaIMEstimate($fromWarehouse, $toWarehouse, $product);
-                        $products[$prKey]['estimateCost'][$deliveryKey] = $estimateCost;
+                        try {
+                            $estimateCost = $this->novaposhtaIMEstimate($fromWarehouse, $toWarehouse, $product);
+                            $products[$prKey]['estimateCost'][$deliveryKey] = $estimateCost;
+                        } catch (\Exception $ex) {}
                         break;                    
                     
                     // ТК ИнТайм
                     case self::$deliveryIdIntime:
-                        $estimateCost = $this->intimeEstimate($fromWarehouse, $toWarehouse, $product);
-                        $products[$prKey]['estimateCost'][$deliveryKey] = $estimateCost;
+                        try {
+                            $estimateCost = $this->intimeEstimate($fromWarehouse, $toWarehouse, $product);
+                            $products[$prKey]['estimateCost'][$deliveryKey] = $estimateCost;
+                        } catch (\Exception $ex) {}
                         break;
 
                     // ТК Автолюкс
                     case self::$deliveryIdAutolux:
-                        $estimateCost = $this->autoluxEstimate($fromWarehouse, $toWarehouse, $product);
-                        $products[$prKey]['estimateCost'][$deliveryKey] = $estimateCost;
+                        try {
+                            $estimateCost = $this->autoluxEstimate($fromWarehouse, $toWarehouse, $product);
+                            $products[$prKey]['estimateCost'][$deliveryKey] = $estimateCost;
+                        } catch (\Exception $ex) {}
                         break;
 
                     // ТК Мист Експерсс
                     case self::$deliveryIdMeestexpress:
-                        $estimateCost = $this->meestexpressEstimate($fromWarehouse, $toWarehouse, $product);
-                        $products[$prKey]['estimateCost'][$deliveryKey] = $estimateCost;
+                        try {
+                            $estimateCost = $this->meestexpressEstimate($fromWarehouse, $toWarehouse, $product);
+                            $products[$prKey]['estimateCost'][$deliveryKey] = $estimateCost;
+                        } catch (\Exception $ex) {}
                         break;
                     
                     // по умолчанию не определен механизм расчета
