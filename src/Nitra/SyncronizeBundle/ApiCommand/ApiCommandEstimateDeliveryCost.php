@@ -680,8 +680,8 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         // kontrabas 
         // добавить скидку для клиента
         if ($costTk > 0 && $this->client->getName() == 'kontrabas') {
-            // Скидка 10 процентов
-            $discount = ($costTk/100)*10; 
+            // Скидка 10% процентов
+            $discount = ($costTk*0.1); 
             $costTk = $costTk - $discount;
         }
         
@@ -1207,6 +1207,13 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
      */
     protected function meestexpressEstimate(Warehouse $fromWarehouse, Warehouse $toWarehouse, array $product)
     {
+        // kontrabas 
+        // индивидульные настройки
+        if ($this->client->getName() == 'kontrabas') {
+            // % услуги по формлению наложенного платежа
+            self::$meestexpressOptions['percentPOD'] = 0.012;
+        }
+        
         // получить параметры  из файла настроек
         $containerParameters = $this->getContainer()->getParameter('meestexpress');
         
@@ -1292,6 +1299,15 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             $costTk = // в ответе $xmlCostWarehouse уже учтено percentProductCost и сostServiceDelivery
                     ($product['quantity'] * str_replace(',', '.', (string)$xmlCostWarehouse[0]->PriceOfDelivery));
             
+            // kontrabas 
+            // добавить скидку для клиента
+            if ($costTk > 0 && $this->client->getName() == 'kontrabas') {
+                // Скидка 1% процент
+                $discount = ($costTk*0.01); 
+                $costTk = $costTk - $discount;
+            }
+            
+            
             // стоимоть обратной доставки 
             $costBack = $product['quantity'] * $product['priceOut'] * self::$meestexpressOptions['percentPOD'];
             // стоимость меньше минимальной
@@ -1306,7 +1322,8 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             // итоговая стоимость доставки Склад-Двери
             $costToDoor = // $costToWarehouse 
                           // + self::novaposhtaDeliveryToDoorByWeight($product['quantity'] * $maxWeight);
-                    ($product['quantity'] * str_replace(',', '.', (string)$xmlCostDoor[0]->PriceOfDelivery));
+                    $costBack
+                    + ($product['quantity'] * str_replace(',', '.', (string)$xmlCostDoor[0]->PriceOfDelivery));
             
             // дата доставки Склад-Склад
             $dateToWarehouse = ''; // \DateTime::createFromFormat('d.m.Y', (string)$xmlCostWarehouse->date);
