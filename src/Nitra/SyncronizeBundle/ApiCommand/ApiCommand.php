@@ -354,6 +354,7 @@ class ApiCommand
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $xmlRequest);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
         $xmlResponse = curl_exec($ch);
         curl_close($ch);
         
