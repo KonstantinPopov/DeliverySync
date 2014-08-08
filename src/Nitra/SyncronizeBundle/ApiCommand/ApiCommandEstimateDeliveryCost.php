@@ -675,7 +675,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         // стоимость доставки
         $costTk = $product['quantity'] * $bigestValue 
                     + self::$autoluxOptions['сostServiceDelivery'] 
-                    + self::$autoluxOptions['percentInsurance'] * $product['priceOut'] / 100;
+                    + self::$autoluxOptions['percentInsurance'] * $product['quantity']  * $product['priceOut'] / 100;
         
         // kontrabas 
         // добавить скидку для клиента
@@ -686,7 +686,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         }
         
         // стоимоть обратной доставки 
-        $costBack = (self::$autoluxOptions['percentPOD'] * $product['priceOut']/ 100 + self::$autoluxOptions['сostServiceBack']);
+        $costBack = (self::$autoluxOptions['percentPOD'] * $product['quantity'] * $product['priceOut']/ 100 + self::$autoluxOptions['сostServiceBack']);
         
         // итоговая стоимость доставки Склад-Склад
         $costToWarehouse = ($costTk + $costBack);
