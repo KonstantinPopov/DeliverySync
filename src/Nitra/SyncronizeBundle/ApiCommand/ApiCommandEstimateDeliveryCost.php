@@ -1299,13 +1299,13 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             $costTk = // в ответе $xmlCostWarehouse уже учтено percentProductCost и сostServiceDelivery
                     ($product['quantity'] * str_replace(',', '.', (string)$xmlCostWarehouse[0]->PriceOfDelivery));
             
-            // kontrabas 
-            // добавить скидку для клиента
-            if ($costTk > 0 && $this->client->getName() == 'kontrabas') {
-                // Скидка 1% процент
-                $discount = ($costTk*0.01); 
-                $costTk = $costTk - $discount;
-            }
+//            // kontrabas временно комментируем: в параметрах подключения к Мист Експресс используем данные контрабаса, которые учитывают скидку.
+//            // добавить скидку для клиента
+//            if ($costTk > 0 && $this->client->getName() == 'kontrabas') {
+//                // Скидка 1% процент
+//                $discount = ($costTk*0.01); 
+//                $costTk = $costTk - $discount;
+//            }
             
             
             // стоимоть обратной доставки 
