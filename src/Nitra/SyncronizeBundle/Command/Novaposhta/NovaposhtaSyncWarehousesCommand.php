@@ -96,13 +96,13 @@ class NovaposhtaSyncWarehousesCommand extends NovaposhtaSync
         // обойти массив ответа
         foreach($responseArray as $tkWh) {
             
-            // адрес склада берем по умолчанию русское знаяение
+            // адрес склада берем по умолчанию русское значение
             $whAddress = trim((string)$tkWh->addressRu);
             if (!$whAddress) {
                 // нет русского значения берем то что есть
                 $whAddress = trim((string)$tkWh->address);
             }
-            
+                        
             // проверить существует ли склад в DS
             $businessKey = (string)$tkWh->wareId;
             if (!isset($dsWarehouses[$businessKey])) {

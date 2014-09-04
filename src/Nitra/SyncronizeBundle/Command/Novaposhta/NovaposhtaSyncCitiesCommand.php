@@ -86,37 +86,33 @@ class NovaposhtaSyncCitiesCommand extends NovaposhtaSync
             ->getQuery()
             ->execute(array(), 'KeyPair');
         
-        // получить массив городов ТК
-        // array( businessKey => name )
+        // получить города DS
+        // ключ массива ID города на стороне ТК
         $dsCities = $this->getEntityManager()
-            ->getRepository('NitraDeliveryBundle:City')
-            ->createQueryBuilder('city')
-            ->select('city.businessKey, city.nameTk')
+            ->createQueryBuilder()
+            ->select('city.id, city.businessKey, city.name')
+            ->from('NitraDeliveryBundle:City', 'city', 'city.businessKey')
             ->where('city.delivery = :delivery')->setParameter('delivery', $this->getDelivery())
             ->getQuery()
-            ->execute(array(), 'KeyPair');
+            ->getArrayResult();
         
         // обойти массив ответа
         foreach($responseArray as $tkCity) {
             
-            // проверить существует ли город в городах ТК 
+            // название города берем по умолчанию русское значение
+            $cityTkName = trim((string)$tkCity->nameRu);
+            
+            // проверить существует ли город в DS
             $businessKey = trim((string)$tkCity->id);
-            if (in_array($businessKey, array_keys($dsCities))) {
-                // удаляем из массива городов 
-                // оставшиеся города в массиве будут удалены, по ним ТК не работает
-                unset($dsCities[$businessKey]);
-                
-            } else {
-                // в ds нет города 
-                // добавить новый город 
-                $cityTkName = trim((string)$tkCity->nameRu);
-                
+            if (!isset($dsCities[$businessKey])) {
+                // город в DS не существует
+                // создать новый город
                 $dsCity = new City();
                 $dsCity->setDelivery($this->getDelivery());
                 $dsCity->setBusinessKey($businessKey);
                 $dsCity->setNameTk($cityTkName);
                 // город регион
-                if ((string)$tkCity->id == (string)$tkCity->parentCityId) {
+                if (trim((string)$tkCity->id) == trim((string)$tkCity->parentCityId)) {
                     // установить город регион
                     $dsCity->setName($cityTkName);
                     
@@ -136,14 +132,43 @@ class NovaposhtaSyncCitiesCommand extends NovaposhtaSync
                     $dsCity->setName($cityName);
                 }
                 
-                // автоподвязка к эталонному городу
-                $geoCityId = array_search($cityTkName, $geoCities);
-                if ($geoCityId) {
-                    $dsCity->setGeoCity($this->getEntityManager()->getReference('NitraGeoBundle:City', $geoCityId));
-                }
+//                // убираем автоподвязку
+//                // автоподвязка к эталонному городу
+//                $geoCityId = array_search($cityTkName, $geoCities);
+//                if ($geoCityId) {
+//                    $dsCity->setGeoCity($this->getEntityManager()->getReference('NitraGeoBundle:City', $geoCityId));
+//                }
                 
                 // запомнить для сохранения
-                $this->getEntityManager()->persist($dsCity);
+                $this->getEntityManager()->persist($dsCity);                
+                
+            } else {
+                
+                // город в DS сушествует 
+                // получить город
+                $dsCity = $this->getEntityManager()->getReference('NitraDeliveryBundle:City', $dsCities[$businessKey]['id']);
+                
+                // удаляем из массива город 
+                // оставшиеся города в массиве будут удалены, по ним ТК не работает
+                unset($dsCities[$businessKey]);
+            }
+            
+            // массив сравнения город ТК 
+            $tkCityCompare = serialize(array(
+               trim((string)$tkCity->id),
+               trim((string)$tkCity->nameRu),
+            ));
+            
+            // массив сравнения город DS
+            $dsCityCompare = serialize(array(
+                (string)$dsCity->getBusinessKey(),
+                (string)$dsCity->getNameTk(),
+            ));
+            
+            // сравнить город ТК и город DS
+            if ($tkCityCompare != $dsCityCompare) {
+                // наполнить город DS данными
+                $dsCity->setNameTk(trim((string)$tkCity->nameRu));
             }
             
             // обновить прогресс
