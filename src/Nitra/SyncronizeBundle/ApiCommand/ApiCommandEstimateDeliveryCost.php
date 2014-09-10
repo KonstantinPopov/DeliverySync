@@ -101,7 +101,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
         'percentPOD' => 2,                // инимальный процент для наложенного платежа pay on delivery
         'percentInsurance' => 0.5,        // Размер страховки, %
         'сostServiceDelivery' => 15,      // Стоимость оформления груза
-        'сostServiceBack' => 13,          // Стоимость оформления обратной доставки
+        'сostServiceBack' => 15,          // Стоимость оформления обратной доставки
     );
     
     
@@ -420,6 +420,11 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             throw new \Exception($errorMessage);
         }
         
+        // получить $timeout
+        $timeout = $this->container->get('nitra.timeout');
+        // лимит времени - микросекунды (1 сек = 1000000)
+        $timeoutLimit = 30000000;
+        
         // получить массив доставляемых продуктов
         $products = $this->getParameter('products');
         
@@ -476,7 +481,12 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                     case self::$deliveryIdNovaposhta:
                         // попытка выполнить расчет 
                         try {
-                            $estimateCost = $this->novaposhtaEstimate($fromWarehouse, $toWarehouse, $product);
+                            // выполнить расчет с ограничением по времени
+                            // лимит времени - микросекунды (1 сек = 1000000)
+                            $estimateCost = $timeout->process(function() use ($fromWarehouse, $toWarehouse, $product){
+                                return $this->novaposhtaEstimate($fromWarehouse, $toWarehouse, $product);
+                            }, $timeoutLimit);
+                            // запомнить результат
                             $products[$prKey]['estimateCost'][$deliveryKey] = $estimateCost;
                         } catch (\Exception $ex) {}
                         break;
@@ -484,7 +494,12 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                     // ТК Новая Почта ИМ
                     case self::$deliveryIdNovaposhtaIM:
                         try {
-                            $estimateCost = $this->novaposhtaIMEstimate($fromWarehouse, $toWarehouse, $product);
+                            // выполнить расчет с ограничением по времени
+                            // лимит времени - микросекунды (1 сек = 1000000)
+                            $estimateCost = $timeout->process(function() use ($fromWarehouse, $toWarehouse, $product){
+                                return $this->novaposhtaIMEstimate($fromWarehouse, $toWarehouse, $product);
+                            }, $timeoutLimit);
+                            // запомнить результат
                             $products[$prKey]['estimateCost'][$deliveryKey] = $estimateCost;
                         } catch (\Exception $ex) {}
                         break;                    
@@ -492,7 +507,12 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                     // ТК ИнТайм
                     case self::$deliveryIdIntime:
                         try {
-                            $estimateCost = $this->intimeEstimate($fromWarehouse, $toWarehouse, $product);
+                            // выполнить расчет с ограничением по времени
+                            // лимит времени - микросекунды (1 сек = 1000000)
+                            $estimateCost = $timeout->process(function() use ($fromWarehouse, $toWarehouse, $product){
+                                return $this->intimeEstimate($fromWarehouse, $toWarehouse, $product);
+                            }, $timeoutLimit);
+                            // запомнить результат
                             $products[$prKey]['estimateCost'][$deliveryKey] = $estimateCost;
                         } catch (\Exception $ex) {}
                         break;
@@ -500,7 +520,12 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                     // ТК Автолюкс
                     case self::$deliveryIdAutolux:
                         try {
-                            $estimateCost = $this->autoluxEstimate($fromWarehouse, $toWarehouse, $product);
+                            // выполнить расчет с ограничением по времени
+                            // лимит времени - микросекунды (1 сек = 1000000)
+                            $estimateCost = $timeout->process(function() use ($fromWarehouse, $toWarehouse, $product){
+                                return $this->autoluxEstimate($fromWarehouse, $toWarehouse, $product);
+                            }, $timeoutLimit);
+                            // запомнить результат
                             $products[$prKey]['estimateCost'][$deliveryKey] = $estimateCost;
                         } catch (\Exception $ex) {}
                         break;
@@ -508,7 +533,12 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                     // ТК Мист Експерсс
                     case self::$deliveryIdMeestexpress:
                         try {
-                            $estimateCost = $this->meestexpressEstimate($fromWarehouse, $toWarehouse, $product);
+                            // выполнить расчет с ограничением по времени
+                            // лимит времени - микросекунды (1 сек = 1000000)
+                            $estimateCost = $timeout->process(function() use ($fromWarehouse, $toWarehouse, $product){
+                                return $this->meestexpressEstimate($fromWarehouse, $toWarehouse, $product);
+                            }, $timeoutLimit);
+                            // запомнить результат
                             $products[$prKey]['estimateCost'][$deliveryKey] = $estimateCost;
                         } catch (\Exception $ex) {}
                         break;

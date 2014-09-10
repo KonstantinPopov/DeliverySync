@@ -28,6 +28,8 @@ class AppKernel extends Kernel
             new Nitra\DeliveryBundle\NitraDeliveryBundle(),
             new Nitra\ManagerBundle\NitraManagerBundle(),
             new Nitra\SyncronizeBundle\NitraSyncronizeBundle(),
+            // NitraTimeoutBundle
+            new Nitra\TimeoutBundle\NitraTimeoutBundle(),
             
             // NitraThemeBundle
             new Knp\Bundle\MenuBundle\KnpMenuBundle(),

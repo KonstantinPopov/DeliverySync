@@ -1,9 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
+        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
     ],
-    "hash": "2cff0f3dcdc3f31cb8e06aa67d591434",
+    "hash": "fe2d84f601e660c6feb54d6c37567d9e",
     "packages": [
         {
             "name": "afarkas/html5shiv",
@@ -2247,6 +2248,43 @@
             "time": "2013-02-03 08:13:07"
         },
         {
+            "name": "nitra/timeout-bundle",
+            "version": "dev-master",
+            "target-dir": "Nitra/TimeoutBundle",
+            "source": {
+                "type": "git",
+                "url": "https://bitbucket.org/nitra/nitratimeoutbundle.git",
+                "reference": "6911608e4e5ee74928f9ae173dd124f69e50cdfa"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://bitbucket.org/nitra/nitratimeoutbundle/get/6911608e4e5ee74928f9ae173dd124f69e50cdfa.zip",
+                "reference": "6911608e4e5ee74928f9ae173dd124f69e50cdfa",
+                "shasum": ""
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-0": {
+                    "Nitra\\TimeoutBundle": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "CC-BY-NC-ND-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "Nitra Labs",
+                    "homepage": "http://nitralabs.com"
+                }
+            ],
+            "description": "nitra timeoutbundle",
+            "keywords": [
+                "TimeoutBundle"
+            ],
+            "time": "2014-09-10 13:16:22"
+        },
+        {
             "name": "pagerfanta/pagerfanta",
             "version": "v1.0.1",
             "source": {
@@ -3236,8 +3274,10 @@
         "friendsofsymfony/jsrouting-bundle": 20,
         "doctrine/doctrine-fixtures-bundle": 20,
         "doctrine/doctrine-migrations-bundle": 20,
-        "jms/di-extra-bundle": 20
+        "jms/di-extra-bundle": 20,
+        "nitra/timeout-bundle": 20
     },
+    "prefer-stable": true,
     "platform": {
         "php": ">=5.4.7"
     },
