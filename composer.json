@@ -21,6 +21,7 @@
         "incenteev/composer-parameter-handler": "~2.0",
         
         "nitra/nitra-theme-bundle": "dev-master",
+        "nitra/timeout-bundle": "dev-master",
         "friendsofsymfony/jsrouting-bundle": "1.1.*@dev",
         
         "doctrine/doctrine-fixtures-bundle": "dev-master",
@@ -63,4 +64,3 @@
         }
     }
 }
-
