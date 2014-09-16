@@ -1272,7 +1272,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                     </Conditions_items>
                     <Places_items>
                         <SendingFormat>'.(($sendingFormat) ? $sendingFormat['Code'] : '').'</SendingFormat>
-                        <Quantity>' . $product['quantity'] . '</Quantity>
+                        <Quantity>1</Quantity>
                         <Weight>'   . $maxWeight . '</Weight>
                         <Length>'   . $product['length'] . '</Length>
                         <Width>'    . $product['width'] . '</Width>
@@ -1298,7 +1298,7 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
                     </Conditions_items>
                     <Places_items>
                         <SendingFormat>'.(($sendingFormat) ? $sendingFormat['Code'] : '').'</SendingFormat>
-                        <Quantity>' . $product['quantity'] . '</Quantity>
+                        <Quantity>1</Quantity>
                         <Weight>'   . $maxWeight . '</Weight>
                         <Length>'   . $product['length'] . '</Length>
                         <Width>'    . $product['width'] . '</Width>
