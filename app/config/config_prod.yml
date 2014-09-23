@@ -1,6 +1,6 @@
 imports:
     - { resource: config.yml }
-
+    - { resource: parameters.yml }
 # In production environment you should know that the parameters for URL generation
 # always pass the requirements. Otherwise it would break your link (or even site with
 # strict_requirements = true). So we can disable the requirements check completely for
@@ -18,10 +18,19 @@ framework:
 monolog:
     handlers:
         main:
-            type:         fingers_crossed
-            action_level: error
-            handler:      nested
-        nested:
-            type:  stream
-            path:  "%kernel.logs_dir%/%kernel.environment%.log"
-            level: debug
+            type:               fingers_crossed
+            action_level:       error
+            handler:            grouped
+        grouped:
+            type:               group
+            members:            [streamed, swift]
+        streamed:
+            type:               stream
+            path:               "%kernel.logs_dir%/%kernel.environment%.log"
+            level:              debug
+        swift:
+            type:               swift_mailer
+            from_email:         "%monolog_from_email%"
+            to_email:           "%monolog_to_email%"
+            subject:            "%monolog_subject%"
+            level:              critical 

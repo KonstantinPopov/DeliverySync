@@ -14,6 +14,11 @@ parameters:
     locale:            ru
     secret:            921b17afa7fc6b15f6f3ef27d37af855
     
+    # логирование
+    monolog_from_email: "Input email from for errors"
+    monolog_to_email:   "Input email for errors"
+    monolog_subject:    "Input email subject for errors"
+
     # Настройки ТК Новая Почта
     novaposhta:
         # ID эталона страны в которой находится ТК
