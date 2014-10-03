@@ -340,7 +340,10 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
             );
             
             // ТК тариф Интернет магазин
-            if ($deliveryId == self::$deliveryIdNovaposhta) {
+            // только для клиента kontrabas
+            if ($deliveryId == self::$deliveryIdNovaposhta &&
+                $this->client->getName() == 'kontrabas'
+            ) {
                 // запомнить ТК тариф ИМ
                 $this->deliveries[self::$deliveryIdNovaposhtaIM] = $this->deliveries[self::$deliveryIdNovaposhta];
                 $this->deliveries[self::$deliveryIdNovaposhtaIM]['name'] .= ' (тариф ИМ)';
@@ -1041,13 +1044,6 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
      */
     protected function novaposhtaIMEstimate(Warehouse $fromWarehouse, Warehouse $toWarehouse, array $products)
     {
-        // проверить если клиент не kontrabas 
-        // расчет стоимости не доступен
-        if ($this->client->getName() != 'kontrabas') {
-            // вернуть пустоту
-            return null;
-        }
-        
         // получить параметры  из файла настроек
         $containerParameters = $this->getContainer()->getParameter('novaposhta');
         
