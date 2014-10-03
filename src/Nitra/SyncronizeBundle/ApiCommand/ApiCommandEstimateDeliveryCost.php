@@ -1041,6 +1041,13 @@ class ApiCommandEstimateDeliveryCost extends ApiCommand
      */
     protected function novaposhtaIMEstimate(Warehouse $fromWarehouse, Warehouse $toWarehouse, array $products)
     {
+        // проверить если клиент не kontrabas 
+        // расчет стоимости не доступен
+        if ($this->client->getName() != 'kontrabas') {
+            // вернуть пустоту
+            return null;
+        }
+        
         // получить параметры  из файла настроек
         $containerParameters = $this->getContainer()->getParameter('novaposhta');
         
