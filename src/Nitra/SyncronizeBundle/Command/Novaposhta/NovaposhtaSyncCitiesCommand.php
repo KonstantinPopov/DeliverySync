@@ -168,7 +168,7 @@ class NovaposhtaSyncCitiesCommand extends NovaposhtaSync
             // сравнить город ТК и город DS
             if ($tkCityCompare != $dsCityCompare) {
                 // наполнить город DS данными
-                $dsCity->setNameTk(trim((string)$tkCity->nameRu));
+                $dsCity->setNameTk($cityTkName);
             }
             
             // обновить прогресс
