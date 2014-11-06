@@ -21,7 +21,7 @@ builders:
     list:
         params:
             title:          "Список складов ТК"
-            display:        [ delivery, city, name, address, nameTk, phone ]
+            display:        [ delivery, city, name, address, nameTk, phone, updatedAt ]
             sort:           [ name, ASC ]
             max_per_page:   100
             actions:        []

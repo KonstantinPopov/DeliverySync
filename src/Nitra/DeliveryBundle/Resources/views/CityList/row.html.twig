@@ -1,1 +1,7 @@
 {% extends_admingenerated "NitraDeliveryBundle:CityList:row.html.twig" %}
+
+{% block list_td_column_updatedAt %}
+    {% if City.updatedAt %}
+        {{ City.updatedAt.format('Y-M-d H:i') }}
+    {% endif %}
+{% endblock list_td_column_updatedAt %}
